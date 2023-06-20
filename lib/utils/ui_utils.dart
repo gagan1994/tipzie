@@ -135,3 +135,36 @@ Text buildItem({
     textAlign: TextAlign.start,
   );
 }
+
+Widget getFilter_1Widget(List<String> listOfFilter1,
+    Function(int) selectedIndexCall, currentSelectedIndex) {
+  return ListView.builder(
+    itemCount: listOfFilter1.length,
+    scrollDirection: Axis.horizontal,
+    itemBuilder: (BuildContext context, int index) {
+      return GestureDetector(
+        onTap: () {
+          selectedIndexCall(index);
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 5),
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          height: 38,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              color: index == currentSelectedIndex
+                  ? notif_selected_bg_color
+                  : divider_color),
+          child: Text(
+            "${listOfFilter1[index]}",
+            style: TextStyle(
+                color: currentSelectedIndex == index
+                    ? Colors.white
+                    : not_selected_item_color),
+          ),
+        ),
+      );
+    },
+  );
+}

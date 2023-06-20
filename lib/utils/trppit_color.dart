@@ -17,3 +17,5 @@ const Color notif_bg_color = Color(0xffD8E7F2);
 const Color notif_selected_bg_color = Color(0xff0192FA);
 const Color hambuger_light = Color(0xff93A3B4);
 const Color text_light = Color(0xffA4A7AC);
+const Color text_light_2 = Color(0xff9CA9C5);
+const Color selected_date_color = Color(0xffF6F9FE);

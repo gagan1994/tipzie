@@ -3,9 +3,11 @@ import 'package:page_transition/page_transition.dart';
 import 'package:tripzie/ui/login/login_page_1.dart';
 import 'package:tripzie/ui/login/login_screen.dart';
 import 'package:tripzie/ui/login/verify_otp_screen.dart';
+import 'package:tripzie/ui/main/discovery/disovery_details_screen.dart';
 import 'package:tripzie/ui/main/rides/create_new_ride_screen.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 
+import 'ui/main/discovery/models.dart';
 import 'ui/main/main_screen.dart';
 import 'ui/splash_screen.dart';
 
@@ -37,6 +39,9 @@ class MyApp extends StatelessWidget {
             return rightToLeftTransition(VerifyOTP(phone));
           case CreateNewRideScreen.PAGE_NAME:
             return rightToLeftTransition(CreateNewRideScreen());
+          case DiscoveryDetailsScreen.PAGE_NAME:
+            final discoveryItem = settings.arguments as DiscoveryListItem;
+            return bottomToTop(DiscoveryDetailsScreen(discoveryItem));
         }
       },
     );
@@ -53,6 +58,13 @@ class MyApp extends StatelessWidget {
     return PageTransition(
       child: widget,
       type: PageTransitionType.rightToLeft,
+    );
+  }
+
+  PageTransition bottomToTop(StatefulWidget widget) {
+    return PageTransition(
+      child: widget,
+      type: PageTransitionType.bottomToTop,
     );
   }
 }
