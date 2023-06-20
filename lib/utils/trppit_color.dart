@@ -13,3 +13,7 @@ const Color available = Color(0xff34A853);
 const Color edit_text_bg_color = Color(0xffF4F4F6);
 const Color edit_text_color = Color(0xffA7A8AD);
 const Color divider_color = Color(0xffF4F4F6);
+const Color notif_bg_color = Color(0xffD8E7F2);
+const Color notif_selected_bg_color = Color(0xff0192FA);
+const Color hambuger_light = Color(0xff93A3B4);
+const Color text_light = Color(0xffA4A7AC);
