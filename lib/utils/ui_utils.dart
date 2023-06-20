@@ -1,0 +1,137 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:tripzie/utils/trppit_color.dart';
+
+import '../ui/main/rides/models.dart';
+
+String? getFontStyle() {
+  return GoogleFonts.montserratAlternates().fontFamily;
+}
+
+SnackBar customSnackBar({required String content}) {
+  return SnackBar(
+    backgroundColor: Colors.black,
+    content: Text(
+      content,
+      style: const TextStyle(color: Colors.redAccent, letterSpacing: 0.5),
+    ),
+  );
+}
+
+void showSnackBar(BuildContext context, String content) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      backgroundColor: Colors.black,
+      content: Text(
+        content,
+        style: const TextStyle(color: Colors.white, letterSpacing: 0.5),
+      )));
+}
+
+Widget rideDetails(RideListItem item) {
+  return ListTile(
+    leading: CircleAvatar(
+      backgroundImage: NetworkImage(item.imageUri.isEmpty
+          ? "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+          : item.imageUri),
+    ),
+    title: Text(
+      item.name,
+      overflow: TextOverflow.ellipsis,
+    ),
+    trailing: Container(
+      height: 50,
+      width: 100,
+      alignment: Alignment.centerRight,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (item.isAvailable)
+            const Text(
+              "Active",
+              style: TextStyle(fontSize: 10),
+            ),
+          if (item.isAvailable)
+            const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 2),
+                child: CircleAvatar(radius: 5, backgroundColor: Colors.green)),
+          if (!item.isAvailable)
+            Text(
+              timeAgo(item.lastSeen),
+              style: const TextStyle(fontSize: 10),
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget rideDetails_2(RideListItem item) {
+  return Container(
+    color: Colors.white,
+    child: ListTile(
+      leading: CircleAvatar(
+        radius: 24,
+        backgroundImage: NetworkImage(item.imageUri.isEmpty
+            ? "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+            : item.imageUri),
+      ),
+      title: buildItem(text: item.name, text2: item.despription),
+      trailing: Icon(
+        Icons.arrow_forward_ios_outlined,
+        color: accent_color,
+      ),
+    ),
+  );
+}
+
+Widget rideDetails_3(RideListItem item) {
+  return Column(
+    children: [
+      Container(
+        height: 50,
+        width: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          image: DecorationImage(
+            image: NetworkImage(item.imageUri),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+      SizedBox(
+        height: 10,
+      ),
+      Text(item.name),
+    ],
+  );
+}
+
+Text buildItem({
+  required String text,
+  required String text2,
+}) {
+  return Text.rich(
+    TextSpan(
+      children: [
+        TextSpan(
+          text: text,
+          style: TextStyle(
+            color: accent_color,
+            fontSize: 18.0,
+          ),
+        ),
+        TextSpan(
+          text: "\n" + text2,
+          style: TextStyle(
+            fontWeight: FontWeight.normal,
+            fontSize: 12.0,
+          ),
+        ),
+      ],
+    ),
+    maxLines: 2,
+    overflow: TextOverflow.ellipsis,
+    textAlign: TextAlign.start,
+  );
+}
