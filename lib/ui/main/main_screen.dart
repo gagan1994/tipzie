@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:tripzie/background_task/background_location.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/ui/main/home/home_screen.dart';
 import 'package:tripzie/ui/main/profile/profile_screen.dart';
@@ -39,11 +40,14 @@ class _MainScreenState extends State<MainScreen>
         print("Log listener");
       });
     });
+
+    BackgroundLocationWrapper.instance.startLocationService();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    BackgroundLocationWrapper.instance.stopLocationService();
     super.dispose();
   }
 

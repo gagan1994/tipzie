@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:tripzie/auth/authentication.dart';
+import 'package:tripzie/background_task/background_location.dart';
 import 'package:tripzie/ui/main/main_screen.dart';
 
 import '../utils/trppit_color.dart';
@@ -68,6 +69,7 @@ class SplashScreenState extends State<SplashPage> {
   }
 
   void checkAndMoveToNextScreen() async {
+    await BackgroundLocationWrapper.instance.initialize();
     Timer(
         const Duration(seconds: 3),
         () => {

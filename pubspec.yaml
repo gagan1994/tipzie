@@ -53,6 +53,8 @@ dependencies:
   intl: ^0.17.0
   socket_io_client: ^2.0.2
   snippet_coder_utils: ^1.0.14
+  background_locator_2: ^2.0.6
+  location_permissions: ^4.0.1
 
 dev_dependencies:
   flutter_test:
