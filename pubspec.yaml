@@ -47,7 +47,7 @@ dependencies:
   firebase_core: ^2.14.0
   firebase_auth: ^4.6.3
   geolocator: ^9.0.2
-  custom_map_markers: ^0.0.2+1
+  image: ^4.0.17
   flutter_polygon: ^0.2.0
   google_fonts: ^4.0.3
   intl: ^0.17.0

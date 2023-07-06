@@ -98,7 +98,7 @@ class _MyAppState extends State<TripzieMap> {
   }
 
   addMarker(LiveLocationModel model) async {
-    var image = await MapUtils.getMarkerImage(model.photoURL!);
+    var image = await MapUtils.getMarkerIcon(model.photoURL!, Size(75, 75));
     CameraPosition cameraPosition = CameraPosition(
       target: LatLng(model.latitude!, model.longitude!),
       zoom: 16,
