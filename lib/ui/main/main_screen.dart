@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tripzie/background_task/background_location.dart';
+import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/ui/main/home/home_screen.dart';
 import 'package:tripzie/ui/main/profile/profile_screen.dart';
@@ -29,6 +30,7 @@ class _MainScreenState extends State<MainScreen>
   void initState() {
     super.initState();
     _controller = TabController(vsync: this, length: 3);
+    initAll();
     bottom_screens = [
       HomeScreen(),
       RideScreen(),
@@ -40,14 +42,11 @@ class _MainScreenState extends State<MainScreen>
         print("Log listener");
       });
     });
-
-    BackgroundLocationWrapper.instance.startLocationService();
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    BackgroundLocationWrapper.instance.stopLocationService();
     super.dispose();
   }
 
@@ -66,6 +65,11 @@ class _MainScreenState extends State<MainScreen>
                 left: 15,
                 child: _buildFab(context),
               ),
+            Positioned(
+              bottom: 75,
+              right: 20,
+              child: _buildPlay(context),
+            ),
           ],
         ),
       ),
@@ -142,5 +146,28 @@ class _MainScreenState extends State<MainScreen>
         }
       },
     );
+  }
+
+  Widget _buildPlay(BuildContext context) {
+    return GestureDetector(
+        child: Container(
+          color: accent_color,
+          child: ValueListenableBuilder<bool>(
+            valueListenable: BackgroundLocationWrapper.instance.isRunning,
+            builder: (context, value, widget) {
+              return Icon(
+                  value ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                  color: Colors.white);
+            },
+          ),
+        ),
+        onTap: () {
+          BackgroundLocationWrapper.instance.toggle();
+        });
+  }
+
+  void initAll() async {
+    await Authentication.initializeFirebase();
+    SocketWrapper.instance.setUser(Authentication.getUser());
   }
 }

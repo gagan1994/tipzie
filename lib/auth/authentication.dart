@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/login/login_screen.dart';
 
 import '../utils/ui_utils.dart';
@@ -22,7 +23,9 @@ class Authentication {
   }
 
   static Future<FirebaseApp> initializeFirebase() async {
-    FirebaseApp firebaseApp = await Firebase.initializeApp();
+    print("FirebaseAuth init");
+    FirebaseApp firebaseApp = await Firebase.initializeApp()
+        .whenComplete(() => print("FirebaseAuth completed"));
     return firebaseApp;
   }
 
@@ -127,6 +130,7 @@ class Authentication {
 
   static void logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
+    SocketWrapper.instance.setUser(null);
     Navigator.pushNamedAndRemoveUntil(
         context, LoginPage.PAGE_NAME, (Route<dynamic> route) => false);
   }

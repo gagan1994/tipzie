@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:background_locator_2/background_locator.dart';
 import 'package:background_locator_2/location_dto.dart';
 import 'package:background_locator_2/settings/android_settings.dart';
@@ -11,28 +13,31 @@ import 'location_callback_handler.dart';
 class BackgroundLocationWrapper {
   BackgroundLocationWrapper._();
   static final instance = BackgroundLocationWrapper._();
-  bool isRunning = false;
-  LocationDto? lastLocation = null;
+  final isRunning = ValueNotifier<bool>(false);
+
+  LocationDto? lastLocation;
 
   void startLocationService() async {
+    print("Starting location service");
     _onStart();
   }
 
   void stopLocationService() {
+    print("Stopping location service");
     onStop();
   }
 
   void onStop() async {
     await BackgroundLocator.unRegisterLocationUpdate();
     final _isRunning = await BackgroundLocator.isServiceRunning();
-    isRunning = _isRunning;
+    isRunning.value = (_isRunning);
   }
 
   void _onStart() async {
     if (await _checkLocationPermission()) {
       await _startLocator();
       final _isRunning = await BackgroundLocator.isServiceRunning();
-      isRunning = _isRunning;
+      isRunning.value = _isRunning;
       lastLocation = null;
     } else {
       // show error
@@ -92,6 +97,16 @@ class BackgroundLocationWrapper {
   }
 
   Future<void> initialize() async {
-    return BackgroundLocator.initialize();
+    await BackgroundLocator.initialize();
+    final _isRunning = await BackgroundLocator.isServiceRunning();
+    isRunning.value = (_isRunning);
+  }
+
+  void toggle() {
+    if (isRunning.value) {
+      stopLocationService();
+    } else {
+      startLocationService();
+    }
   }
 }

@@ -124,7 +124,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             image: NetworkImage(Authentication.getUser().photoURL!),
             fit: BoxFit.cover,
           ),
-          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+          borderRadius: BorderRadius.all(Radius.circular(60.0)),
           border: Border.all(
             color: Colors.white,
             width: 2.0,

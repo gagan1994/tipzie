@@ -26,9 +26,9 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: (settings) {
         print("Changing page request: ${settings.name}");
         switch (settings.name) {
+          // case SplashPage.PAGE_NAME:
+          //   return fadeTransition(SplashPage());
           case SplashPage.PAGE_NAME:
-            return fadeTransition(SplashPage());
-          case MainScreen.PAGE_NAME:
             return rightToLeftTransition(MainScreen());
           case LoginPage.PAGE_NAME:
             return rightToLeftTransition(LoginPage());
