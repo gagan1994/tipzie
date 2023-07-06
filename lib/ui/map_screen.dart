@@ -6,6 +6,8 @@ import 'package:flutter_polygon/flutter_polygon.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tripzie/auth/authentication.dart';
+import 'package:tripzie/socket/models/models.dart';
+import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
 class TripzieMap extends StatefulWidget {
@@ -39,6 +41,7 @@ class _MyAppState extends State<TripzieMap> {
   void initState() {
     super.initState();
     getUserCurrentLocationUpdateUi();
+    SocketWrapper.instance.startListeningForLocationUpdates(addMarker);
   }
 
   @override
@@ -67,31 +70,7 @@ class _MyAppState extends State<TripzieMap> {
         });
   }
 
-  void loadData() async {
-    print("loadData");
-    _customMarkers.clear();
-    CameraPosition cameraPosition = CameraPosition(
-      target: LatLng(currentLocation!.latitude, currentLocation!.longitude),
-      zoom: 16,
-    );
-    final GoogleMapController controller = await _controller.future;
-    controller.moveCamera(CameraUpdate.newCameraPosition(cameraPosition));
-    _customMarkers.add(MarkerData(
-        marker: Marker(
-            markerId: MarkerId('id-1'),
-            position:
-                LatLng(currentLocation!.latitude, currentLocation!.longitude)),
-        child: _currentUserMarker()));
-    print("add marker");
-    setState(() {});
-  }
-
-  void getUserCurrentLocationUpdateUi() async {
-    currentLocation = await getUserCurrentLocation();
-    loadData();
-  }
-
-  Widget _currentUserMarker() {
+  Widget _currentUserMarker(LiveLocationModel model) {
     //'https://newprofilepic2.photo-cdn.net//assets/images/article/profile.jpg'
     return Container(
       width: 30,
@@ -103,8 +82,8 @@ class _MyAppState extends State<TripzieMap> {
           PolygonBoxShadow(color: Colors.black, elevation: 1.0),
           PolygonBoxShadow(color: Colors.grey, elevation: 5.0)
         ],
-        child: (Authentication.getUser().photoURL != null)
-            ? Image.network(Authentication.getUser().photoURL!)
+        child: (model.photoURL != null)
+            ? Image.network(model.photoURL!)
             : Container(
                 color: accent_color,
                 child: Icon(
@@ -113,5 +92,42 @@ class _MyAppState extends State<TripzieMap> {
                 )),
       ),
     );
+  }
+
+  void getUserCurrentLocationUpdateUi() async {
+    currentLocation = await getUserCurrentLocation();
+    var currentMarker = LiveLocationModel.fromData(
+        currentLocation!.latitude,
+        currentLocation!.longitude,
+        currentLocation!.altitude,
+        currentLocation!.timestamp!.millisecond.toDouble(),
+        Authentication.getUser());
+    _customMarkers.clear();
+    addMarker(currentMarker);
+  }
+
+  addMarker(LiveLocationModel model) async {
+    CameraPosition cameraPosition = CameraPosition(
+      target: LatLng(model.latitude!, model.longitude!),
+      zoom: 16,
+    );
+    final GoogleMapController controller = await _controller.future;
+    if (Authentication.isCurrentUser(model.userId)) {
+      controller.moveCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    }
+    _customMarkers.add(
+      MarkerData(
+        marker: Marker(
+          markerId: MarkerId(model.userId!),
+          position: LatLng(model.latitude!, model.longitude!),
+          infoWindow: InfoWindow(
+              title:
+                  model.userName == null ? model.phoneNumber : model.userName),
+        ),
+        child: _currentUserMarker(model),
+      ),
+    );
+    print("add marker");
+    setState(() {});
   }
 }

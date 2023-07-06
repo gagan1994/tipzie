@@ -6,11 +6,20 @@ class LiveLocationModel {
   String? userName;
   String? phoneNumber;
   String? email;
+  String? photoURL;
 
   double? latitude;
   double? longitude;
   double? altitude;
   double? time;
+  LiveLocationModel.fromData(
+      this.latitude, this.longitude, this.altitude, this.time, User? user) {
+    userId = user?.uid;
+    userName = user?.displayName;
+    phoneNumber = user?.phoneNumber;
+    email = user?.email;
+    photoURL = user?.photoURL;
+  }
   LiveLocationModel(LocationDto dto, User? user) {
     userId = user?.uid;
     userName = user?.displayName;
@@ -20,6 +29,7 @@ class LiveLocationModel {
     longitude = dto.longitude;
     altitude = dto.altitude;
     time = dto.time;
+    photoURL = user?.photoURL;
   }
 
   LiveLocationModel.fromJson(Map<String, dynamic> json)
@@ -27,6 +37,7 @@ class LiveLocationModel {
         userName = json['userName'],
         phoneNumber = json['phoneNumber'],
         email = json['email'],
+        photoURL = json['photoURL'],
         latitude = json['latitude'],
         longitude = json['longitude'],
         altitude = json['altitude'],
@@ -37,6 +48,7 @@ class LiveLocationModel {
         'userName': userName,
         'phoneNumber': phoneNumber,
         'email': email,
+        'photoURL': photoURL,
         'latitude': latitude,
         'longitude': longitude,
         'altitude': altitude,

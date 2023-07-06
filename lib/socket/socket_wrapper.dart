@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:background_locator_2/location_dto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -61,7 +59,13 @@ class SocketWrapper {
   }
 
   void _sendData(String event, Map<String, dynamic> data) {
-    var sendData = jsonEncode(data);
-    _sender.emit(event, sendData);
+    _sender.emit(event, data);
+  }
+
+  void startListeningForLocationUpdates(Function(LiveLocationModel) callback) {
+    _receiver.listen('position-change', (data) async {
+      var liveData = LiveLocationModel.fromJson(data);
+      callback(liveData);
+    });
   }
 }

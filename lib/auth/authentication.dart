@@ -153,4 +153,9 @@ class Authentication {
         ? FirebaseAuth.instance.currentUser!.phoneNumber!
         : "Not - Found";
   }
+
+  static bool isCurrentUser(String? userId) {
+    if (userId == null) return false;
+    return (userId == getUser().uid);
+  }
 }

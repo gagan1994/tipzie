@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:socket_io_client/src/socket.dart';
 
 class SocketSender {
@@ -7,8 +9,9 @@ class SocketSender {
     this.socket = socket;
   }
 
-  void emit(String event, data) {
-    print("event $event  data=> $data");
-    socket.emit(event, data);
+  void emit(String event, Map<String, dynamic> data) {
+    var sendData = jsonEncode(data);
+    print("Sent:\nevent $event\ndata=> $sendData");
+    socket.emit(event, sendData);
   }
 }
