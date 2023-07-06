@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:custom_map_markers/custom_map_markers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polygon/flutter_polygon.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/socket/models/models.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
+import 'package:tripzie/utils/map_utils.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
 class TripzieMap extends StatefulWidget {
@@ -17,8 +17,7 @@ class TripzieMap extends StatefulWidget {
 
 class _MyAppState extends State<TripzieMap> {
   Completer<GoogleMapController> _controller = Completer();
-  late List<MarkerData> _customMarkers = [];
-
+  Set<Marker> markers = Set();
   Position? currentLocation;
 
   void _onMapCreated(GoogleMapController controller) {
@@ -46,28 +45,20 @@ class _MyAppState extends State<TripzieMap> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomGoogleMapMarkerBuilder(
-        customMarkers: _customMarkers,
-        builder: (BuildContext context, Set<Marker>? markers) {
-          if (markers == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return GoogleMap(
-              zoomGesturesEnabled: true,
-              onMapCreated: _onMapCreated,
-              mapType: MapType.terrain,
-              markers: markers,
-              zoomControlsEnabled: false,
-              initialCameraPosition: CameraPosition(
-                  target: currentLocation == null
-                      ? const LatLng(
-                          20.42796133580664,
-                          80.885749655962,
-                        )
-                      : LatLng(currentLocation!.latitude,
-                          currentLocation!.longitude),
-                  zoom: 16));
-        });
+    return GoogleMap(
+        zoomGesturesEnabled: true,
+        onMapCreated: _onMapCreated,
+        mapType: MapType.terrain,
+        markers: markers,
+        zoomControlsEnabled: false,
+        initialCameraPosition: CameraPosition(
+            target: currentLocation == null
+                ? const LatLng(
+                    20.42796133580664,
+                    80.885749655962,
+                  )
+                : LatLng(currentLocation!.latitude, currentLocation!.longitude),
+            zoom: 16));
   }
 
   Widget _currentUserMarker(LiveLocationModel model) {
@@ -102,32 +93,32 @@ class _MyAppState extends State<TripzieMap> {
         currentLocation!.altitude,
         currentLocation!.timestamp!.millisecond.toDouble(),
         Authentication.getUser());
-    _customMarkers.clear();
+    markers.clear();
     addMarker(currentMarker);
   }
 
   addMarker(LiveLocationModel model) async {
+    var image = await MapUtils.getMarkerImage(model.photoURL!);
     CameraPosition cameraPosition = CameraPosition(
       target: LatLng(model.latitude!, model.longitude!),
       zoom: 16,
     );
     final GoogleMapController controller = await _controller.future;
+    var marker = Marker(
+        markerId: MarkerId(model.userId!),
+        position: LatLng(model.latitude!, model.longitude!),
+        infoWindow: InfoWindow(title: MapUtils.getInfoWindow(model)),
+        icon: BitmapDescriptor.fromBytes(image));
+    markers.add(marker);
     if (Authentication.isCurrentUser(model.userId)) {
       controller.moveCamera(CameraUpdate.newCameraPosition(cameraPosition));
+      controller.showMarkerInfoWindow(marker.markerId);
+    } else {
+      controller.moveCamera(CameraUpdate.newLatLngBounds(
+        MapUtils.boundsFromLatLngList(markers),
+        100.0,
+      ));
     }
-    _customMarkers.add(
-      MarkerData(
-        marker: Marker(
-          markerId: MarkerId(model.userId!),
-          position: LatLng(model.latitude!, model.longitude!),
-          infoWindow: InfoWindow(
-              title:
-                  model.userName == null ? model.phoneNumber : model.userName),
-        ),
-        child: _currentUserMarker(model),
-      ),
-    );
-    print("add marker");
     setState(() {});
   }
 }
