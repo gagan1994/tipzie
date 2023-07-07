@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tripzie/background_task/background_location.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/ui/main/home/home_screen.dart';
@@ -11,6 +10,7 @@ import '../../auth/authentication.dart';
 import '../../utils/trippit_assets.dart';
 import '../../utils/trppit_color.dart';
 import 'fab_with_icons.dart';
+import 'map/current_ride_screen.dart';
 import 'rides/ride_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -149,21 +149,13 @@ class _MainScreenState extends State<MainScreen>
   }
 
   Widget _buildPlay(BuildContext context) {
-    return GestureDetector(
-        child: Container(
-          color: accent_color,
-          child: ValueListenableBuilder<bool>(
-            valueListenable: BackgroundLocationWrapper.instance.isRunning,
-            builder: (context, value, widget) {
-              return Icon(
-                  value ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                  color: Colors.white);
-            },
-          ),
-        ),
-        onTap: () {
-          BackgroundLocationWrapper.instance.toggle();
-        });
+    return FloatingActionButton.extended(
+      onPressed: () {
+        Navigator.pushNamed(context, CurrentRideScreen.PAGE_NAME);
+      },
+      label: const Text('Current Rides'),
+      backgroundColor: accent_color,
+    );
   }
 
   void initAll() async {

@@ -13,9 +13,9 @@ class HomeScreen extends TripzieBottomNavBarScreen {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Placeholder(),
+    return SafeArea(
+      child: Scaffold(
+        body: Placeholder(),
       ),
     );
   }

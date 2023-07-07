@@ -9,6 +9,7 @@ import 'package:tripzie/utils/ui_utils.dart';
 
 import 'ui/main/discovery/models.dart';
 import 'ui/main/main_screen.dart';
+import 'ui/main/map/current_ride_screen.dart';
 import 'ui/splash_screen.dart';
 
 void main() {
@@ -42,6 +43,8 @@ class MyApp extends StatelessWidget {
           case DiscoveryDetailsScreen.PAGE_NAME:
             final discoveryItem = settings.arguments as DiscoveryListItem;
             return bottomToTop(DiscoveryDetailsScreen(discoveryItem));
+          case CurrentRideScreen.PAGE_NAME:
+            return bottomToTop(CurrentRideScreen());
         }
       },
     );
