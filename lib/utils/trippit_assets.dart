@@ -21,3 +21,5 @@ const String ic_rating = image_directory + 'ic_rating.svg';
 const String ic_location_blue = image_directory + 'ic_location_blue.svg';
 const String ic_location_orange = image_directory + 'ic_location_orange.svg';
 const String ic_faded = image_directory + 'ic_faded.svg';
+
+const String ic_google_assistant = image_directory + 'ic_google_assistant.svg';

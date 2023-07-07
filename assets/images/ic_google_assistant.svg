@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Artboard</title>
+    <g id="Artboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="android-brands" transform="translate(26.250000, 26.250000)"></g>
+        <g id="Google_Assistant_logo" transform="translate(0.000000, 2.500000)"></g>
+        <ellipse id="Oval" fill="#4285F4" fill-rule="nonzero" cx="13.125" cy="13.75" rx="11.875" ry="11.25"></ellipse>
+        <path d="M40,13.75 C40,15.1308954 38.8804231,16.25 37.5,16.25 C36.1195769,16.25 35,15.1308954 35,13.75 C35,12.3691833 36.1195769,11.25 37.5,11.25 C38.8804231,11.25 40,12.3691833 40,13.75 Z" id="Path" fill="#34A853" fill-rule="nonzero"></path>
+        <path d="M35,19.3750689 C35,21.7911918 33.0414138,23.75 30.6250344,23.75 C28.2084484,23.75 26.25,21.7911918 26.25,19.3750689 C26.25,16.9588082 28.2085173,15 30.6250344,15 C33.0414827,15 35,16.9588771 35,19.3750689 Z" id="Path" fill="#EA4335" fill-rule="nonzero"></path>
+        <path d="M36.25,31.2500656 C36.25,34.0115905 33.7319457,36.25 30.6250369,36.25 C27.5181281,36.25 25,34.0115905 25,31.2500656 C25,28.4886718 27.5180543,26.25 30.6250369,26.25 C33.7319457,26.25 36.25,28.4886718 36.25,31.2500656 Z" id="Path" fill="#FBBC05" fill-rule="nonzero"></path>
+    </g>
+</svg>
