@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -22,12 +24,16 @@ class AssistantHelper {
   void statusListener(String status) {
     _logEvent(
         'Received listener status: $status, listening: ${speech.isListening}');
-    lastStatus = status;
+    if (status == "done") {
+      lastStatus = status;
+    } else {
+      lastStatus = status;
+    }
     updateUi();
   }
 
   bool isListening() {
-    return speech.isListening;
+    return lastStatus != "done";
   }
 
   Future<void> initSpeechState(Function() callback) async {
