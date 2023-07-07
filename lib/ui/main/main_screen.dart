@@ -5,11 +5,11 @@ import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/ui/main/home/home_screen.dart';
 import 'package:tripzie/ui/main/profile/profile_screen.dart';
+import 'package:tripzie/ui/main/wallet/wallet_screen.dart';
 
 import '../../auth/authentication.dart';
 import '../../utils/trippit_assets.dart';
 import '../../utils/trppit_color.dart';
-import 'discovery/discovery_screen.dart';
 import 'fab_with_icons.dart';
 import 'rides/ride_screen.dart';
 
@@ -34,7 +34,7 @@ class _MainScreenState extends State<MainScreen>
     bottom_screens = [
       HomeScreen(),
       RideScreen(),
-      DiscoveryScreen(),
+      WalletScreen(),
       ProfileScreen()
     ];
     _controller.addListener(() {

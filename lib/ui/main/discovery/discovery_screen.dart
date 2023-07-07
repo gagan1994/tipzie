@@ -37,50 +37,6 @@ class DiscoveryScreenState extends State<DiscoveryScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SvgPicture.asset(
-                  ic_hamburger_menu,
-                  color: hambuger_light,
-                ),
-                Container(
-                  height: 38,
-                  width: 38,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(38)),
-                      color: notif_bg_color),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        child: Icon(
-                          Icons.notifications_none,
-                          color: notif_selected_bg_color,
-                        ),
-                        left: 0,
-                        right: 0,
-                        top: 0,
-                        bottom: 0,
-                      ),
-                      Positioned(
-                        right: 11.5,
-                        top: 11.5,
-                        child: Container(
-                          height: 7,
-                          width: 7,
-                          decoration: BoxDecoration(
-                              color: notif_selected_bg_color,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              border:
-                                  Border.all(color: notif_bg_color, width: 1)),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
             const SizedBox(
               height: 10,
             ),
