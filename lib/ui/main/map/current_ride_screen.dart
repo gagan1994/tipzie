@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:tripzie/ui/main/map/assistant_helper.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
 import '../../../utils/trippit_assets.dart';
@@ -15,10 +16,24 @@ class CurrentRideScreen extends StatefulWidget {
 }
 
 class _CurrentRideScreenState extends State<CurrentRideScreen> {
-  bool isVolumeDown = false;
+  bool isVolumeSelected = false;
   bool isAssistantInProgress = false;
-  bool isMicOff = false;
-  bool isSpeaking = false;
+  bool isMicSelected = false;
+  AssistantHelper assistantHelper = AssistantHelper();
+
+  @override
+  void initState() {
+    assistantHelper.initSpeechState(() {
+      setState(() {});
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    assistantHelper.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +48,7 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
 
   _previewWidget() {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(30.0),
           topRight: Radius.circular(30.0),
@@ -42,7 +57,7 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
       ),
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Container(
@@ -53,21 +68,21 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
               color: accent_color_light,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _getIcon(Icons.volume_down_rounded, isVolumeDown, () {
+              _getIcon(Icons.volume_down_rounded, isVolumeSelected, () {
                 setState(() {
-                  isVolumeDown = !isVolumeDown;
+                  isVolumeSelected = !isVolumeSelected;
                 });
               }),
-              _getIcon(Icons.mic_off, isMicOff, () {
+              _getIcon(Icons.mic_off, isMicSelected, () {
                 setState(() {
-                  isMicOff = !isMicOff;
+                  isMicSelected = !isMicSelected;
                 });
               }),
               _getAssistant(),
@@ -90,7 +105,7 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
         decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: isSelected ? Colors.white : accent_color),
-        padding: EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10.0),
       ),
     );
   }
@@ -105,23 +120,41 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
       child: Container(
         decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isSpeaking ? accent_color_light : Colors.transparent),
-        padding: EdgeInsets.all(10.0),
-        child: SvgPicture.asset(
-          ic_google_assistant,
-          width: 20,
-          height: 20,
-        ),
+            color: assistantHelper.isListening()
+                ? accent_color_light
+                : Colors.transparent),
+        padding: const EdgeInsets.all(10.0),
+        child: SvgPicture.asset(ic_google_assistant,
+            width: 20,
+            height: 20,
+            color: assistantHelper.isInit ? null : accent_color_light),
       ),
     );
   }
 
-  onAssistantClicked() {
-    if (isSpeaking) {
+  onAssistantClicked() async {
+    if (assistantHelper.isListening()) {
       return;
     }
-    setState(() {
-      isSpeaking = true;
-    });
+    assistantHelper.startListening(eventCallback);
+    setState(() {});
+  }
+
+  void eventCallback(VoiceEvents event) {
+    switch (event) {
+      case VoiceEvents.MUTE:
+        isMicSelected = true;
+        break;
+      case VoiceEvents.UNMUTE:
+        isMicSelected = false;
+        break;
+      case VoiceEvents.SPEAKER_MODE_OF:
+        isVolumeSelected = false;
+        break;
+      case VoiceEvents.SPEAKER_MODE_ON:
+        isVolumeSelected = true;
+        break;
+    }
+    setState(() {});
   }
 }

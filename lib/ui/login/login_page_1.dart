@@ -23,14 +23,11 @@ class _LoginPage1State extends State<LoginPage1> {
           Expanded(
             child: Container(),
           ),
-          Hero(
-            tag: "bottom_button",
-            child: TripzieButton(
-              button_text: "Get Started",
-              onPressed: () {
-                Navigator.pushNamed(context, LoginPage.PAGE_NAME);
-              },
-            ),
+          TripzieButton(
+            button_text: "Get Started",
+            onPressed: () {
+              Navigator.pushNamed(context, LoginPage.PAGE_NAME);
+            },
           ),
           bottom_layout_padding,
         ],

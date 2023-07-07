@@ -62,28 +62,25 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(
                   height: 15,
                 ),
-                Hero(
-                  tag: 'bottom_button',
-                  child: TripzieButton(
-                    button_text: "Send OTP",
-                    onPressed: () {
-                      _isValidPhone = isValidPhone(myController.text);
-                      setState(() {
-                        _isValidPhone;
-                      });
-                      if (!_isValidPhone) {
-                        return;
-                      }
-                      Authentication.signInWithPhone(context, myController.text,
-                          (verifyId, token) {
-                        var phone = PhoneNumberDetails(
-                            myController.text, verifyId, token);
-                        print("phone details: ${phone.toString()}");
-                        Navigator.pushNamed(context, VerifyOTP.PAGE_NAME,
-                            arguments: phone);
-                      });
-                    },
-                  ),
+                TripzieButton(
+                  button_text: "Send OTP",
+                  onPressed: () {
+                    _isValidPhone = isValidPhone(myController.text);
+                    setState(() {
+                      _isValidPhone;
+                    });
+                    if (!_isValidPhone) {
+                      return;
+                    }
+                    Authentication.signInWithPhone(context, myController.text,
+                        (verifyId, token) {
+                      var phone = PhoneNumberDetails(
+                          myController.text, verifyId, token);
+                      print("phone details: ${phone.toString()}");
+                      Navigator.pushNamed(context, VerifyOTP.PAGE_NAME,
+                          arguments: phone);
+                    });
+                  },
                 ),
                 const SizedBox(
                   height: 15,

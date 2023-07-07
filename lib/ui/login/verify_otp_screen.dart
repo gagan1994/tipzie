@@ -129,28 +129,25 @@ class _VerrifyOTPState extends State<VerifyOTP> {
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Hero(
-                  tag: 'bottom_button',
-                  child: TripzieButton(
-                    button_text: "Verify",
-                    onPressed: () async {
-                      if (otp_text == null ||
-                          otp_text!.isEmpty ||
-                          otp_text!.length != lengthOfOTP) {
-                        showSnackBar(context, "Please enter valid OTP");
-                        return;
-                      }
-                      var user = await Authentication.verifyOTP(
-                          context, widget.phoneDetails.verifyId, otp_text!!);
-                      print("user: $user");
-                      if (user != null) {
-                        Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            MainScreen.PAGE_NAME,
-                            (Route<dynamic> route) => false);
-                      }
-                    },
-                  ),
+                TripzieButton(
+                  button_text: "Verify",
+                  onPressed: () async {
+                    if (otp_text == null ||
+                        otp_text!.isEmpty ||
+                        otp_text!.length != lengthOfOTP) {
+                      showSnackBar(context, "Please enter valid OTP");
+                      return;
+                    }
+                    var user = await Authentication.verifyOTP(
+                        context, widget.phoneDetails.verifyId, otp_text!!);
+                    print("user: $user");
+                    if (user != null) {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          MainScreen.PAGE_NAME,
+                          (Route<dynamic> route) => false);
+                    }
+                  },
                 ),
                 const SizedBox(
                   height: 10,
