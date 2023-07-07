@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/ui/main/home/home_screen.dart';
 import 'package:tripzie/ui/main/profile/profile_screen.dart';
 import 'package:tripzie/ui/main/wallet/wallet_screen.dart';
+import 'package:tripzie/utils/ui_utils.dart';
 
 import '../../auth/authentication.dart';
 import '../../utils/trippit_assets.dart';
@@ -150,7 +152,17 @@ class _MainScreenState extends State<MainScreen>
 
   Widget _buildPlay(BuildContext context) {
     return FloatingActionButton.extended(
-      onPressed: () {
+      onPressed: () async {
+        var permissionStatus = await Permission.microphone.request();
+        if (permissionStatus != PermissionStatus.granted) {
+          showSnackBar(context, "Please provide permission");
+          return;
+        }
+        permissionStatus = await Permission.location.request();
+        if (permissionStatus != PermissionStatus.granted) {
+          showSnackBar(context, "Please provide permission");
+          return;
+        }
         Navigator.pushNamed(context, CurrentRideScreen.PAGE_NAME);
       },
       label: const Text('Current Rides'),

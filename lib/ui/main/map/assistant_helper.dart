@@ -7,7 +7,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 class AssistantHelper {
   final SpeechToText speech = SpeechToText();
   String lastError = "";
-  String lastStatus = "";
+  String lastStatus = "done";
   bool _logEvents = true;
   bool isInit = false;
   Function()? callback;
@@ -24,11 +24,7 @@ class AssistantHelper {
   void statusListener(String status) {
     _logEvent(
         'Received listener status: $status, listening: ${speech.isListening}');
-    if (status == "done") {
-      lastStatus = status;
-    } else {
-      lastStatus = status;
-    }
+    lastStatus = status;
     updateUi();
   }
 

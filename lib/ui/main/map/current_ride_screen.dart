@@ -120,9 +120,7 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
       child: Container(
         decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: assistantHelper.isListening()
-                ? accent_color_light
-                : Colors.transparent),
+            color: assistantHelper.isListening() ? accent_color_light : null),
         padding: const EdgeInsets.all(10.0),
         child: SvgPicture.asset(ic_google_assistant,
             width: 20,
