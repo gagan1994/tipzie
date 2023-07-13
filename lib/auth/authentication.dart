@@ -158,4 +158,8 @@ class Authentication {
     if (userId == null) return false;
     return (userId == getUser().uid);
   }
+
+  static String getImageUri() {
+    return 'https://static.toiimg.com/thumb/93105946/rajasthan.jpg?width=1200&height=900';
+  }
 }

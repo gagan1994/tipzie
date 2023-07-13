@@ -42,6 +42,7 @@ class _TrippitTabViewState extends State<TrippitTabView>
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // give the tab bar a height [can change hheight to preferred height]
           Container(

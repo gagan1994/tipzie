@@ -41,6 +41,8 @@ List<RideListItem> getRideList() {
         "Rajasthan",
         DateTime.now().add(Duration(hours: -10))),
     RideListItem(
-        " ", "Ride Name", DateTime.now().add(Duration(days: -366, hours: -10))),
+        'https://static.toiimg.com/thumb/93105946/rajasthan.jpg?width=1200&height=900',
+        "Ride Name",
+        DateTime.now().add(Duration(days: -366, hours: -10))),
   ];
 }
