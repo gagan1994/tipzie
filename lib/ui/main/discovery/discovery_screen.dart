@@ -31,12 +31,26 @@ class DiscoveryScreenState extends State<DiscoveryScreen> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      padding: EdgeInsets.only(left: 10, top: 50, right: 10),
+      padding: EdgeInsets.only(left: 10, top: 30, right: 10),
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SvgPicture.asset(
+                  ic_hamburger_menu,
+                  height: 15,
+                  width: 15,
+                ),
+                myAppBarIcon(),
+              ],
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -210,7 +224,6 @@ class DiscoveryScreenState extends State<DiscoveryScreen> {
                             height: 71,
                             width: 71,
                             decoration: BoxDecoration(
-                                color: Colors.red,
                                 borderRadius: BorderRadius.circular(20),
                                 image: DecorationImage(
                                     image: NetworkImage(item.imageUri),
@@ -277,5 +290,42 @@ class DiscoveryScreenState extends State<DiscoveryScreen> {
   void onItemClicked(DiscoveryListItem item) {
     Navigator.pushNamed(context, DiscoveryDetailsScreen.PAGE_NAME,
         arguments: item);
+  }
+
+  Widget myAppBarIcon() {
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: notif_bg_color),
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Icon(
+              Icons.notifications_none,
+              color: notif_selected_bg_color,
+              size: 25,
+            ),
+          ),
+          Container(
+            width: 20,
+            height: 20,
+            alignment: Alignment.topRight,
+            margin: EdgeInsets.only(top: 3, left: 6),
+            child: Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: notif_selected_bg_color,
+                  border: Border.all(color: Colors.white, width: 1)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

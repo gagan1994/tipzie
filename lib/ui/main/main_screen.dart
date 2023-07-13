@@ -13,6 +13,7 @@ import '../../utils/trippit_assets.dart';
 import '../../utils/trppit_color.dart';
 import 'fab_with_icons.dart';
 import 'map/current_ride_screen.dart';
+import 'rides/create_new_ride_screen.dart';
 import 'rides/ride_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -61,12 +62,6 @@ class _MainScreenState extends State<MainScreen>
         child: Stack(
           children: [
             bottom_screens[current_index],
-            if (current_index == 0)
-              Positioned(
-                top: 50,
-                left: 15,
-                child: _buildFab(context),
-              ),
             Positioned(
               bottom: 75,
               right: 20,
@@ -151,21 +146,14 @@ class _MainScreenState extends State<MainScreen>
   }
 
   Widget _buildPlay(BuildContext context) {
+    if (current_index == 2 || current_index == 3) {
+      return SizedBox();
+    }
     return FloatingActionButton.extended(
       onPressed: () async {
-        var permissionStatus = await Permission.microphone.request();
-        if (permissionStatus != PermissionStatus.granted) {
-          showSnackBar(context, "Please provide permission");
-          return;
-        }
-        permissionStatus = await Permission.location.request();
-        if (permissionStatus != PermissionStatus.granted) {
-          showSnackBar(context, "Please provide permission");
-          return;
-        }
-        Navigator.pushNamed(context, CurrentRideScreen.PAGE_NAME);
+        onFabButtonClick(current_index);
       },
-      label: const Text('Current Rides'),
+      label: Text(current_index == 0 ? 'Current Rides' : 'Create Rides'),
       backgroundColor: accent_color,
     );
   }
@@ -173,5 +161,24 @@ class _MainScreenState extends State<MainScreen>
   void initAll() async {
     await Authentication.initializeFirebase();
     SocketWrapper.instance.setUser(Authentication.getUser());
+  }
+
+  void onFabButtonClick(int current_index) async {
+    if (current_index == 0) {
+      var permissionStatus = await Permission.microphone.request();
+      if (permissionStatus != PermissionStatus.granted) {
+        showSnackBar(context, "Please provide permission");
+        return;
+      }
+      permissionStatus = await Permission.location.request();
+      if (permissionStatus != PermissionStatus.granted) {
+        showSnackBar(context, "Please provide permission");
+        return;
+      }
+      Navigator.pushNamed(context, CurrentRideScreen.PAGE_NAME);
+    }
+    if (current_index == 1) {
+      Navigator.pushNamed(context, CreateNewRideScreen.PAGE_NAME);
+    }
   }
 }
