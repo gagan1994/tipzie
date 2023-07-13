@@ -160,6 +160,6 @@ class Authentication {
   }
 
   static String getImageUri() {
-    return 'https://static.toiimg.com/thumb/93105946/rajasthan.jpg?width=1200&height=900';
+    return 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
   }
 }

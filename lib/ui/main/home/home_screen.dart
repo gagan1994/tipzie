@@ -4,8 +4,7 @@ import 'package:tripzie/ui/main/discovery/discovery_screen.dart';
 
 class HomeScreen extends TripzieBottomNavBarScreen {
   static const PAGE_NAME = "/home_screen";
-
-  const HomeScreen({Key? key}) : super(key: key);
+  HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -14,8 +13,6 @@ class HomeScreen extends TripzieBottomNavBarScreen {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: DiscoveryScreen(),
-    );
+    return DiscoveryScreen();
   }
 }

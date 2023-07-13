@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:tripzie/ui/login/login_page_1.dart';
 import 'package:tripzie/ui/login/login_screen.dart';
 import 'package:tripzie/ui/login/verify_otp_screen.dart';
 import 'package:tripzie/ui/main/discovery/disovery_details_screen.dart';
+import 'package:tripzie/ui/main/profile/profile_screen.dart';
 import 'package:tripzie/ui/main/rides/create_new_ride_screen.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 
@@ -13,6 +15,8 @@ import 'ui/main/map/current_ride_screen.dart';
 import 'ui/splash_screen.dart';
 
 void main() {
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(MyApp());
 }
 
@@ -45,6 +49,8 @@ class MyApp extends StatelessWidget {
             return bottomToTop(DiscoveryDetailsScreen(discoveryItem));
           case CurrentRideScreen.PAGE_NAME:
             return bottomToTop(CurrentRideScreen());
+          case ProfileScreen.PAGE_NAME:
+            return transition(ProfileScreen(), PageTransitionType.leftToRight);
         }
       },
     );
@@ -61,6 +67,13 @@ class MyApp extends StatelessWidget {
     return PageTransition(
       child: widget,
       type: PageTransitionType.rightToLeft,
+    );
+  }
+
+  PageTransition transition(StatefulWidget widget, PageTransitionType type) {
+    return PageTransition(
+      child: widget,
+      type: type,
     );
   }
 

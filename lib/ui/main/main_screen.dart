@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/ui/main/home/home_screen.dart';
 import 'package:tripzie/ui/main/profile/profile_screen.dart';
 import 'package:tripzie/ui/main/wallet/wallet_screen.dart';
-import 'package:tripzie/utils/ui_utils.dart';
 
 import '../../auth/authentication.dart';
 import '../../utils/trippit_assets.dart';
 import '../../utils/trppit_color.dart';
 import 'fab_with_icons.dart';
-import 'map/current_ride_screen.dart';
 import 'rides/create_new_ride_screen.dart';
 import 'rides/ride_screen.dart';
 
@@ -146,16 +143,16 @@ class _MainScreenState extends State<MainScreen>
   }
 
   Widget _buildPlay(BuildContext context) {
-    if (current_index == 2 || current_index == 3) {
-      return SizedBox();
+    if (current_index == 1) {
+      return FloatingActionButton.extended(
+        onPressed: () async {
+          onFabButtonClick(current_index);
+        },
+        label: Text(current_index == 0 ? 'Current Rides' : 'Create Rides'),
+        backgroundColor: accent_color,
+      );
     }
-    return FloatingActionButton.extended(
-      onPressed: () async {
-        onFabButtonClick(current_index);
-      },
-      label: Text(current_index == 0 ? 'Current Rides' : 'Create Rides'),
-      backgroundColor: accent_color,
-    );
+    return SizedBox();
   }
 
   void initAll() async {
@@ -164,19 +161,6 @@ class _MainScreenState extends State<MainScreen>
   }
 
   void onFabButtonClick(int current_index) async {
-    if (current_index == 0) {
-      var permissionStatus = await Permission.microphone.request();
-      if (permissionStatus != PermissionStatus.granted) {
-        showSnackBar(context, "Please provide permission");
-        return;
-      }
-      permissionStatus = await Permission.location.request();
-      if (permissionStatus != PermissionStatus.granted) {
-        showSnackBar(context, "Please provide permission");
-        return;
-      }
-      Navigator.pushNamed(context, CurrentRideScreen.PAGE_NAME);
-    }
     if (current_index == 1) {
       Navigator.pushNamed(context, CreateNewRideScreen.PAGE_NAME);
     }

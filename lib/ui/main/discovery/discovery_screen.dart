@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:tripzie/ui/main/discovery/disovery_details_screen.dart';
 import 'package:tripzie/utils/trippit_assets.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 
 import '../bottom_navbar_screen.dart';
+import '../map/current_ride_screen.dart';
+import '../profile/profile_screen.dart';
 import 'models.dart';
 
 class DiscoveryScreen extends TripzieBottomNavBarScreen {
   static const PAGE_NAME = "/discovery_screen";
 
-  const DiscoveryScreen({Key? key}) : super(key: key);
+  DiscoveryScreen({Key? key}) : super(key: key);
 
   @override
   State<DiscoveryScreen> createState() => DiscoveryScreenState();
@@ -43,10 +46,17 @@ class DiscoveryScreenState extends State<DiscoveryScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SvgPicture.asset(
-                  ic_hamburger_menu,
-                  height: 15,
-                  width: 15,
+                GestureDetector(
+                  onTap: () {
+                    print("open drawer");
+                    Navigator.pushNamed(context, ProfileScreen.PAGE_NAME);
+                    print("open drawer end");
+                  },
+                  child: SvgPicture.asset(
+                    ic_hamburger_menu,
+                    height: 15,
+                    width: 15,
+                  ),
                 ),
                 myAppBarIcon(),
               ],
@@ -54,13 +64,7 @@ class DiscoveryScreenState extends State<DiscoveryScreen> {
             const SizedBox(
               height: 10,
             ),
-            const Text(
-              "Discovery",
-              style: TextStyle(
-                  fontSize: 28,
-                  color: accent_color,
-                  fontWeight: FontWeight.bold),
-            ),
+            _currentRide(),
             const SizedBox(
               height: 6,
             ),
@@ -327,5 +331,101 @@ class DiscoveryScreenState extends State<DiscoveryScreen> {
         ],
       ),
     );
+  }
+
+  _currentRide() {
+    return GestureDetector(
+      onTap: () {
+        _goToCurrentRide();
+      },
+      child: Card(
+        child: Container(
+          margin: EdgeInsets.all(10),
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    "Current ride",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  Text(
+                    "Riding with Punith and 10 others",
+                    style: TextStyle(fontSize: 10, color: version_color),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.navigation),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "BENGALURU",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            "MYSURU",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 20,
+                      ),
+                      _getCurrentRideTiles("146 Kms"),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      _getCurrentRideTiles("2/5 Riders"),
+                    ],
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  _getCurrentRideTiles(String text) {
+    return Container(
+      padding: EdgeInsets.all(7),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: accent_color),
+      child: Text(
+        text,
+        style: TextStyle(fontSize: 10, color: Colors.white),
+      ),
+    );
+  }
+
+  void _goToCurrentRide() async {
+    var permissionStatus = await Permission.microphone.request();
+    if (permissionStatus != PermissionStatus.granted) {
+      showSnackBar(context, "Please provide permission");
+      return;
+    }
+    permissionStatus = await Permission.location.request();
+    if (permissionStatus != PermissionStatus.granted) {
+      showSnackBar(context, "Please provide permission");
+      return;
+    }
+    Navigator.pushNamed(context, CurrentRideScreen.PAGE_NAME);
   }
 }

@@ -7,7 +7,8 @@ import 'package:tripzie/utils/trppit_color.dart';
 import '../../../auth/authentication.dart';
 
 class ProfileScreen extends TripzieBottomNavBarScreen {
-  const ProfileScreen({Key? key}) : super(key: key);
+  static const PAGE_NAME = 'profile_screen';
+  ProfileScreen({Key? key}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -23,111 +24,101 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ];
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Column(
-        children: [
-          Container(
-            margin: EdgeInsets.only(top: 30),
-            height: 50,
-            alignment: Alignment.center,
-            child: Text("Profile"),
-          ),
-          Container(
-            height: 150,
-            decoration: const BoxDecoration(
-              color: accent_color,
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.horizontal(
-                right: Radius.circular(75.0),
-              ),
+    return Scaffold(
+      body: Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.only(top: 30),
+              height: 50,
+              alignment: Alignment.center,
+              child: Text("Profile"),
             ),
-            child: Row(
-              children: [
-                const SizedBox(
-                  width: 30,
-                ),
-                _getProfileIconCircle(),
-                const SizedBox(
-                  width: 20,
-                ),
-                Text.rich(
+            const SizedBox(
+              width: 30,
+            ),
+            _getProfileIconCircle(),
+            const SizedBox(
+              height: 10,
+            ),
+            Text.rich(
+              TextSpan(
+                text: '${Authentication.getName()}',
+                style: const TextStyle(
+                    color: accent_color,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+                children: <TextSpan>[
                   TextSpan(
-                    text: '${Authentication.getName()}',
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
-                    children: <TextSpan>[
-                      TextSpan(
-                          text: '\n\n${Authentication.getEmail()}',
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.normal)),
-                      TextSpan(
-                          text: '\n${Authentication.getPhoneNumber()}',
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.normal))
-                    ],
-                  ),
-                ),
-                SizedBox(),
-              ],
+                      text: '\n\n${Authentication.getEmail()}',
+                      style: const TextStyle(
+                          color: accent_color,
+                          fontSize: 13,
+                          fontWeight: FontWeight.normal)),
+                  TextSpan(
+                      text: '\n${Authentication.getPhoneNumber()}',
+                      style: const TextStyle(
+                          color: accent_color,
+                          fontSize: 13,
+                          fontWeight: FontWeight.normal))
+                ],
+              ),
+              textAlign: TextAlign.center,
+              style: TextStyle(height: 0.6),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: list.length,
-              itemBuilder: (context, i) {
-                return Material(
-                  child: InkWell(
-                    onTap: () {
-                      print("clicked $i");
-                    },
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          child: SvgPicture.asset(list[i]['image']!),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                        ),
-                        Expanded(child: Text(list[i]['title']!)),
-                        Padding(
-                          child: SvgPicture.asset(ic_riight_arrow),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                        ),
-                      ],
+            Expanded(
+              child: ListView.builder(
+                itemCount: list.length,
+                itemBuilder: (context, i) {
+                  return Material(
+                    child: InkWell(
+                      onTap: () {
+                        print("clicked $i");
+                      },
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            child: SvgPicture.asset(list[i]['image']!),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                          ),
+                          Expanded(child: Text(list[i]['title']!)),
+                          Padding(
+                            child: SvgPicture.asset(ic_riight_arrow),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
-          )
-        ],
+                  );
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
 
   _getProfileIconCircle() {
-    if (Authentication.getUser().photoURL != null) {
+    if (Authentication.getUser().photoURL != null &&
+        Authentication.getUser().photoURL!.isNotEmpty) {
       return Container(
         width: 100.0,
         height: 100.0,
         decoration: BoxDecoration(
-          color: const Color(0xff7c94b6),
+          color: accent_color,
           image: DecorationImage(
             image: NetworkImage(Authentication.getImageUri()),
             fit: BoxFit.cover,
           ),
           borderRadius: BorderRadius.all(Radius.circular(60.0)),
           border: Border.all(
-            color: Colors.white,
-            width: 2.0,
+            color: accent_color,
+            width: 4.0,
           ),
         ),
       );
