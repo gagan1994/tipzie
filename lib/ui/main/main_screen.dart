@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/ui/main/home/home_screen.dart';
-import 'package:tripzie/ui/main/profile/profile_screen.dart';
 import 'package:tripzie/ui/main/wallet/wallet_screen.dart';
 
 import '../../auth/authentication.dart';
@@ -35,7 +34,7 @@ class _MainScreenState extends State<MainScreen>
       HomeScreen(),
       RideScreen(),
       WalletScreen(),
-      ProfileScreen()
+      WalletScreen()
     ];
     _controller.addListener(() {
       setState(() {

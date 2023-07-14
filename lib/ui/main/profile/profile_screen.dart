@@ -72,6 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 itemCount: list.length,
                 itemBuilder: (context, i) {
                   return Material(
+                    color: Colors.white,
                     child: InkWell(
                       onTap: () {
                         print("clicked $i");
