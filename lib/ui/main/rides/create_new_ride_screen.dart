@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:tripzie/utils/map_utils.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
-import '../../../utils/trippit_assets.dart';
 import '../../../utils/ui_utils.dart';
 import 'models.dart';
 
@@ -59,20 +58,20 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                             EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                         child: Container(
                           margin: EdgeInsets.symmetric(horizontal: 20),
-                          padding: EdgeInsets.only(
+                          padding: const EdgeInsets.only(
                             left: 10,
                           ),
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: edit_text_bg_color,
                             borderRadius: BorderRadius.all(Radius.circular(30)),
                           ),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.search,
                                 color: edit_text_color,
                               ),
-                              Expanded(
+                              const Expanded(
                                 child: TextField(
                                   decoration: InputDecoration(
                                       border: InputBorder.none,
@@ -84,26 +83,34 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                       hintText: "Enter Destination "),
                                 ),
                               ),
-                              Text(
+                              const Text(
                                 "|",
                                 style: TextStyle(
                                     fontSize: 24, color: edit_text_color),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                               Container(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 25, vertical: 10),
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(20),
                                   ),
                                 ),
-                                child: SvgPicture.asset(ic_alarm),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    MapUtils.checkPlaces(context, "benglore");
+                                  },
+                                  child: const Icon(
+                                    Icons.location_on_rounded,
+                                    color: accent_color,
+                                  ),
+                                ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                             ],

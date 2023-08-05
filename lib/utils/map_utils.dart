@@ -12,6 +12,7 @@ import 'package:image/image.dart' as imageLib;
 import 'package:image/image.dart';
 import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/socket/models/models.dart';
+import 'package:tripzie/ui/main/map/tripzie_places_search.dart';
 
 class MapUtils {
   static String? getInfoWindow(LiveLocationModel model) {
@@ -20,6 +21,8 @@ class MapUtils {
     }
     return model.userName == null ? model.phoneNumber : model.userName;
   }
+
+  static const kGoogleApiKey = "AIzaSyATbnH2M_82lBfpUtxJNq-ngQxqkpCXCpI";
 
   static Future<Uint8List> getMarkerImage(String photoURL) async {
     final File markerImageFile =
@@ -213,6 +216,10 @@ class MapUtils {
     b = (b ~/ colors.length);
 
     return ui.Color.fromRGBO(r, g, b, 1);
+  }
+
+  static void checkPlaces(BuildContext context, String s) async {
+    Navigator.pushNamed(context, TripziePlacesSearch.PAGE_NAME);
   }
 }
 
