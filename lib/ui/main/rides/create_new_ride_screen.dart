@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:tripzie/utils/map_utils.dart';
+import 'package:tripzie/ui/main/map/select_places_on_map.dart';
 import 'package:tripzie/utils/trppit_color.dart';
+import 'package:tripzie/utils/ui_utils.dart';
 
-import '../../../utils/ui_utils.dart';
-import 'models.dart';
+import '../map/tripit_map_ui.dart';
+
+class NewRideObject {
+  Places? source;
+  Places? destination;
+}
 
 class CreateNewRideScreen extends StatefulWidget {
   static const PAGE_NAME = "/create_new_screen";
@@ -14,11 +19,13 @@ class CreateNewRideScreen extends StatefulWidget {
 }
 
 class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
+  NewRideObject newRideObject = NewRideObject();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: edit_text_bg_color,
+      body: Card(
+        color: Colors.white,
         child: Column(
           children: [
             Container(
@@ -49,93 +56,66 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      verticalDivider(),
                       Container(
-                        color: Colors.white,
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 20),
-                          padding: const EdgeInsets.only(
-                            left: 10,
+                        width: MediaQuery.of(context).size.width,
+                        height: 40,
+                        padding: EdgeInsets.all(10),
+                        decoration: const BoxDecoration(
+                          color: edit_text_bg_color,
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                        ),
+                        child: TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Enter Ride Name',
+                            border: InputBorder.none,
                           ),
-                          decoration: const BoxDecoration(
-                            color: edit_text_bg_color,
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                      verticalDivider(),
+                      Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15),
+                            ),
+                            border: Border.all(
+                              width: 0.5,
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                            ),
                           ),
-                          child: Row(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Icon(
-                                Icons.search,
-                                color: edit_text_color,
+                              Text(
+                                "Select Source and Destination",
+                                style: TextStyle(fontSize: 12),
                               ),
-                              const Expanded(
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                      enabledBorder: InputBorder.none,
-                                      errorBorder: InputBorder.none,
-                                      disabledBorder: InputBorder.none,
-                                      contentPadding: EdgeInsets.only(left: 15),
-                                      hintText: "Enter Destination "),
-                                ),
-                              ),
-                              const Text(
-                                "|",
-                                style: TextStyle(
-                                    fontSize: 24, color: edit_text_color),
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 25, vertical: 10),
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(20),
-                                  ),
-                                ),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    MapUtils.checkPlaces(context, "benglore");
-                                  },
-                                  child: const Icon(
-                                    Icons.location_on_rounded,
-                                    color: accent_color,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
+                              verticalDivider(),
+                              getSourceDestinationUI(
+                                null,
+                                MarkMapUI("Enter Source",
+                                    place: newRideObject.source),
+                                MarkMapUI("Enter Source",
+                                    place: newRideObject.destination),
+                                (selected) async {
+                                  await Navigator.pushNamed(
+                                      context, TripzieMarkOnMap.PAGE_NAME,
+                                      arguments: newRideObject);
+                                  setState(() {});
+                                },
+                                10.00,
+                                Colors.transparent,
                               ),
                             ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 20,
-                        color: Colors.white,
-                      ),
-                      rideDetails_2(getRideList()[2]),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                        color: Colors.white,
-                        child: Container(
-                          height: 1,
-                          color: divider_color,
-                        ),
-                      ),
-                      rideDetails_2(getRideList()[2]),
-                      Container(
-                        height: 20,
-                        color: Colors.white,
-                      ),
+                          )),
                     ],
                   ),
                 ),
@@ -147,40 +127,3 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
     );
   }
 }
-
-/*
- Expanded(
-              child: Container(
-                color: Colors.white,
-                padding: EdgeInsets.all(10),
-                height: 100,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Ways to plan with Trippit",
-                      style: TextStyle(color: accent_color, fontSize: 18),
-                    ),
-                    ListView.builder(
-                        itemCount: 5,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            color: Colors.blue,
-                            child: Column(
-                              children: [
-                                Container(
-                                  width: 100,
-                                  height: 50,
-                                  child: Image.network(
-                                      "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"),
-                                )
-                              ],
-                            ),
-                          );
-                        })
-                  ],
-                ),
-              ),
-            )
-* */

@@ -5,6 +5,7 @@ import 'package:tripzie/ui/login/login_page_1.dart';
 import 'package:tripzie/ui/login/login_screen.dart';
 import 'package:tripzie/ui/login/verify_otp_screen.dart';
 import 'package:tripzie/ui/main/discovery/disovery_details_screen.dart';
+import 'package:tripzie/ui/main/map/select_places_on_map.dart';
 import 'package:tripzie/ui/main/map/tripzie_places_search.dart';
 import 'package:tripzie/ui/main/profile/profile_screen.dart';
 import 'package:tripzie/ui/main/rides/create_new_ride_screen.dart';
@@ -54,6 +55,10 @@ class MyApp extends StatelessWidget {
             return transition(ProfileScreen(), PageTransitionType.leftToRight);
           case TripziePlacesSearch.PAGE_NAME:
             return transition(TripziePlacesSearch(), PageTransitionType.fade);
+          case TripzieMarkOnMap.PAGE_NAME:
+            final newride = settings.arguments as NewRideObject;
+            return transition(
+                TripzieMarkOnMap(newride), PageTransitionType.fade);
         }
       },
     );
