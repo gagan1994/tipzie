@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
 import '../ui/main/rides/models.dart';
@@ -8,9 +9,10 @@ String? getFontStyle() {
   return GoogleFonts.montserratAlternates().fontFamily;
 }
 
-verticalDivider() {
-  return SizedBox(
+verticalDivider([Color color = Colors.transparent]) {
+  return Container(
     height: 10,
+    color: color,
   );
 }
 
@@ -179,4 +181,82 @@ Widget getFilter_1Widget(List<String> listOfFilter1,
       );
     },
   );
+}
+
+Widget getDatePickerSingleLine(
+  DateTime start,
+  DateTime end, [
+  double fontsize = 8.0,
+]) {
+  var noOfDays = end.difference(start).inDays + 6;
+  print("Start date $start");
+  print("End date $end");
+  print("diff: $noOfDays");
+  var listStartDate = start.subtract(Duration(days: 2));
+
+  return ListView.builder(
+      itemCount: noOfDays,
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (BuildContext context, int index) {
+        DateTime indexDate = listStartDate.add(Duration(days: index));
+        print("indexDate: $indexDate");
+        var isSelectedDate = isSameDay(start, indexDate);
+        if (!isSelectedDate) {
+          isSelectedDate = isSameDay(end, indexDate);
+          print("isSelectedDate: $isSelectedDate");
+        }
+        bool isDateInBtw = false;
+        if (start.isBefore(indexDate) && end.isAfter(indexDate)) {
+          isDateInBtw = true;
+        }
+        return Container(
+          color: isDateInBtw || isSelectedDate
+              ? selected_date_color
+              : Colors.white,
+          child: Container(
+            width: 45,
+            alignment: Alignment.center,
+            height: 30,
+            decoration: !isSelectedDate
+                ? BoxDecoration()
+                : BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(40)),
+                    color: notif_selected_bg_color,
+                  ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "${indexDate.day}",
+                  style: TextStyle(
+                      color: !isSelectedDate ? accent_color : Colors.white,
+                      fontSize: fontsize),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  "${DateFormat('EE').format(indexDate)}",
+                  style: TextStyle(
+                      color: !isSelectedDate ? accent_color : Colors.white,
+                      fontSize: fontsize),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 2),
+                    child: CircleAvatar(
+                      radius: 2,
+                      backgroundColor: Colors.white,
+                    ))
+              ],
+            ),
+          ),
+        );
+      });
+}
+
+bool isSameDay(DateTime d1, DateTime d2) {
+  return d1.day == d2.day && d1.month == d2.month && d1.year == d2.year;
 }
