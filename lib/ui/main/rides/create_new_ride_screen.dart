@@ -1,4 +1,8 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
+import 'package:tripzie/api/api_wrapper.dart';
+import 'package:tripzie/api/user_data.dart';
 import 'package:tripzie/ui/main/map/select_places_on_map.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 import 'package:tripzie/utils/ui_utils.dart';
@@ -13,9 +17,21 @@ class NewRideObject {
   Places? destination;
   DateTime? startDate;
   DateTime? endDate;
+  Map<String, String> selectedUsers = new HashMap();
+  bool isSelectedUser(UserProfile user) {
+    return selectedUsers.keys.contains(user.userId);
+  }
 
-  bool isSelectedUser(int index) {
-    return index % 2 == 0;
+  void toggleUser(UserProfile user) {
+    if (isSelectedUser(user)) {
+      selectedUsers.remove(user.userId);
+    } else {
+      selectedUsers[user.userId!] = user.firstName!;
+    }
+  }
+
+  void removeUser(k) {
+    selectedUsers.remove(k);
   }
 }
 
@@ -29,6 +45,15 @@ class CreateNewRideScreen extends StatefulWidget {
 
 class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
   NewRideObject newRideObject = NewRideObject();
+
+  List<UserProfile> originalList = [];
+  List<UserProfile> userList = [];
+
+  @override
+  void initState() {
+    fetchProfileData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,53 +190,86 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                         ],
                       )),
                       Text(
-                        "Select Rders",
+                        "Select Riders",
                         style: TextStyle(fontSize: 12),
                       ),
                       TrippitSearchInput((textChanged) {
-                        setState(() {});
+                        setState(() {
+                          userList.clear();
+                          if (textChanged.isEmpty) {
+                            userList.addAll(originalList);
+                          } else {
+                            for (var item in originalList) {
+                              if (item
+                                  .toString()
+                                  .toLowerCase()
+                                  .contains(textChanged.toLowerCase())) {
+                                userList.add(item);
+                              }
+                            }
+                          }
+                        });
                       }),
-                      Container(
-                        height: 200,
-                        child: ListView.separated(
-                            separatorBuilder: (context, index) {
-                              return Divider();
-                            },
-                            padding: EdgeInsets.zero,
-                            itemCount: 10,
-                            itemBuilder: (context, index) {
-                              return Row(
-                                children: [
-                                  Container(
-                                    child: UserAvatar(),
-                                    width: 30,
-                                    height: 30,
-                                  ),
-                                  horizontalDivider(),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Name $index",
-                                          style: TextStyle(fontSize: 12),
+                      if (newRideObject.selectedUsers.isNotEmpty)
+                        Container(
+                          child: getSelectedList(),
+                        ),
+                      if (userList.length == 0)
+                        Container(
+                          child: const Text("User list empty"),
+                          alignment: Alignment.center,
+                        ),
+                      if (userList.length != 0)
+                        Container(
+                          height: 200,
+                          child: ListView.separated(
+                              separatorBuilder: (context, index) {
+                                return Divider();
+                              },
+                              padding: EdgeInsets.zero,
+                              itemCount: userList.length,
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      newRideObject.toggleUser(userList[index]);
+                                    });
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        child: UserAvatar(),
+                                        width: 30,
+                                        height: 30,
+                                      ),
+                                      horizontalDivider(),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "${userList[index].firstName} ,"
+                                              " ${userList[index].surName}",
+                                              style: TextStyle(fontSize: 12),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                      Container(
+                                          alignment: Alignment.topCenter,
+                                          child: Icon(
+                                            newRideObject.isSelectedUser(
+                                                    userList[index])
+                                                ? Icons.check_box
+                                                : Icons.check_box_outline_blank,
+                                            size: 15,
+                                          ))
+                                    ],
                                   ),
-                                  Container(
-                                      alignment: Alignment.topCenter,
-                                      child: Icon(
-                                        newRideObject.isSelectedUser(index)
-                                            ? Icons.check_box
-                                            : Icons.check_box_outline_blank,
-                                        size: 15,
-                                      ))
-                                ],
-                              );
-                            }),
-                      ),
+                                );
+                              }),
+                        ),
                     ],
                   ),
                 ),
@@ -223,7 +281,10 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: TripzieButton(
         button_text: "Create Ride",
-        onPressed: () {},
+        onPressed: () async {
+          var data = await fetchProfiles();
+          print(data);
+        },
       ),
     );
   }
@@ -262,5 +323,63 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
 
   getDateText(DateTime date) {
     return "${date.day}/${date.month}/${date.year}";
+  }
+
+  void fetchProfileData() async {
+    var data = await fetchProfiles();
+    setState(() {
+      originalList.clear();
+      originalList.addAll(data);
+      userList.clear();
+      userList.addAll(data);
+    });
+    print("data: $data");
+  }
+
+  void sortItems() {
+    userList.sort((a, b) => a.firstName!.compareTo(b.firstName!));
+    for (int i = 0; i < userList.length; i++) {
+      var item = userList[i];
+      if (newRideObject.isSelectedUser(item)) {
+        userList.remove(i);
+        userList.insert(0, item);
+      }
+    }
+  }
+
+  getSelectedList() {
+    return Wrap(
+        children: newRideObject.selectedUsers.keys
+            .map((k) => Container(
+                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                  decoration: const BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      color: otp_background_color,
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                            text: newRideObject.selectedUsers[k],
+                            style: TextStyle(color: accent_color)),
+                        WidgetSpan(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                newRideObject.removeUser(k);
+                              });
+                            },
+                            child: const Icon(
+                              Icons.close_rounded,
+                              size: 14,
+                              color: accent_color,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ))
+            .toList());
   }
 }
