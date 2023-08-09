@@ -22,7 +22,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.only(left: 10, right: 10, top: 40),
+              padding: const EdgeInsets.only(left: 10, right: 10, top: 50),
               color: Colors.white,
               child: Row(
                 children: [
@@ -136,113 +136,6 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                         height: 20,
                         color: Colors.white,
                       ),
-                      Container(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                        height: 150,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Suggestion",
-                                  style: TextStyle(
-                                      color: accent_color, fontSize: 18),
-                                ),
-                                Text(
-                                  "See All",
-                                  style: TextStyle(
-                                      color: accent_color, fontSize: 14),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                rideDetails_3(getRideList()[2]),
-                                rideDetails_3(getRideList()[2]),
-                                rideDetails_3(getRideList()[2]),
-                                rideDetails_3(getRideList()[2]),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        color: Colors.white,
-                        padding: EdgeInsets.only(top: 10, left: 10),
-                        height: 300,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Ways to plan with Trippit",
-                              style:
-                                  TextStyle(color: accent_color, fontSize: 18),
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                  itemCount: 5,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return Container(
-                                      color: Colors.white,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            margin: EdgeInsets.all(10),
-                                            width: 218,
-                                            height: 128,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10)),
-                                              image: DecorationImage(
-                                                image: NetworkImage(
-                                                    "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"),
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10),
-                                              child: const Text(
-                                                "Plan with existing group",
-                                                style: TextStyle(
-                                                    color: accent_color,
-                                                    fontSize: 18),
-                                              )),
-                                          Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10),
-                                              child: const Text(
-                                                "Room for trekkers",
-                                                style: TextStyle(
-                                                    color: accent_color),
-                                              )),
-                                        ],
-                                      ),
-                                    );
-                                  }),
-                            )
-                          ],
-                        ),
-                      )
                     ],
                   ),
                 ),

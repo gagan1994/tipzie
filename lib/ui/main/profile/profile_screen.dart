@@ -30,7 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             Container(
-              margin: EdgeInsets.only(top: 30),
+              margin: EdgeInsets.only(top: 50),
               height: 50,
               alignment: Alignment.center,
               child: Text("Profile"),
@@ -57,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           fontSize: 13,
                           fontWeight: FontWeight.normal)),
                   TextSpan(
-                      text: '\n${Authentication.getPhoneNumber()}',
+                      text: '\n\n${Authentication.getPhoneNumber()}',
                       style: const TextStyle(
                           color: accent_color,
                           fontSize: 13,

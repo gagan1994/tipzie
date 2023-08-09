@@ -20,3 +20,4 @@ const Color hambuger_light = Color(0xff93A3B4);
 const Color text_light = Color(0xffA4A7AC);
 const Color text_light_2 = Color(0xff9CA9C5);
 const Color selected_date_color = Color(0xffF6F9FE);
+const Color suggestion_bg = Color(0xffF5F5F5);

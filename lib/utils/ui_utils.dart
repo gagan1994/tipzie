@@ -8,6 +8,18 @@ String? getFontStyle() {
   return GoogleFonts.montserratAlternates().fontFamily;
 }
 
+verticalDivider() {
+  return SizedBox(
+    height: 10,
+  );
+}
+
+horizontalDivider() {
+  return SizedBox(
+    width: 10,
+  );
+}
+
 SnackBar customSnackBar({required String content}) {
   return SnackBar(
     backgroundColor: Colors.black,
