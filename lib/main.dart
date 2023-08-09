@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:tripzie/ui/login/login_page_1.dart';
 import 'package:tripzie/ui/login/login_screen.dart';
@@ -17,8 +16,6 @@ import 'ui/main/map/current_ride_screen.dart';
 import 'ui/splash_screen.dart';
 
 void main() {
-  SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(MyApp());
 }
 

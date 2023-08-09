@@ -1,6 +1,6 @@
 const String asset_directory = 'assets/';
 const String image_directory = asset_directory + 'images/';
-const String logo_image = image_directory + 'logo_bg.svg';
+const String logo_image = image_directory + 'trippit_logo.png';
 const String arrow_left_go_back = image_directory + 'arrow_left_go_back.svg';
 const String google_logo = image_directory + 'google_logo.svg';
 const String ic_home = image_directory + 'ic_home.svg';

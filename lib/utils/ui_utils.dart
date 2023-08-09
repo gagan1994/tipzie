@@ -1,12 +1,24 @@
+import 'package:easy_loader/easy_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:tripzie/utils/trippit_assets.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
 import '../ui/main/rides/models.dart';
 
 String? getFontStyle() {
   return GoogleFonts.montserratAlternates().fontFamily;
+}
+
+Widget showProgress(bool isInProgress) {
+  if (isInProgress) {
+    return const EasyLoader(
+      image: AssetImage(logo_image),
+      iconSize: 50,
+    );
+  }
+  return SizedBox();
 }
 
 verticalDivider([Color color = Colors.transparent]) {
@@ -189,9 +201,6 @@ Widget getDatePickerSingleLine(
   double fontsize = 8.0,
 ]) {
   var noOfDays = end.difference(start).inDays + 6;
-  print("Start date $start");
-  print("End date $end");
-  print("diff: $noOfDays");
   var listStartDate = start.subtract(Duration(days: 2));
 
   return ListView.builder(
@@ -199,11 +208,9 @@ Widget getDatePickerSingleLine(
       scrollDirection: Axis.horizontal,
       itemBuilder: (BuildContext context, int index) {
         DateTime indexDate = listStartDate.add(Duration(days: index));
-        print("indexDate: $indexDate");
         var isSelectedDate = isSameDay(start, indexDate);
         if (!isSelectedDate) {
           isSelectedDate = isSameDay(end, indexDate);
-          print("isSelectedDate: $isSelectedDate");
         }
         bool isDateInBtw = false;
         if (start.isBefore(indexDate) && end.isAfter(indexDate)) {
