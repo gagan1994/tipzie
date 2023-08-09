@@ -67,6 +67,13 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
               color: Colors.white,
               child: Row(
                 children: [
+                  const Expanded(
+                      child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Create New Ride",
+                    ),
+                  )),
                   GestureDetector(
                     child: const Icon(
                       Icons.clear,
@@ -76,13 +83,6 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                       Navigator.pop(context);
                     },
                   ),
-                  Expanded(
-                      child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Create New Ride",
-                    ),
-                  )),
                 ],
               ),
             ),
