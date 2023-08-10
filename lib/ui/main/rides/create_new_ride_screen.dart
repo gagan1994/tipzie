@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:tripzie/api/api_wrapper.dart';
 import 'package:tripzie/api/user_data.dart';
+import 'package:tripzie/db/users.dart';
 import 'package:tripzie/ui/main/map/select_places_on_map.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 import 'package:tripzie/utils/ui_utils.dart';
@@ -433,7 +434,10 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
     setState(() {
       isInProgress = true;
     });
-    var data = await fetchProfiles();
+    if (allUsers.values.isEmpty) {
+      allUsers = await fetchProfiles();
+    }
+    var data = allUsers.values;
     setState(() {
       originalList.clear();
       originalList.addAll(data);

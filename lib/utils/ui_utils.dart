@@ -173,7 +173,7 @@ Text buildItem({
 Widget getFilter_1Widget(List<String> listOfFilter1,
     Function(int) selectedIndexCall, currentSelectedIndex) {
   return ListView.builder(
-    itemCount: listOfFilter1.length,
+    itemCount: 0,
     scrollDirection: Axis.horizontal,
     itemBuilder: (BuildContext context, int index) {
       return GestureDetector(

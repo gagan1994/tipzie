@@ -1,3 +1,6 @@
+import 'package:tripzie/api/user_data.dart';
+import 'package:tripzie/db/users.dart';
+
 import '../ui/main/map/tripit_map_ui.dart';
 
 class Ride {
@@ -6,7 +9,7 @@ class Ride {
   Places? destination;
   DateTime? startDate;
   DateTime? endDate;
-  List<String>? selectedUsers = [];
+  List<UserProfile>? selectedUsers = [];
 
   String? name;
   Ride.fromJson(Map<String, dynamic> json) {
@@ -17,10 +20,11 @@ class Ride {
     var start_time = json['start_time'];
     var end_time = json['end_time'];
     startDate = DateTime.tryParse(start_time);
-    end_time = DateTime.tryParse(start_time);
+    endDate = DateTime.tryParse(end_time);
     print("Riders: ${json['riders']}");
-    selectedUsers =
-        (json['riders'] as List).map((item) => item as String).toList();
+    selectedUsers = (json['riders'] as List)
+        .map((item) => findUserWithId(item as String))
+        .toList();
   }
 
   //"_id": "64aabdb502343f44c4f95f7d",

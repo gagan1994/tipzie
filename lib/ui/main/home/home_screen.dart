@@ -4,8 +4,10 @@ import 'package:tripzie/api/api_wrapper.dart';
 import 'package:tripzie/api/ride.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/ui/main/profile/profile_screen.dart';
+import 'package:tripzie/ui/main/rides/ride_details.dart';
 import 'package:tripzie/utils.dart';
 
+import '../../../db/users.dart';
 import '../../../utils/trippit_assets.dart';
 import '../../../utils/trppit_color.dart';
 import '../../../utils/ui_utils.dart';
@@ -25,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    fetchRideAndUpdateUi();
+    loadData();
     super.initState();
   }
 
@@ -41,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
             triggerMode: RefreshIndicatorTriggerMode.onEdge,
             onRefresh: () async {
               print("refresh");
-              await fetchRideAndUpdateUi();
+              await loadData();
             },
             child: SingleChildScrollView(
               physics: AlwaysScrollableScrollPhysics(),
@@ -102,7 +104,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   var ride = currentRides[index];
 
                                   return GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, RideDetailsScreen.PAGE_NAME,
+                                          arguments: ride);
+                                    },
                                     child: Container(
                                       padding:
                                           EdgeInsets.only(left: 5, right: 5),
@@ -218,5 +224,14 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       isInProgress = false;
     });
+  }
+
+  fetchUsersAndStore() async {
+    allUsers = await fetchProfiles();
+  }
+
+  loadData() async {
+    await fetchUsersAndStore();
+    await fetchRideAndUpdateUi();
   }
 }

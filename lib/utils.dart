@@ -24,3 +24,9 @@ String dateFormat(DateTime date) {
   final result = DateFormat('yMMMMEEEEd').format(date);
   return result;
 }
+
+String dateFormat2(DateTime src, DateTime dest) {
+  final src1 = DateFormat('hh:mm a').format(src);
+  final destn = DateFormat('hh:mm a').format(dest);
+  return '$src1 - $destn';
+}

@@ -8,8 +8,10 @@ import 'package:tripzie/ui/main/map/select_places_on_map.dart';
 import 'package:tripzie/ui/main/map/tripzie_places_search.dart';
 import 'package:tripzie/ui/main/profile/profile_screen.dart';
 import 'package:tripzie/ui/main/rides/create_new_ride_screen.dart';
+import 'package:tripzie/ui/main/rides/ride_details.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 
+import 'api/ride.dart';
 import 'ui/main/discovery/models.dart';
 import 'ui/main/main_screen.dart';
 import 'ui/main/map/current_ride_screen.dart';
@@ -46,6 +48,9 @@ class MyApp extends StatelessWidget {
           case DiscoveryDetailsScreen.PAGE_NAME:
             final discoveryItem = settings.arguments as DiscoveryListItem;
             return bottomToTop(DiscoveryDetailsScreen(discoveryItem));
+          case RideDetailsScreen.PAGE_NAME:
+            final rideItem = settings.arguments as Ride;
+            return bottomToTop(RideDetailsScreen(rideItem));
           case CurrentRideScreen.PAGE_NAME:
             return bottomToTop(CurrentRideScreen());
           case ProfileScreen.PAGE_NAME:

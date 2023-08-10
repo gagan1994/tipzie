@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -30,18 +31,20 @@ Future<http.Response> uploadData(String endpoint, dynamic object) {
   return resp;
 }
 
-Future<List<UserProfile>> fetchProfiles() async {
+Future<HashMap<String, UserProfile>> fetchProfiles() async {
   var response = await fetchData("/profiles");
   print("response status: ${response.statusCode}");
   if (response.statusCode == 200) {
     List<dynamic> list = json.decode(response.body);
-    List<UserProfile> userList = [];
+    HashMap<String, UserProfile> userList = HashMap();
     for (var item in list) {
-      userList.add(UserProfile.fromJson(item));
+      var profile = UserProfile.fromJson(item);
+
+      userList[profile.userId!] = profile;
     }
     return userList;
   }
-  return [];
+  return HashMap();
 }
 
 Future<bool> createRides(NewRideObject object) async {
