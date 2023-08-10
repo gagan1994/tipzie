@@ -250,13 +250,26 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                             Container(
                               child: getSelectedList(),
                             ),
-                          if (userList.length == 0)
+                          if (userList.isEmpty && originalList.isNotEmpty)
                             Container(
-                              child: const Text("User list empty"),
+                                alignment: Alignment.center,
+                                child: const Text("No user found for search")),
+                          if (userList.isEmpty && originalList.isEmpty)
+                            Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                      "User list empty refresh to update"),
+                                  GestureDetector(
+                                      onTap: fetchProfileData,
+                                      child: Icon(Icons.refresh))
+                                ],
+                              ),
                               alignment: Alignment.center,
                             ),
-                          if (userList.length != 0)
-                            Container(
+                          if (userList.isNotEmpty)
+                            SizedBox(
                               height: 200,
                               child: ListView.separated(
                                   separatorBuilder: (context, index) {
@@ -309,7 +322,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                     );
                                   }),
                             ),
-                          SizedBox(
+                          const SizedBox(
                             height: 250,
                           )
                         ],
@@ -443,39 +456,45 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
   }
 
   getSelectedList() {
-    return Wrap(
-        children: newRideObject.selectedUsers.keys
-            .map((k) => Container(
-                  margin: EdgeInsets.symmetric(horizontal: 2.5, vertical: 2.5),
-                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                  decoration: const BoxDecoration(
-                      shape: BoxShape.rectangle,
-                      color: otp_background_color,
-                      borderRadius: BorderRadius.all(Radius.circular(10))),
-                  child: RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                            text: newRideObject.selectedUsers[k],
-                            style: TextStyle(color: accent_color)),
-                        WidgetSpan(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                newRideObject.removeUser(k);
-                              });
-                            },
-                            child: const Icon(
-                              Icons.close_rounded,
-                              size: 14,
-                              color: accent_color,
+    return RefreshIndicator(
+      onRefresh: () async {
+        await Future.delayed(Duration(seconds: 2));
+      },
+      child: Wrap(
+          children: newRideObject.selectedUsers.keys
+              .map((k) => Container(
+                    margin:
+                        EdgeInsets.symmetric(horizontal: 2.5, vertical: 2.5),
+                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        color: otp_background_color,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                              text: newRideObject.selectedUsers[k],
+                              style: TextStyle(color: accent_color)),
+                          WidgetSpan(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  newRideObject.removeUser(k);
+                                });
+                              },
+                              child: const Icon(
+                                Icons.close_rounded,
+                                size: 14,
+                                color: accent_color,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ))
-            .toList());
+                  ))
+              .toList()),
+    );
   }
 }

@@ -189,12 +189,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
+                    SizedBox(
+                      height: 250,
+                    )
                   ],
                 ),
               ),
             ),
           ),
-          showProgress(isInProgress)
         ],
       ),
     );
@@ -205,6 +207,9 @@ class _HomeScreenState extends State<HomeScreen> {
       isInProgress = true;
     });
     currentRides = await fetchRides();
+    currentRides.sort((a, b) {
+      return b.startDate!.compareTo(a.startDate!);
+    });
     setState(() {
       isInProgress = false;
     });
