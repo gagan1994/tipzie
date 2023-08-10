@@ -208,9 +208,16 @@ Widget getDatePickerSingleLine(
   DateTime end, [
   double fontsize = 8.0,
 ]) {
+  if (end.isBefore(start)) {
+    var temp = start;
+    start = end;
+    end = temp;
+  }
+  print("startdate: $start");
+  print("enddate $end");
   var noOfDays = end.difference(start).inDays + 6;
+  print("noOfDays $noOfDays");
   var listStartDate = start.subtract(Duration(days: 2));
-
   return ListView.builder(
       itemCount: noOfDays,
       scrollDirection: Axis.horizontal,
