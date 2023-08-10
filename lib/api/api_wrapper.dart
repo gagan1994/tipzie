@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:tripzie/api/ride.dart';
 import 'package:tripzie/api/user_data.dart';
+import 'package:tripzie/utils/ui_utils.dart';
 
 import '../ui/main/rides/create_new_ride_screen.dart';
 
@@ -52,7 +54,7 @@ Future<bool> createRides(NewRideObject object) async {
   return Future.value(false);
 }
 
-Future<List<Ride>> fetchRides() async {
+Future<List<Ride>> fetchRides(BuildContext context) async {
   var response = await fetchData("/rides");
   print("response status: ${response.statusCode}");
   if (response.statusCode == 200) {
@@ -62,6 +64,8 @@ Future<List<Ride>> fetchRides() async {
       rideList.add(Ride.fromJson(item));
     }
     return rideList;
+  } else {
+    showSnackBar(context, "Unable to load Please Refresh");
   }
   return [];
 }

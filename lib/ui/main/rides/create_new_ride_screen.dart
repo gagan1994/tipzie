@@ -337,39 +337,41 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: TripzieButton(
-        button_text: "Create Ride",
-        onPressed: () async {
-          isNameEmpty =
-              newRideObject.name == null || newRideObject.name!.isEmpty;
-          isSourceOrDestinationEmpty =
-              newRideObject.source == null || newRideObject.destination == null;
-          isStartDateEndDateEmpty =
-              newRideObject.startDate == null || newRideObject.endDate == null;
-          isSelectedUsersEmpty = newRideObject.selectedUsers.isEmpty;
-          if (isNameEmpty ||
-              isSourceOrDestinationEmpty ||
-              isStartDateEndDateEmpty) {
-            setState(() {});
-            showSnackBar(context, "Please Resolve the Errors");
-            return;
-          }
-          setState(() {
-            isInProgress = true;
-          });
-          var res = await createRides(newRideObject);
-          setState(() {
-            isInProgress = false;
-          });
-          if (res) {
-            showSnackBar(context, "Ride Created Successfully");
-            Navigator.pop(context);
-          } else {
-            showSnackBar(context,
-                "Unable to create Rides at this movement Please try again later");
-          }
-        },
-      ),
+      floatingActionButton: !isInProgress
+          ? TripzieButton(
+              button_text: "Create Ride",
+              onPressed: () async {
+                isNameEmpty =
+                    newRideObject.name == null || newRideObject.name!.isEmpty;
+                isSourceOrDestinationEmpty = newRideObject.source == null ||
+                    newRideObject.destination == null;
+                isStartDateEndDateEmpty = newRideObject.startDate == null ||
+                    newRideObject.endDate == null;
+                isSelectedUsersEmpty = newRideObject.selectedUsers.isEmpty;
+                if (isNameEmpty ||
+                    isSourceOrDestinationEmpty ||
+                    isStartDateEndDateEmpty) {
+                  setState(() {});
+                  showSnackBar(context, "Please Resolve the Errors");
+                  return;
+                }
+                setState(() {
+                  isInProgress = true;
+                });
+                var res = await createRides(newRideObject);
+                setState(() {
+                  isInProgress = false;
+                });
+                if (res) {
+                  showSnackBar(context, "Ride Created Successfully");
+                  Navigator.pop(context);
+                } else {
+                  showSnackBar(context,
+                      "Unable to create Rides at this movement Please try again later");
+                }
+              },
+            )
+          : null,
     );
   }
 

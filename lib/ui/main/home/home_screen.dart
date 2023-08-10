@@ -101,40 +101,45 @@ class _HomeScreenState extends State<HomeScreen> {
                                 itemBuilder: (BuildContext context, int index) {
                                   var ride = currentRides[index];
 
-                                  return Container(
-                                    padding: EdgeInsets.only(left: 5, right: 5),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          width: 218,
-                                          height: 128,
-                                          decoration: const BoxDecoration(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10)),
-                                            image: DecorationImage(
-                                              image: NetworkImage(
-                                                  "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"),
-                                              fit: BoxFit.cover,
+                                  return GestureDetector(
+                                    onTap: () {},
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.only(left: 5, right: 5),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width: 218,
+                                            height: 128,
+                                            decoration: const BoxDecoration(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10)),
+                                              image: DecorationImage(
+                                                image: NetworkImage(
+                                                    "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"),
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        Container(
-                                            child: Text(
-                                          '${ride.name}',
-                                          style: const TextStyle(
-                                              color: accent_color,
-                                              fontSize: 18),
-                                        )),
-                                        Container(
-                                            child: Text(
-                                          "${dateFormat(ride.startDate!)}",
-                                          style: TextStyle(color: accent_color),
-                                        )),
-                                      ],
+                                          Container(
+                                              child: Text(
+                                            '${ride.name}',
+                                            style: const TextStyle(
+                                                color: accent_color,
+                                                fontSize: 18),
+                                          )),
+                                          Container(
+                                              child: Text(
+                                            "${dateFormat(ride.startDate!)}",
+                                            style:
+                                                TextStyle(color: accent_color),
+                                          )),
+                                        ],
+                                      ),
                                     ),
                                   );
                                 }),
@@ -206,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       isInProgress = true;
     });
-    currentRides = await fetchRides();
+    currentRides = await fetchRides(context);
     currentRides.sort((a, b) {
       return b.startDate!.compareTo(a.startDate!);
     });
