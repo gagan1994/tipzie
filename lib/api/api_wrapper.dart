@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:tripzie/api/ride.dart';
 import 'package:tripzie/api/user_data.dart';
 
 import '../ui/main/rides/create_new_ride_screen.dart';
@@ -49,6 +50,20 @@ Future<bool> createRides(NewRideObject object) async {
     return Future.value(true);
   }
   return Future.value(false);
+}
+
+Future<List<Ride>> fetchRides() async {
+  var response = await fetchData("/rides");
+  print("response status: ${response.statusCode}");
+  if (response.statusCode == 200) {
+    List<dynamic> list = json.decode(response.body);
+    List<Ride> rideList = [];
+    for (var item in list) {
+      rideList.add(Ride.fromJson(item));
+    }
+    return rideList;
+  }
+  return [];
 }
 
 Map<String, dynamic> toJson(NewRideObject object) {

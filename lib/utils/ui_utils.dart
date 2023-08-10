@@ -2,6 +2,7 @@ import 'package:easy_loader/easy_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:tripzie/api/ride.dart';
 import 'package:tripzie/utils/trippit_assets.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
@@ -111,7 +112,7 @@ Widget rideDetails_2(RideListItem item) {
   );
 }
 
-Widget rideDetails_3(RideListItem item) {
+Widget rideDetails_3(Ride item) {
   return Column(
     children: [
       Container(
@@ -120,7 +121,8 @@ Widget rideDetails_3(RideListItem item) {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(10)),
           image: DecorationImage(
-            image: NetworkImage(item.imageUri),
+            image: NetworkImage(
+                'https://images.indianexpress.com/2019/01/leh-ladakh-getty-images-759.jpg'),
             fit: BoxFit.cover,
           ),
         ),
@@ -128,7 +130,13 @@ Widget rideDetails_3(RideListItem item) {
       SizedBox(
         height: 10,
       ),
-      Text(item.name),
+      Text(
+        item.name!,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontSize: 12,
+        ),
+      ),
     ],
   );
 }

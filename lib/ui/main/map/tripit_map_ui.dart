@@ -4,10 +4,16 @@ import 'package:tripzie/ui/main/map/select_places_on_map.dart';
 import '../../../utils/trppit_color.dart';
 
 class Places {
-  String name;
-  double lat;
-  double lng;
+  String? name;
+  double? lat;
+  double? lng;
   Places(this.name, this.lat, this.lng);
+
+  Places.fromJson(json) {
+    name = json['name'];
+    lat = json['latitude'];
+    lng = json['longitude'];
+  }
 }
 
 Widget getSourceDestinationUI(MarkMapUI? selectedOption, MarkMapUI source,

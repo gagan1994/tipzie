@@ -1,10 +1,11 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 
 const String app_name = "Tripzie";
 // icon: i == 2 ? BitmapDescriptor.fromBytes(markerImageBytes): BitmapDescriptor.defaultMarker,
 
 LatLngBounds boundsFromLatLngList(List<LatLng> list) {
-  double x0 = 0, x1= 0, y0=0, y1=0;
+  double x0 = 0, x1 = 0, y0 = 0, y1 = 0;
   for (LatLng latLng in list) {
     if (x0 == 0) {
       x0 = x1 = latLng.latitude;
@@ -17,4 +18,9 @@ LatLngBounds boundsFromLatLngList(List<LatLng> list) {
     }
   }
   return LatLngBounds(northeast: LatLng(x1, y1), southwest: LatLng(x0, y0));
+}
+
+String dateFormat(DateTime date) {
+  final result = DateFormat('yMMMMEEEEd').format(date);
+  return result;
 }
