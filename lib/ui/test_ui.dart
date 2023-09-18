@@ -2,6 +2,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 
+import '../auth/authentication.dart';
+import '../db/shared_pref_wrapper.dart';
+import '../socket/models/models.dart';
+
 class TestUi extends StatefulWidget {
   static const PAGE_NAME = "/test_ui";
   Map<String, dynamic> dataFromNotification;
@@ -12,11 +16,17 @@ class TestUi extends StatefulWidget {
 }
 
 class _TestUiState extends State<TestUi> {
+  var ride_id = '';
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   @override
   void initState() {
     super.initState();
-    // print("TestUi init: " + widget.dataFromNotification.toString());
+    SharedPrefWrapper.instance.clearNotificationDetails();
+    print("TestUi init: " + widget.dataFromNotification.toString());
+    if (widget.dataFromNotification.containsKey('ride_id')) {
+      ride_id = widget.dataFromNotification['ride_id'];
+      print("Ride id: $ride_id");
+    }
   }
 
   @override
@@ -32,6 +42,16 @@ class _TestUiState extends State<TestUi> {
             ElevatedButton(
               onPressed: registerFirebase,
               child: Text('registerFirebase'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                SocketWrapper.initSocket();
+              },
+              child: Text('Init socket'),
+            ),
+            ElevatedButton(
+              onPressed: sendSubscribeRides,
+              child: Text('Send ride capture'),
             ),
             ElevatedButton(
               onPressed: subscribe,
@@ -58,15 +78,28 @@ class _TestUiState extends State<TestUi> {
   }
 
   void subscribe() {
-    SocketWrapper.instance.subscribeTopic("subscribe_ride", (response) {
-      print("received data: " + response);
+    SocketWrapper.instance.subscribeTopic("rides_${ride_id}", (response) {
+      var locationData = LiveLocationModel.fromJson(response);
+      print("received data: ${locationData.latitude}");
     });
+  }
+
+  void sendSubscribeRides() {
+    SocketWrapper.instance
+        .sendDataToTopic("subscribe_rides", {"ride_id": ride_id});
   }
 
   void unSubscribe() {}
 
   void sendData() {
-    SocketWrapper.instance.sendDataToTopic(
-        "chat message", {"data": "hi im gagan", "token": "gagan"});
+    var currentMarker = LiveLocationModel.fromData(
+      12.9716,
+      77.5946,
+      40.4376,
+      DateTime.now().millisecond.toDouble(),
+      Authentication.getUser(),
+    );
+    SocketWrapper.instance
+        .sendDataToTopic("rides_$ride_id", currentMarker.toJson());
   }
 }

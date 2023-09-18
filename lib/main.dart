@@ -13,6 +13,7 @@ import 'package:tripzie/ui/test_ui.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 
 import 'api/ride.dart';
+import 'auth/authentication.dart';
 import 'ui/main/discovery/models.dart';
 import 'ui/main/main_screen.dart';
 import 'ui/main/map/current_ride_screen.dart';
@@ -20,6 +21,7 @@ import 'ui/splash_screen.dart';
 
 void main() {
   runApp(MyApp());
+  Authentication.initializeFirebase();
 }
 
 class MyApp extends StatelessWidget {

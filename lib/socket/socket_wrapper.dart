@@ -1,7 +1,6 @@
 import 'package:background_locator_2/location_dto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/socket/models/models.dart';
 import 'package:tripzie/socket/socket_receive.dart';
 import 'package:tripzie/socket/socket_send.dart';
@@ -10,17 +9,22 @@ class SocketWrapper {
   late SocketSender _sender;
   late SocketReceiver _receiver;
   late IO.Socket socket;
-
+  bool isInit = false;
   static final SocketWrapper instance = SocketWrapper();
 
   User? user = null;
 
-  SocketWrapper() {
-    init();
-    _sender = SocketSender();
-    _receiver = SocketReceiver();
-    _sender.setSocket(socket);
-    _receiver.setSocket(socket);
+  SocketWrapper() {}
+  static void initSocket() {
+    print("isInit: ${instance.isInit}");
+    if (instance.isInit) {
+      return;
+    }
+    instance.init();
+    instance._sender = SocketSender();
+    instance._receiver = SocketReceiver();
+    instance._sender.setSocket(instance.socket);
+    instance._receiver.setSocket(instance.socket);
   }
 
   void setUser(User? user) {
@@ -29,6 +33,7 @@ class SocketWrapper {
   }
 
   void init() {
+    isInit = true;
     print("initSocket");
     try {
       socket = IO.io("http://192.168.1.2:3000", <String, dynamic>{
@@ -48,7 +53,6 @@ class SocketWrapper {
     try {
       print("SocketWrapper: sendData hashCode hashCode");
       if (user == null) {
-        await Authentication.initializeFirebase();
         user = FirebaseAuth.instance.currentUser;
       }
       _sendData(

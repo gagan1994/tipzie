@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:tripzie/db/shared_pref_wrapper.dart';
 
 import '../ui/test_ui.dart';
 import '../utils/ui_utils.dart';
@@ -10,15 +10,16 @@ import '../utils/ui_utils.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print('Handling a background message ${message.messageId}');
+  print('Handling a background message ${message.data.toString()}');
+  SharedPrefWrapper.instance.saveBgNotification(message.data);
 }
 
 class FirebasePushNotificationWrapper {
   static final FirebasePushNotificationWrapper _instance =
       FirebasePushNotificationWrapper._internal();
 
-  static void init(BuildContext context) {
-    _instance.initNotification(context);
+  static void init() {
+    _instance.initNotification();
   }
 
   factory FirebasePushNotificationWrapper() {
@@ -31,13 +32,15 @@ class FirebasePushNotificationWrapper {
   late AndroidNotificationChannel channel;
   bool isFlutterLocalNotificationsInitialized = false;
 
-  void initNotification(BuildContext context) async {
+  void initNotification() async {
     print("init notification");
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      print("onMessageOpenedApp");
+    });
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data} context: $context');
+      print('Message data: ${message.data}');
       navigatorKey.currentState
           ?.pushNamed(TestUi.PAGE_NAME, arguments: message.data);
       if (message.notification != null) {

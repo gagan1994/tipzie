@@ -4,8 +4,10 @@ import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/ui/main/home/home_screen.dart';
 import 'package:tripzie/ui/main/wallet/wallet_screen.dart';
+import 'package:tripzie/ui/test_ui.dart';
 
 import '../../auth/authentication.dart';
+import '../../db/shared_pref_wrapper.dart';
 import '../../utils/trippit_assets.dart';
 import '../../utils/trppit_color.dart';
 import 'fab_with_icons.dart';
@@ -20,7 +22,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late List<TripzieBottomNavBarScreen> bottom_screens;
   late TabController _controller;
   var current_index = 0;
@@ -29,6 +31,7 @@ class _MainScreenState extends State<MainScreen>
   void initState() {
     super.initState();
     _controller = TabController(vsync: this, length: 3);
+    WidgetsBinding.instance?.addObserver(this);
     initAll();
     bottom_screens = [
       HomeScreen(),
@@ -117,6 +120,14 @@ class _MainScreenState extends State<MainScreen>
     );
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('lifcycleState $state');
+    if (state == AppLifecycleState.resumed) {
+      checkAndOpenNotification();
+    }
+  }
+
   _getBottomIcon(int index, String ic_home) {
     return SvgPicture.asset(
       ic_home,
@@ -155,13 +166,49 @@ class _MainScreenState extends State<MainScreen>
   }
 
   void initAll() async {
-    await Authentication.initializeFirebase();
     SocketWrapper.instance.setUser(Authentication.getUser());
   }
 
   void onFabButtonClick(int current_index) async {
     if (current_index == 1) {
       Navigator.pushNamed(context, CreateNewRideScreen.PAGE_NAME);
+    }
+  }
+
+  void checkAndOpenNotification() async {
+    var notificationList = await SharedPrefWrapper.instance.getBgNotification();
+    print('checkAndOpenNotification -> $notificationList');
+    if (notificationList.isNotEmpty) {
+      print("notification came on background: $notificationList");
+      print("last notification background: ${notificationList.last}");
+      showDialog(
+        context: context,
+        builder: (context) {
+          String contentText = "You have ongoing ride, go to Live ride screen";
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                title: const Text("Ride Alert!"),
+                content: Text(contentText),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Cancel"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, TestUi.PAGE_NAME,
+                          arguments: notificationList.last);
+                    },
+                    child: const Text("Join now"),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
     }
   }
 }

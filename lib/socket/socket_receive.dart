@@ -10,6 +10,7 @@ class SocketReceiver {
   }
 
   void listen(String event, EventHandler callback) {
+    print("subscribing topic: $event");
     socket.on(event, (data) {
       print("received:\nevent:$event\ndata $data ");
       if (data is String) {

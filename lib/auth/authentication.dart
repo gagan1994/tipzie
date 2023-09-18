@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/login/login_screen.dart';
 
+import '../norification/firebase_notifcation_wrapper.dart';
 import '../utils/ui_utils.dart';
 
 class Authentication {
@@ -27,6 +28,7 @@ class Authentication {
     FirebaseApp firebaseApp = await Firebase.initializeApp().whenComplete(() {
       print("FirebaseAuth completed");
     });
+    FirebasePushNotificationWrapper.init();
     return firebaseApp;
   }
 
