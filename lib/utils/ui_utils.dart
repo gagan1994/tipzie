@@ -8,6 +8,8 @@ import 'package:tripzie/utils/trppit_color.dart';
 
 import '../ui/main/rides/models.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
+
 String? getFontStyle() {
   return GoogleFonts.montserratAlternates().fontFamily;
 }

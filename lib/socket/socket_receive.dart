@@ -12,7 +12,11 @@ class SocketReceiver {
   void listen(String event, EventHandler callback) {
     socket.on(event, (data) {
       print("received:\nevent:$event\ndata $data ");
-      callback(jsonDecode(data));
+      if (data is String) {
+        callback(jsonDecode(data));
+      } else {
+        callback(data);
+      }
     });
   }
 }

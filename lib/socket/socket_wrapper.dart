@@ -31,7 +31,7 @@ class SocketWrapper {
   void init() {
     print("initSocket");
     try {
-      socket = IO.io("http://192.168.0.110:3700", <String, dynamic>{
+      socket = IO.io("http://192.168.1.2:3000", <String, dynamic>{
         "transports": ['websocket'],
         "autoConnect": true
       });
@@ -58,6 +58,10 @@ class SocketWrapper {
     }
   }
 
+  void sendDataToTopic(String topic, dynamic message) {
+    _sendData(topic, message);
+  }
+
   void _sendData(String event, Map<String, dynamic> data) {
     _sender.emit(event, data);
   }
@@ -67,5 +71,9 @@ class SocketWrapper {
       var liveData = LiveLocationModel.fromJson(data);
       callback(liveData);
     });
+  }
+
+  void subscribeTopic(String topic, Function(dynamic) callback) {
+    _receiver.listen(topic, callback);
   }
 }

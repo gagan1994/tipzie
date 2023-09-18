@@ -10,8 +10,9 @@ import 'package:tripzie/utils/ui_utils.dart';
 import '../ui/main/rides/create_new_ride_screen.dart';
 
 Future<http.Response> fetchData(String endpoint) {
-  var resp = http.get(Uri.parse(
-      'https://9100rosoac.execute-api.us-east-1.amazonaws.com/dev' + endpoint));
+  var uri = Uri.parse('http://13.233.26.160:3000' + endpoint);
+  print("fetch data $uri");
+  var resp = http.get(uri);
   print("$endpoint Resp: $resp");
   return resp;
 }
@@ -32,8 +33,9 @@ Future<http.Response> uploadData(String endpoint, dynamic object) {
 }
 
 Future<HashMap<String, UserProfile>> fetchProfiles() async {
+  print("fetchProfiles");
   var response = await fetchData("/profiles");
-  print("response status: ${response.statusCode}");
+  print("profiles response status: ${response.statusCode}");
   if (response.statusCode == 200) {
     List<dynamic> list = json.decode(response.body);
     HashMap<String, UserProfile> userList = HashMap();
@@ -58,6 +60,7 @@ Future<bool> createRides(NewRideObject object) async {
 }
 
 Future<List<Ride>> fetchRides(BuildContext context) async {
+  print("fetchRides");
   var response = await fetchData("/rides");
   print("response status: ${response.statusCode}");
   if (response.statusCode == 200) {

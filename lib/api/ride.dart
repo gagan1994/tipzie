@@ -15,8 +15,12 @@ class Ride {
   Ride.fromJson(Map<String, dynamic> json) {
     _id = json['_id'];
     name = json['name'];
-    source = Places.fromJson(json['location']['source']);
-    destination = Places.fromJson(json['location']['destination']);
+    if (json['location'] == null) {
+      print(json);
+    } else {
+      source = Places.fromJson(json['location']['source']);
+      destination = Places.fromJson(json['location']['destination']);
+    }
     var start_time = json['start_time'];
     var end_time = json['end_time'];
     startDate = DateTime.tryParse(start_time);

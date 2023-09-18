@@ -24,8 +24,9 @@ class Authentication {
 
   static Future<FirebaseApp> initializeFirebase() async {
     print("FirebaseAuth init");
-    FirebaseApp firebaseApp = await Firebase.initializeApp()
-        .whenComplete(() => print("FirebaseAuth completed"));
+    FirebaseApp firebaseApp = await Firebase.initializeApp().whenComplete(() {
+      print("FirebaseAuth completed");
+    });
     return firebaseApp;
   }
 

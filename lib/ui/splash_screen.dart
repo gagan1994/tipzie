@@ -5,6 +5,7 @@ import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/background_task/background_location.dart';
 import 'package:tripzie/ui/main/main_screen.dart';
 
+import '../norification/firebase_notifcation_wrapper.dart';
 import '../utils/trppit_color.dart';
 import 'login/login_page_1.dart';
 
@@ -25,6 +26,7 @@ class SplashScreenState extends State<SplashPage> {
   void initState() {
     super.initState();
     Authentication.initializeFirebase();
+    FirebasePushNotificationWrapper.init(context);
     checkAndMoveToNextScreen();
   }
 

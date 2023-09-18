@@ -5,6 +5,7 @@ import 'package:tripzie/api/ride.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/ui/main/profile/profile_screen.dart';
 import 'package:tripzie/ui/main/rides/ride_details.dart';
+import 'package:tripzie/ui/test_ui.dart';
 import 'package:tripzie/utils.dart';
 
 import '../../../db/users.dart';
@@ -72,15 +73,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     verticalDivider(),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 128,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        image: DecorationImage(
-                          image: NetworkImage(
-                              "https://psd.zone/wp-content/uploads/2020/09/Travel-Agency-Advertisement-Flyer-PSD.jpg"),
-                          fit: BoxFit.cover,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, TestUi.PAGE_NAME);
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 128,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          image: DecorationImage(
+                            image: NetworkImage(
+                                "https://psd.zone/wp-content/uploads/2020/09/Travel-Agency-Advertisement-Flyer-PSD.jpg"),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
@@ -231,6 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   loadData() async {
+    print("load data home screen");
     await fetchUsersAndStore();
     await fetchRideAndUpdateUi();
   }
