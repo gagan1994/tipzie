@@ -8,7 +8,11 @@ class SharedPrefWrapper extends VMWrapper {
   }
 
   Future<String> getOnGoingRide() async {
-    return getJsonData('on_going_rides');
+    var jsonData = await getJsonData('on_going_rides');
+    if (jsonData != null) {
+      return jsonData as String;
+    }
+    return '';
   }
 
   void saveBgNotification(Map<String, dynamic> data) async {

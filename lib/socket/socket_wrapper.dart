@@ -65,6 +65,12 @@ class SocketWrapper {
     }
   }
 
+  void sendRideData() async {
+    var ride_id = await SharedPrefWrapper.instance.getOnGoingRide();
+
+    _sendData('rides_' + ride_id, {'testride_id': 'id'});
+  }
+
   void sendDataToTopic(String topic, dynamic message) {
     _sendData(topic, message);
   }

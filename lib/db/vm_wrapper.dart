@@ -25,7 +25,7 @@ class VMWrapper {
     await shared.writeAsString(jsonEncode(keyVal));
   }
 
-  dynamic getJsonData(String key) async {
+  Future<dynamic> getJsonData(String key) async {
     var shared = await getSharedJsonFile();
     var data = await shared.readAsString();
     print('current shared data: ' + data);

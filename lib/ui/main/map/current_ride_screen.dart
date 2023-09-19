@@ -26,9 +26,7 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
 
   @override
   void initState() {
-    if (SocketWrapper.instance.isInit) {
-      SocketWrapper.initSocket();
-    }
+    checkAndInitSocket();
     assistantHelper.initSpeechState(() {
       setState(() {});
     });
@@ -142,6 +140,7 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
     }
     assistantHelper.startListening(eventCallback);
     setState(() {});
+    // SocketWrapper.instance.sendRideData();
   }
 
   void eventCallback(VoiceEvents event) {
@@ -160,5 +159,11 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
         break;
     }
     setState(() {});
+  }
+
+  void checkAndInitSocket() {
+    if (!SocketWrapper.instance.isInit) {
+      SocketWrapper.initSocket();
+    }
   }
 }
