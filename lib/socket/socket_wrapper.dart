@@ -61,12 +61,6 @@ class SocketWrapper {
     }
   }
 
-  void sendRideData() async {
-    var ride_id = await SharedPrefWrapper.instance.getOnGoingRide();
-
-    _sendData('rides_' + ride_id, {'testride_id': 'id'});
-  }
-
   void sendDataToTopic(String topic, dynamic message) {
     _sendData(topic, message);
   }
@@ -81,10 +75,6 @@ class SocketWrapper {
     _sender.emit('subscribe_rides', {'ride_id': ride_id});
     _receiver.listen('rides_' + ride_id, (data) async {
       var liveData = LiveLocationModel.fromJson(data);
-      if (liveData.userId! == FirebaseAuth.instance.currentUser!.uid) {
-        print("same device returning");
-        return;
-      }
       callback(liveData);
     });
   }
