@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/map/assistant_helper.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
+import '../../../api/ride.dart';
 import '../../../utils/trippit_assets.dart';
 import 'map_screen.dart';
 
 class CurrentRideScreen extends StatefulWidget {
   static const PAGE_NAME = 'current_rides_screen';
-  CurrentRideScreen({Key? key}) : super(key: key);
+  Ride ride;
+  CurrentRideScreen(this.ride, {Key? key}) : super(key: key);
 
   @override
   State<CurrentRideScreen> createState() => _CurrentRideScreenState();
@@ -23,6 +26,9 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
 
   @override
   void initState() {
+    if (SocketWrapper.instance.isInit) {
+      SocketWrapper.initSocket();
+    }
     assistantHelper.initSpeechState(() {
       setState(() {});
     });
@@ -111,7 +117,7 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
   }
 
   _backgroundWidget() {
-    return TripzieMap();
+    return TripzieMap(widget.ride);
   }
 
   _getAssistant() {

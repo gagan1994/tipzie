@@ -2,7 +2,7 @@ class UserProfile {
   String? userId;
   String? firstName;
   String? surName;
-  int? phone;
+  dynamic? phone;
 /*
 *  "_id": "649e80a17f729edf3809f3f2",
         "FirstName": "punith",

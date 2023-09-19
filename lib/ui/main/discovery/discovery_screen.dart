@@ -6,7 +6,6 @@ import 'package:tripzie/utils/trppit_color.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 
 import '../bottom_navbar_screen.dart';
-import '../live_ride.dart';
 import '../profile/profile_screen.dart';
 import 'models.dart';
 
@@ -63,7 +62,6 @@ class DiscoveryScreenState extends State<DiscoveryScreen> {
             const SizedBox(
               height: 10,
             ),
-            LiveRide(),
             const SizedBox(
               height: 6,
             ),

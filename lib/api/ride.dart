@@ -4,7 +4,7 @@ import 'package:tripzie/db/users.dart';
 import '../ui/main/map/tripit_map_ui.dart';
 
 class Ride {
-  String? _id;
+  String _id = '';
   Places? source;
   Places? destination;
   DateTime? startDate;
@@ -12,9 +12,16 @@ class Ride {
   List<UserProfile>? selectedUsers = [];
 
   String? name;
+  String getId() {
+    return _id;
+  }
+
   Ride.fromJson(Map<String, dynamic> json) {
     _id = json['_id'];
     name = json['name'];
+    if (name == null) {
+      name = 'undefined';
+    }
     if (json['location'] == null) {
       print(json);
     } else {
@@ -23,12 +30,19 @@ class Ride {
     }
     var start_time = json['start_time'];
     var end_time = json['end_time'];
-    startDate = DateTime.tryParse(start_time);
-    endDate = DateTime.tryParse(end_time);
-    print("Riders: ${json['riders']}");
-    selectedUsers = (json['riders'] as List)
-        .map((item) => findUserWithId(item as String))
-        .toList();
+    try {
+      startDate = DateTime.tryParse(start_time);
+      endDate = DateTime.tryParse(end_time);
+      print("Riders: ${json['riders']}");
+      selectedUsers = (json['riders'] as List)
+          .map((item) => findUserWithId(item as String))
+          .toList();
+    } catch (e) {
+      startDate = DateTime.now();
+      endDate = DateTime.now();
+      selectedUsers = [];
+      print("_id:$_id: exception: ${e}");
+    }
   }
 
   //"_id": "64aabdb502343f44c4f95f7d",

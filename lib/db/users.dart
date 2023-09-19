@@ -10,5 +10,5 @@ UserProfile findUserWithId(String id) {
     return allUsers[id]!;
   }
   return UserProfile(
-      userId: "1", firstName: "fname", surName: "sName", phone: 1234);
+      userId: "1", firstName: "fname", surName: "sName", phone: "1234");
 }

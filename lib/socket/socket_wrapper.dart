@@ -1,6 +1,7 @@
 import 'package:background_locator_2/location_dto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:tripzie/db/shared_pref_wrapper.dart';
 import 'package:tripzie/socket/models/models.dart';
 import 'package:tripzie/socket/socket_receive.dart';
 import 'package:tripzie/socket/socket_send.dart';
@@ -55,8 +56,10 @@ class SocketWrapper {
       if (user == null) {
         user = FirebaseAuth.instance.currentUser;
       }
+      var ride_id = await SharedPrefWrapper.instance.getOnGoingRide();
+
       _sendData(
-          "position-change", LiveLocationModel(locationDto, user).toJson());
+          'rides_' + ride_id, LiveLocationModel(locationDto, user).toJson());
     } catch (e) {
       print(e);
     }
@@ -70,8 +73,11 @@ class SocketWrapper {
     _sender.emit(event, data);
   }
 
-  void startListeningForLocationUpdates(Function(LiveLocationModel) callback) {
-    _receiver.listen('position-change', (data) async {
+  void startListeningForLocationUpdates(
+      String ride_id, Function(LiveLocationModel) callback) {
+    SharedPrefWrapper.instance.saveOnGoingRide(ride_id);
+    _sender.emit('subscribe_rides', {'ride_id': ride_id});
+    _receiver.listen('rides_' + ride_id, (data) async {
       var liveData = LiveLocationModel.fromJson(data);
       callback(liveData);
     });

@@ -176,11 +176,9 @@ class _MainScreenState extends State<MainScreen>
   }
 
   void checkAndOpenNotification() async {
-    var notificationList = await SharedPrefWrapper.instance.getBgNotification();
-    print('checkAndOpenNotification -> $notificationList');
-    if (notificationList.isNotEmpty) {
-      print("notification came on background: $notificationList");
-      print("last notification background: ${notificationList.last}");
+    var notification = await SharedPrefWrapper.instance.getBgNotification();
+    if (notification.keys.isNotEmpty) {
+      print("notification came on background: $notification");
       showDialog(
         context: context,
         builder: (context) {
@@ -199,7 +197,7 @@ class _MainScreenState extends State<MainScreen>
                     onPressed: () {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, TestUi.PAGE_NAME,
-                          arguments: notificationList.last);
+                          arguments: notification);
                     },
                     child: const Text("Join now"),
                   ),

@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../api/ride.dart';
 import '../../utils/trppit_color.dart';
 import '../../utils/ui_utils.dart';
 import 'map/current_ride_screen.dart';
 
 class LiveRide extends StatefulWidget {
-  LiveRide({Key? key}) : super(key: key);
+  Ride ride;
+  LiveRide(this.ride, {Key? key}) : super(key: key);
 
   @override
   State<LiveRide> createState() => _LiveRideState();
 }
 
 class _LiveRideState extends State<LiveRide> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -33,11 +41,11 @@ class _LiveRideState extends State<LiveRide> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Current ride",
+                      widget.ride.name!,
                       style: TextStyle(fontSize: 14),
                     ),
                     Text(
-                      "Riding with Punith and 10 others",
+                      getDescription(),
                       style: TextStyle(fontSize: 10, color: version_color),
                     ),
                     SizedBox(
@@ -55,7 +63,9 @@ class _LiveRideState extends State<LiveRide> {
                   ],
                 ),
               ),
-              getNavigationIcons(["Bgl", "Mys"])
+              getNavigationIcons(
+                  [widget.ride.source!.name!, widget.ride.destination!.name!],
+                  widget.ride.startDate!)
             ],
           ),
         ),
@@ -74,7 +84,8 @@ class _LiveRideState extends State<LiveRide> {
       showSnackBar(context, "Please provide permission");
       return;
     }
-    Navigator.pushNamed(context, CurrentRideScreen.PAGE_NAME);
+    Navigator.pushNamed(context, CurrentRideScreen.PAGE_NAME,
+        arguments: widget.ride);
   }
 
   _getLiveRideTiles(String text) {
@@ -90,7 +101,7 @@ class _LiveRideState extends State<LiveRide> {
     );
   }
 
-  getNavigationIcons(List<String> list) {
+  getNavigationIcons(List<String> list, DateTime startDate) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -98,9 +109,12 @@ class _LiveRideState extends State<LiveRide> {
         Text.rich(
           TextSpan(
             children: <TextSpan>[
-              TextSpan(text: "Sun\n", style: TextStyle(fontSize: 8)),
               TextSpan(
-                  text: '25 Jun',
+                  text: "${DateFormat('EE').format(startDate)}\n",
+                  style: TextStyle(fontSize: 8)),
+              TextSpan(
+                  text:
+                      '${startDate.day} ${DateFormat('MMM').format(startDate)}',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
             ],
           ),
@@ -163,5 +177,10 @@ class _LiveRideState extends State<LiveRide> {
       ));
     }
     return ret;
+  }
+
+  String getDescription() {
+    var ride = widget.ride;
+    return 'riding with ${ride.selectedUsers!.first.firstName} and ${ride.selectedUsers!.length - 1} others';
   }
 }

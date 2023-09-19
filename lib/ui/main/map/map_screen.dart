@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_polygon/flutter_polygon.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:tripzie/api/ride.dart';
 import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/socket/models/models.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
@@ -11,6 +12,9 @@ import 'package:tripzie/utils/map_utils.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
 class TripzieMap extends StatefulWidget {
+  Ride ride;
+  TripzieMap(this.ride);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -40,7 +44,8 @@ class _MyAppState extends State<TripzieMap> {
   void initState() {
     super.initState();
     getUserCurrentLocationUpdateUi();
-    SocketWrapper.instance.startListeningForLocationUpdates(addMarker);
+    SocketWrapper.instance
+        .startListeningForLocationUpdates(widget.ride.getId(), addMarker);
   }
 
   @override

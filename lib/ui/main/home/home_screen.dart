@@ -12,6 +12,7 @@ import '../../../db/users.dart';
 import '../../../utils/trippit_assets.dart';
 import '../../../utils/trppit_color.dart';
 import '../../../utils/ui_utils.dart';
+import '../live_ride.dart';
 
 class HomeScreen extends TripzieBottomNavBarScreen {
   static const PAGE_NAME = "/home_screen";
@@ -24,6 +25,7 @@ class HomeScreen extends TripzieBottomNavBarScreen {
 class _HomeScreenState extends State<HomeScreen> {
   bool isInProgress = false;
 
+  List<Ride> allRides = [];
   List<Ride> currentRides = [];
 
   @override
@@ -50,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
               physics: AlwaysScrollableScrollPhysics(),
               child: Container(
                 color: Colors.white,
-                margin: EdgeInsets.symmetric(vertical: 50, horizontal: 10),
+                margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
                 child: Column(
                   children: [
                     verticalDivider(),
@@ -73,6 +75,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     verticalDivider(),
+                    if (currentRides.isNotEmpty)
+                      ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: 1,
+                          itemBuilder: (BuildContext context, int index) {
+                            var item =
+                                currentRides[index % currentRides.length];
+                            return LiveRide(item);
+                          }),
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(context, TestUi.PAGE_NAME);
@@ -104,10 +116,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           verticalDivider(),
                           Expanded(
                             child: ListView.builder(
-                                itemCount: currentRides.length,
+                                itemCount: allRides.length,
                                 scrollDirection: Axis.horizontal,
                                 itemBuilder: (BuildContext context, int index) {
-                                  var ride = currentRides[index];
+                                  var ride = allRides[index];
 
                                   return GestureDetector(
                                     onTap: () {
@@ -160,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     verticalDivider(),
-                    if (currentRides.isNotEmpty)
+                    if (allRides.isNotEmpty)
                       Container(
                         height: 150,
                         padding: const EdgeInsets.symmetric(
@@ -179,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   style: TextStyle(
                                       color: accent_color, fontSize: 18),
                                 ),
-                                if (currentRides.length > 4)
+                                if (allRides.length > 4)
                                   const Text(
                                     "See All",
                                     style: TextStyle(
@@ -193,14 +205,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                if (currentRides.length > 1)
-                                  rideDetails_3(currentRides[0]),
-                                if (currentRides.length > 2)
-                                  rideDetails_3(currentRides[1]),
-                                if (currentRides.length > 3)
-                                  rideDetails_3(currentRides[2]),
-                                if (currentRides.length > 4)
-                                  rideDetails_3(currentRides[3]),
+                                if (allRides.length > 1)
+                                  rideDetails_3(allRides[0]),
+                                if (allRides.length > 2)
+                                  rideDetails_3(allRides[1]),
+                                if (allRides.length > 3)
+                                  rideDetails_3(allRides[2]),
+                                if (allRides.length > 4)
+                                  rideDetails_3(allRides[3]),
                               ],
                             ),
                           ],
@@ -223,10 +235,15 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       isInProgress = true;
     });
-    currentRides = await fetchRides(context);
+    allRides = await fetchRides(context);
+    allRides.sort((a, b) {
+      return b.startDate!.compareTo(a.startDate!);
+    });
     currentRides.sort((a, b) {
       return b.startDate!.compareTo(a.startDate!);
     });
+    currentRides = await fetchOnGoingRides(context);
+
     setState(() {
       isInProgress = false;
     });

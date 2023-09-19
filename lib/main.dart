@@ -56,7 +56,8 @@ class MyApp extends StatelessWidget {
             final rideItem = settings.arguments as Ride;
             return bottomToTop(RideDetailsScreen(rideItem));
           case CurrentRideScreen.PAGE_NAME:
-            return bottomToTop(CurrentRideScreen());
+            final currentRide = settings.arguments as Ride;
+            return bottomToTop(CurrentRideScreen(currentRide));
           case ProfileScreen.PAGE_NAME:
             return transition(ProfileScreen(), PageTransitionType.leftToRight);
           case TripziePlacesSearch.PAGE_NAME:
