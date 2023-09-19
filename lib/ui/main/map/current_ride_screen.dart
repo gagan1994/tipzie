@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:tripzie/background_task/background_location.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/map/assistant_helper.dart';
 import 'package:tripzie/utils/trppit_color.dart';
@@ -31,14 +30,12 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
     assistantHelper.initSpeechState(() {
       setState(() {});
     });
-    BackgroundLocationWrapper.instance.startLocationService();
     super.initState();
   }
 
   @override
   void dispose() {
     assistantHelper.dispose();
-    BackgroundLocationWrapper.instance.stopLocationService();
     super.dispose();
   }
 

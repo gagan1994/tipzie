@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:background_locator_2/location_dto.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:tripzie/ui/login/login_page_1.dart';
@@ -14,10 +17,40 @@ import 'package:tripzie/utils/ui_utils.dart';
 
 import 'api/ride.dart';
 import 'auth/authentication.dart';
+import 'background_task/location_service_repository.dart';
 import 'ui/main/discovery/models.dart';
 import 'ui/main/main_screen.dart';
 import 'ui/main/map/current_ride_screen.dart';
 import 'ui/splash_screen.dart';
+
+@pragma('vm:entry-point')
+class LocationCallbackHandler {
+  @pragma('vm:entry-point')
+  static Future<void> initCallback(Map<dynamic, dynamic> params) async {
+    LocationServiceRepository myLocationCallbackRepository =
+        LocationServiceRepository();
+    await myLocationCallbackRepository.init(params);
+  }
+
+  @pragma('vm:entry-point')
+  static Future<void> disposeCallback() async {
+    LocationServiceRepository myLocationCallbackRepository =
+        LocationServiceRepository();
+    await myLocationCallbackRepository.dispose();
+  }
+
+  @pragma('vm:entry-point')
+  static Future<void> callback(LocationDto locationDto) async {
+    LocationServiceRepository myLocationCallbackRepository =
+        LocationServiceRepository();
+    await myLocationCallbackRepository.callback(locationDto);
+  }
+
+  @pragma('vm:entry-point')
+  static Future<void> notificationCallback() async {
+    print('***notificationCallback');
+  }
+}
 
 void main() {
   runApp(MyApp());

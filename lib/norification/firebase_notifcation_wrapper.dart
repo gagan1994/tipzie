@@ -4,7 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tripzie/db/shared_pref_wrapper.dart';
 
-import '../ui/test_ui.dart';
+import '../api/api_wrapper.dart';
+import '../api/ride.dart';
+import '../background_task/background_location.dart';
+import '../ui/main/map/current_ride_screen.dart';
 import '../utils/ui_utils.dart';
 
 @pragma('vm:entry-point')
@@ -41,8 +44,9 @@ class FirebasePushNotificationWrapper {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Got a message whilst in the foreground!');
       print('Message data: ${message.data}');
-      navigatorKey.currentState
-          ?.pushNamed(TestUi.PAGE_NAME, arguments: message.data);
+      BackgroundLocationWrapper.instance.startLiveRide();
+      navigatorKey.currentState?.pushNamed(CurrentRideScreen.PAGE_NAME,
+          arguments: Ride.fromJson(temp_current_rides[0]));
       if (message.notification != null) {
         print('Message also contained a notification: ${message.notification}');
       }

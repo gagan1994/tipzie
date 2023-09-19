@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:background_locator_2/background_locator.dart';
 import 'package:background_locator_2/location_dto.dart';
@@ -7,15 +9,39 @@ import 'package:background_locator_2/settings/ios_settings.dart';
 import 'package:background_locator_2/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:location_permissions/location_permissions.dart';
+import 'package:tripzie/socket/socket_wrapper.dart';
 
-import 'location_callback_handler.dart';
+import '../main.dart';
+import 'location_service_repository.dart';
 
 class BackgroundLocationWrapper {
+  ReceivePort port = ReceivePort();
+
   BackgroundLocationWrapper._();
   static final instance = BackgroundLocationWrapper._();
   final isRunning = ValueNotifier<bool>(false);
 
   LocationDto? lastLocation;
+  void startLiveRide() {
+    if (IsolateNameServer.lookupPortByName(
+            LocationServiceRepository.isolateName) !=
+        null) {
+      IsolateNameServer.removePortNameMapping(
+          LocationServiceRepository.isolateName);
+    }
+
+    IsolateNameServer.registerPortWithName(
+        port.sendPort, LocationServiceRepository.isolateName);
+    port.listen(
+      (dynamic data) async {
+        print('listened port data: $data');
+        if (data is Map<String, dynamic>) {
+          SocketWrapper.instance.sendData(LocationDto.fromJson(data));
+        }
+      },
+    );
+    BackgroundLocationWrapper.instance.startLocationService();
+  }
 
   void startLocationService() async {
     print("Starting location service");
