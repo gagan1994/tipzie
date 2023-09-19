@@ -135,12 +135,11 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
   }
 
   onAssistantClicked() async {
-    // if (assistantHelper.isListening()) {
-    //   return;
-    // }
-    // assistantHelper.startListening(eventCallback);
-    // setState(() {});
-    SocketWrapper.instance.sendRideData();
+    if (assistantHelper.isListening()) {
+      return;
+    }
+    assistantHelper.startListening(eventCallback);
+    setState(() {});
   }
 
   void eventCallback(VoiceEvents event) {
