@@ -10,7 +10,7 @@ import 'package:tripzie/utils/ui_utils.dart';
 import '../ui/main/rides/create_new_ride_screen.dart';
 
 const BASE_URL = 'http://192.168.1.2:3000';
-const LOCAL_DATA = 101;
+const LOCAL_DATA = 404;
 Future<http.Response> fetchData(String endpoint) async {
   try {
     var uri = Uri.parse(BASE_URL + endpoint);

@@ -100,9 +100,10 @@ class BackgroundLocationWrapper {
     await BackgroundLocator.initialize();
     final _isRunning = await BackgroundLocator.isServiceRunning();
     isRunning.value = (_isRunning);
+    print('isRunning ${_isRunning}');
   }
 
-  void toggle() {
+  void toggleLocation() {
     if (isRunning.value) {
       stopLocationService();
     } else {

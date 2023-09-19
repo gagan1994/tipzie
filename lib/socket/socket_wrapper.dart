@@ -26,6 +26,7 @@ class SocketWrapper {
     instance._receiver = SocketReceiver();
     instance._sender.setSocket(instance.socket);
     instance._receiver.setSocket(instance.socket);
+    instance.isInit = true;
   }
 
   void setUser(User? user) {
@@ -34,7 +35,6 @@ class SocketWrapper {
   }
 
   void init() {
-    isInit = true;
     print("initSocket");
     try {
       socket = IO.io("http://192.168.1.2:3000", <String, dynamic>{
@@ -42,8 +42,7 @@ class SocketWrapper {
         "autoConnect": true
       });
       socket.connect();
-      socket.onConnect((data) => print(
-          "Socket connected id: ${socket.id} hashCode: ${SocketWrapper.instance.hashCode} $user"));
+      socket.onConnect(onConnectSocket);
     } catch (e) {
       print("socket error");
       print(e);
@@ -52,12 +51,9 @@ class SocketWrapper {
 
   void sendData(LocationDto locationDto) async {
     try {
-      print("SocketWrapper: sendData hashCode hashCode");
-      if (user == null) {
-        user = FirebaseAuth.instance.currentUser;
-      }
+      print("SocketWrapper: sendData ${FirebaseAuth.instance.currentUser}");
+      user ??= FirebaseAuth.instance.currentUser;
       var ride_id = await SharedPrefWrapper.instance.getOnGoingRide();
-
       _sendData(
           'rides_' + ride_id, LiveLocationModel(locationDto, user).toJson());
     } catch (e) {
@@ -85,11 +81,25 @@ class SocketWrapper {
     _sender.emit('subscribe_rides', {'ride_id': ride_id});
     _receiver.listen('rides_' + ride_id, (data) async {
       var liveData = LiveLocationModel.fromJson(data);
+      if (liveData.userId! == FirebaseAuth.instance.currentUser!.uid) {
+        print("same device returning");
+        return;
+      }
       callback(liveData);
     });
   }
 
   void subscribeTopic(String topic, Function(dynamic) callback) {
     _receiver.listen(topic, callback);
+  }
+
+  onConnectSocket(data) async {
+    print(
+        "Socket connected id: ${socket.id} hashCode: ${SocketWrapper.instance.hashCode} $user");
+    var ride_id = await SharedPrefWrapper.instance.getOnGoingRide();
+    if (ride_id.isNotEmpty) {
+      print('socket connected ride_id: ' + ride_id);
+      _sender.emit('subscribe_rides', {'ride_id': ride_id});
+    }
   }
 }

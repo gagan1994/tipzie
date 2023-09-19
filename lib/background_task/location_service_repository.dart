@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:background_locator_2/location_dto.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
-
-import '../main.dart';
 
 class LocationServiceRepository {
   static LocationServiceRepository _instance = LocationServiceRepository._();
@@ -26,6 +25,11 @@ class LocationServiceRepository {
 
   Future<void> callback(LocationDto locationDto) async {
     print("***********Location callback***********");
+    print('socket init: ${SocketWrapper.instance.isInit}');
+    if (!SocketWrapper.instance.isInit) {
+      SocketWrapper.initSocket();
+    }
+    await Firebase.initializeApp();
     SocketWrapper.instance.sendData(locationDto);
   }
 }
