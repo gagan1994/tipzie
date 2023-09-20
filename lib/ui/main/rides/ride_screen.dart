@@ -13,26 +13,16 @@ class RideScreen extends TripzieBottomNavBarScreen {
 class _MyAppState extends State<RideScreen> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 50,
-        ),
-        Expanded(
-          child: TrippitTabView((selectedTab) {}, [
-            TrippitTabDetails(
-              'Current Rides',
-              _getRideDetails(),
-            ),
-            TrippitTabDetails(
-              'My rides',
-              _getRideDetails(),
-            )
-          ]),
-        )
-      ],
-    );
+    return TrippitTabView((selectedTab) {}, [
+      TrippitTabDetails(
+        'Current Rides',
+        _getRideDetails(),
+      ),
+      TrippitTabDetails(
+        'My rides',
+        _getRideDetails(),
+      )
+    ]);
   }
 
   Widget _getRideDetails({Widget? bottomWidget: null}) {

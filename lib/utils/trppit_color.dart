@@ -2,6 +2,7 @@ import 'dart:ui';
 
 const Color accent_color = Color(0xff3A4256);
 const Color accent_color_light = Color(0xff757a88);
+Color accent_color_light_bg = accent_color_light.withOpacity(0.01);
 const Color version_color = Color(0xffA7A8AD);
 const Color button_color = Color(0xff3A4256);
 const Color text_color = Color(0xff3A4256);

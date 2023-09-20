@@ -57,12 +57,13 @@ class _MainScreenState extends State<MainScreen>
     return Scaffold(
       extendBody: true,
       body: Container(
+        padding: EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
         color: Colors.white,
         child: Stack(
           children: [
             bottom_screens[current_index],
             Positioned(
-              bottom: 75,
+              bottom: MediaQuery.of(context).viewPadding.top,
               right: 20,
               child: _buildPlay(context),
             ),
