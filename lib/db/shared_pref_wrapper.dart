@@ -15,8 +15,8 @@ class SharedPrefWrapper extends VMWrapper {
     return '';
   }
 
-  void saveBgNotification(Map<String, dynamic> data) async {
-    saveData('notification_details', data);
+  saveBgNotification(Map<String, dynamic> data) async {
+    await saveData('notification_details', data);
   }
 
   Future<Map<String, dynamic>> getBgNotification() async {

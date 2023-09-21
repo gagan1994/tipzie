@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           width: MediaQuery.of(context).size.width,
                           height: 128,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                             image: DecorationImage(
                               image: NetworkImage(

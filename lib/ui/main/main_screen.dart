@@ -4,12 +4,11 @@ import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/ui/main/home/home_screen.dart';
 import 'package:tripzie/ui/main/wallet/wallet_screen.dart';
-import 'package:tripzie/ui/test_ui.dart';
 
 import '../../auth/authentication.dart';
-import '../../db/shared_pref_wrapper.dart';
 import '../../utils/trippit_assets.dart';
 import '../../utils/trppit_color.dart';
+import '../../utils/ui_utils.dart';
 import 'fab_with_icons.dart';
 import 'rides/create_new_ride_screen.dart';
 import 'rides/ride_screen.dart';
@@ -125,7 +124,7 @@ class _MainScreenState extends State<MainScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print('lifcycleState $state');
     if (state == AppLifecycleState.resumed) {
-      checkAndOpenNotification();
+      checkAndOpenNotification(context);
     }
   }
 
@@ -173,41 +172,6 @@ class _MainScreenState extends State<MainScreen>
   void onFabButtonClick(int current_index) async {
     if (current_index == 1) {
       Navigator.pushNamed(context, CreateNewRideScreen.PAGE_NAME);
-    }
-  }
-
-  void checkAndOpenNotification() async {
-    var notification = await SharedPrefWrapper.instance.getBgNotification();
-    if (notification.keys.isNotEmpty) {
-      print("notification came on background: $notification");
-      showDialog(
-        context: context,
-        builder: (context) {
-          String contentText = "You have ongoing ride, go to Live ride screen";
-          return StatefulBuilder(
-            builder: (context, setState) {
-              return AlertDialog(
-                title: const Text("Ride Alert!"),
-                content: Text(contentText),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text("Cancel"),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, TestUi.PAGE_NAME,
-                          arguments: notification);
-                    },
-                    child: const Text("Join now"),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-      );
     }
   }
 }

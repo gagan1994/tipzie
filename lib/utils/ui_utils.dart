@@ -2,10 +2,13 @@ import 'package:easy_loader/easy_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:tripzie/api/api_wrapper.dart';
 import 'package:tripzie/api/ride.dart';
+import 'package:tripzie/ui/main/map/current_ride_screen.dart';
 import 'package:tripzie/utils/trippit_assets.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
+import '../db/shared_pref_wrapper.dart';
 import '../ui/main/rides/models.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
@@ -283,4 +286,42 @@ Widget getDatePickerSingleLine(
 
 bool isSameDay(DateTime d1, DateTime d2) {
   return d1.day == d2.day && d1.month == d2.month && d1.year == d2.year;
+}
+
+void checkAndOpenNotification(BuildContext context) async {
+  var notification = await SharedPrefWrapper.instance.getBgNotification();
+  print('checkAndOpenNotification: $notification');
+  if (notification.keys.isNotEmpty) {
+    print("notification came on background: ${notification.keys}");
+    temp_current_rides
+        .firstWhere((ride) => ride['_id'] == notification.keys.first);
+    showDialog(
+      context: context,
+      builder: (context) {
+        String contentText = "You have ongoing ride, go to Live ride screen";
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Ride Alert!"),
+              content: Text(contentText),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cancel"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, CurrentRideScreen.PAGE_NAME,
+                        arguments: notification);
+                  },
+                  child: const Text("Join now"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 }

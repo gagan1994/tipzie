@@ -16,7 +16,7 @@ class VMWrapper {
     return file;
   }
 
-  void saveData(String key, dynamic data) async {
+  saveData(String key, dynamic data) async {
     print("saving shared file: $key :${data.toString()}");
     var shared = await getSharedJsonFile();
     var fileData = await shared.readAsString();

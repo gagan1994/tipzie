@@ -23,6 +23,10 @@ class BackgroundLocationWrapper {
 
   LocationDto? lastLocation;
   void startLiveRide() {
+    if (BackgroundLocationWrapper.instance.isRunning.value) {
+      print('location is running');
+      return;
+    }
     if (IsolateNameServer.lookupPortByName(
             LocationServiceRepository.isolateName) !=
         null) {
