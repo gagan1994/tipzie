@@ -145,7 +145,6 @@ class Authentication {
   }
 
   static String getEmail() {
-    print("${FirebaseAuth.instance.currentUser}");
     return (FirebaseAuth.instance.currentUser!.email != null)
         ? FirebaseAuth.instance.currentUser!.email!
         : "Not - Found";

@@ -1,10 +1,12 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:tripzie/api/ride.dart';
 import 'package:tripzie/api/user_data.dart';
+import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 
 import '../ui/main/rides/create_new_ride_screen.dart';
@@ -23,11 +25,11 @@ Future<http.Response> fetchData(String endpoint) async {
   }
 }
 
-Future<http.Response> postData(String endpoint, dynamic object) {
+Future<http.Response> postData(String endpoint, dynamic object) async {
   try {
     var body = jsonEncode(object);
     print("uploading $endpoint Body: $body");
-    var resp = http.post(
+    var resp = await http.post(
       Uri.parse(
         BASE_URL + endpoint,
       ),
@@ -36,17 +38,18 @@ Future<http.Response> postData(String endpoint, dynamic object) {
       },
       body: body,
     );
+    print('endpoint: $endpoint response: ${resp.statusCode}');
     return resp;
   } catch (e) {
     return Future.value(http.Response(e.toString(), 100));
   }
 }
 
-Future<http.Response> patchData(String endpoint, dynamic object) {
+Future<http.Response> patchData(String endpoint, dynamic object) async {
   try {
     var body = jsonEncode(object);
     print("uploading patch $endpoint Body: $body");
-    var resp = http.patch(
+    var resp = await http.patch(
       Uri.parse(
         BASE_URL + endpoint,
       ),
@@ -55,6 +58,7 @@ Future<http.Response> patchData(String endpoint, dynamic object) {
       },
       body: body,
     );
+    print('endpoint: $endpoint response: ${resp.statusCode}');
     return resp;
   } catch (e) {
     return Future.value(http.Response(e.toString(), 100));
@@ -123,6 +127,43 @@ Future<List<Ride>> fetchRides(BuildContext context) async {
     showSnackBar(context, "Unable to load Please Refresh");
   }
   return [];
+}
+
+/*
+* firstNameController.text,
+                lastNameController.text,
+                phoneNumberController.text,
+                bloodGroupController.text,
+                bioController.text*/
+
+Future<bool> updateProfile(
+  String fName,
+  String lName,
+  String phoneNumber,
+  String bloodGroup,
+  String bio,
+) async {
+  try {
+    await Future.delayed(Duration(seconds: 1));
+    var imageUri = Authentication.getImageUri();
+    var email = FirebaseAuth.instance.currentUser!.email;
+    var uid = FirebaseAuth.instance.currentUser!.uid;
+    var idToken = await FirebaseAuth.instance.currentUser!.getIdToken();
+
+    email ??= '';
+    var resp = await patchData('/profiles/650dccc084ecde531353af80', {
+      'first_name': fName,
+      'last_name': lName,
+      'phone': phoneNumber,
+      'bio': bio,
+      'email': email,
+      'image_uri': imageUri,
+      'firebase_uid': uid,
+      'firebase_login_token': idToken
+    });
+    return Future.value(resp.statusCode == 200);
+  } on Exception {}
+  return Future.value(false);
 }
 
 Future<List<Ride>> fetchOnGoingRides(BuildContext context) async {

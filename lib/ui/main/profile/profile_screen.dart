@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
+import 'package:tripzie/ui/main/profile/edit_profile.dart';
 import 'package:tripzie/utils/trippit_assets.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
@@ -76,6 +77,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: InkWell(
                       onTap: () {
                         print("clicked $i");
+                        if (i == EditProfileScreen.INDEX) {
+                          Navigator.pushNamed(
+                              context, EditProfileScreen.PAGE_NAME);
+                        }
                       },
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,

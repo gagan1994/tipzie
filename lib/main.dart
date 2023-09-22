@@ -9,6 +9,7 @@ import 'package:tripzie/ui/login/verify_otp_screen.dart';
 import 'package:tripzie/ui/main/discovery/disovery_details_screen.dart';
 import 'package:tripzie/ui/main/map/select_places_on_map.dart';
 import 'package:tripzie/ui/main/map/tripzie_places_search.dart';
+import 'package:tripzie/ui/main/profile/edit_profile.dart';
 import 'package:tripzie/ui/main/profile/profile_screen.dart';
 import 'package:tripzie/ui/main/rides/create_new_ride_screen.dart';
 import 'package:tripzie/ui/main/rides/ride_details.dart';
@@ -95,6 +96,8 @@ class MyApp extends StatelessWidget {
             return transition(ProfileScreen(), PageTransitionType.leftToRight);
           case TripziePlacesSearch.PAGE_NAME:
             return transition(TripziePlacesSearch(), PageTransitionType.fade);
+          case EditProfileScreen.PAGE_NAME:
+            return transition(EditProfileScreen(), PageTransitionType.fade);
           case TripzieMarkOnMap.PAGE_NAME:
             final newride = settings.arguments as NewRideObject;
             return transition(

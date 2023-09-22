@@ -59,6 +59,50 @@ void showSnackBar(BuildContext context, String content) {
       )));
 }
 
+void showSnackBarApiSuccess(BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      backgroundColor: Colors.green,
+      content: Row(
+        children: [
+          Icon(
+            Icons.check_circle,
+            size: 15,
+            color: Colors.white,
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Text(
+            'Successful',
+            style: TextStyle(color: Colors.white, fontSize: 10),
+          )
+        ],
+      )));
+}
+
+void showSnackBarApiError(BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      backgroundColor: Colors.red,
+      content: Row(
+        children: [
+          Icon(
+            Icons.close_rounded,
+            size: 15,
+            color: Colors.white,
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Flexible(
+            child: Text(
+              'Cannot perform action. Please try again later',
+              style: TextStyle(color: Colors.white, fontSize: 10),
+            ),
+          )
+        ],
+      )));
+}
+
 Widget rideDetails(RideListItem item) {
   return ListTile(
     leading: CircleAvatar(
