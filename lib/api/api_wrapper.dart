@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,6 +12,7 @@ import 'package:tripzie/db/shared_pref_wrapper.dart';
 import 'package:tripzie/norification/firebase_notifcation_wrapper.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 
+import '../filrebase/firebase_storage.dart';
 import '../ui/main/rides/create_new_ride_screen.dart';
 
 const BASE_URL = 'http://13.233.26.160:3000';
@@ -158,7 +160,7 @@ Future<List<Ride>> fetchRides(BuildContext context) async {
 
 Future<bool> updateProfile(String fName, String lName, String phoneNumber,
     String bloodGroup, String bio,
-    {isCreate = false}) async {
+    {isCreate = false, uploadFile: File}) async {
   try {
     await Future.delayed(Duration(seconds: 1));
     var imageUri = FirebaseAuth.instance.currentUser!.photoURL;
@@ -166,6 +168,9 @@ Future<bool> updateProfile(String fName, String lName, String phoneNumber,
     var uid = FirebaseAuth.instance.currentUser!.uid;
     var idToken = await FirebaseAuth.instance.currentUser!.getIdToken();
     email ??= '';
+    if (uploadFile != null) {
+      imageUri = await firebaseProfileUpload(uploadFile);
+    }
     if (imageUri == null) {
       imageUri =
           'https://www.vhv.rs/dpng/d/256-2569650_men-profile-icon-png-image-free-download-searchpng.png';

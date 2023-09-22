@@ -75,11 +75,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   return Material(
                     color: Colors.white,
                     child: InkWell(
-                      onTap: () {
+                      onTap: () async {
                         print("clicked $i");
                         if (i == EditProfileScreen.INDEX) {
-                          Navigator.pushNamed(
+                          await Navigator.pushNamed(
                               context, EditProfileScreen.PAGE_NAME);
+                          setState(() {});
                         }
                       },
                       child: Row(

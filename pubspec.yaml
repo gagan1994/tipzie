@@ -54,7 +54,6 @@ dependencies:
   google_fonts: ^4.0.3
   intl: ^0.17.0
   socket_io_client: ^2.0.2
-  snippet_coder_utils: ^1.0.14
   background_locator_2: ^2.0.6
   location_permissions: ^4.0.1
   speech_to_text: ^6.3.0
@@ -64,6 +63,8 @@ dependencies:
   flutter_local_notifications: ^15.1.1
   shared_preferences: ^2.2.1
   path_provider: ^2.1.1
+  image_picker: ^1.0.4
+  firebase_storage: ^11.2.7
 
 dev_dependencies:
   flutter_test:

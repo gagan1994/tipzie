@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 
 import '../../../api/api_wrapper.dart';
@@ -25,6 +29,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? phoneNumberError = null;
   String? bloodGroupError = null;
   bool isInProgress = false;
+  File? selectedImageFile = null;
   @override
   void initState() {
     updateUi();
@@ -53,7 +58,57 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 Container(
                   width: 100,
                   height: 100,
-                  child: _getProfileIconCircle(),
+                  child: Stack(
+                    children: [
+                      _getProfileIconCircle(),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      ListTile(
+                                        leading:
+                                            new Icon(Icons.camera_alt_rounded),
+                                        title: new Text('Camera'),
+                                        onTap: () async {
+                                          pickImage(ImageSource.camera);
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: new Icon(Icons.image),
+                                        title: new Text('Gallery'),
+                                        onTap: () {
+                                          pickImage(ImageSource.gallery);
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                });
+                          },
+                          child: Card(
+                            color: accent_color,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(80),
+                            ),
+                            child: Container(
+                              padding: EdgeInsets.all(5),
+                              child: Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 15,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(
                   height: 10,
@@ -165,7 +220,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     lastNameController.text,
                     phoneNumberController.text,
                     bloodGroupController.text,
-                    bioController.text);
+                    bioController.text,
+                    uploadFile: selectedImageFile);
                 if (isSuccess) {
                   updateUi();
                   showSnackBarApiSuccess(context);
@@ -186,15 +242,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   _getProfileIconCircle() {
-    if (Authentication.loggedInUser!.imageUri != null &&
-        Authentication.loggedInUser!.imageUri!.isNotEmpty) {
+    if ((Authentication.loggedInUser!.imageUri != null &&
+            Authentication.loggedInUser!.imageUri!.isNotEmpty ||
+        selectedImageFile != null)) {
+      ImageProvider? image;
+      if (selectedImageFile == null) {
+        image = NetworkImage(Authentication.loggedInUser!.imageUri!);
+      } else {
+        image = FileImage(selectedImageFile!);
+      }
       return Container(
         width: 100.0,
         height: 100.0,
         decoration: BoxDecoration(
           color: accent_color,
           image: DecorationImage(
-            image: NetworkImage(Authentication.loggedInUser!.imageUri!),
+            image: image,
             fit: BoxFit.cover,
           ),
           borderRadius: BorderRadius.all(Radius.circular(60.0)),
@@ -263,5 +326,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     phoneNumberController.text = Authentication.loggedInUser!.phoneNumber!;
     bloodGroupController.text = Authentication.loggedInUser!.bloodGroup!;
     bioController.text = Authentication.loggedInUser!.bio!;
+  }
+
+  void pickImage(ImageSource camera) async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (image == null) return;
+      final imageTemp = File(image.path);
+      setState(() => this.selectedImageFile = imageTemp);
+    } on PlatformException catch (e) {
+      print('Failed to pick image: $e');
+    }
+    Navigator.pop(context);
   }
 }
