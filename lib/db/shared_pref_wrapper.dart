@@ -31,4 +31,15 @@ class SharedPrefWrapper extends VMWrapper {
     print('clearNotificationDetails');
     saveData('notification_details', null);
   }
+
+  getUserId() async {
+    return await getJsonData('_id');
+  }
+
+  saveUser(String userId) async {
+    await saveData(
+      '_id',
+      userId,
+    );
+  }
 }

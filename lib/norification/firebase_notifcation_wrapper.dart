@@ -24,6 +24,10 @@ class FirebasePushNotificationWrapper {
     _instance.initNotification();
   }
 
+  static FirebasePushNotificationWrapper getInstance() {
+    return _instance;
+  }
+
   factory FirebasePushNotificationWrapper() {
     return _instance;
   }
