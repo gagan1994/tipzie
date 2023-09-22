@@ -123,62 +123,66 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Text("Edit Text"),
           ),
         ),
+        Positioned(
+          bottom: 10,
+          left: 10,
+          right: 10,
+          child: Container(
+            child: ElevatedButton(
+              onPressed: () async {
+                firstNameError = '';
+                lastNameError = '';
+                phoneNumberError = '';
+                bloodGroupError = '';
+                if (firstNameController.text.isEmpty) {
+                  firstNameError = 'This field cannot be empty';
+                }
+                if (lastNameController.text.isEmpty) {
+                  lastNameError = 'This field cannot be empty';
+                }
+                if (phoneNumberController.text.isEmpty) {
+                  phoneNumberError = 'This field cannot be empty';
+                }
+                if (bloodGroupController.text.isEmpty) {
+                  bloodGroupError = 'This field cannot be empty';
+                }
+                if (firstNameError == null ||
+                    firstNameError!.isNotEmpty ||
+                    lastNameError == null ||
+                    lastNameError!.isNotEmpty ||
+                    phoneNumberError == null ||
+                    phoneNumberError!.isNotEmpty ||
+                    bloodGroupError == null ||
+                    bloodGroupError!.isNotEmpty) {
+                  setState(() {});
+                  showSnackBar(context, 'Please Resolve the Errors');
+                  return;
+                }
+                setState(() {
+                  isInProgress = true;
+                });
+                FocusScope.of(context).unfocus();
+                var isSuccess = await updateProfile(
+                    firstNameController.text,
+                    lastNameController.text,
+                    phoneNumberController.text,
+                    bloodGroupController.text,
+                    bioController.text);
+                if (isSuccess) {
+                  showSnackBarApiSuccess(context);
+                } else {
+                  showSnackBarApiError(context);
+                }
+                setState(() {
+                  isInProgress = false;
+                });
+              },
+              child: Text("Save"),
+            ),
+          ),
+        ),
         showProgress(isInProgress),
       ]),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Container(
-        width: MediaQuery.of(context).size.width - 50,
-        child: ElevatedButton(
-          onPressed: () async {
-            firstNameError = '';
-            lastNameError = '';
-            phoneNumberError = '';
-            bloodGroupError = '';
-            if (firstNameController.text.isEmpty) {
-              firstNameError = 'This field cannot be empty';
-            }
-            if (lastNameController.text.isEmpty) {
-              lastNameError = 'This field cannot be empty';
-            }
-            if (phoneNumberController.text.isEmpty) {
-              phoneNumberError = 'This field cannot be empty';
-            }
-            if (bloodGroupController.text.isEmpty) {
-              bloodGroupError = 'This field cannot be empty';
-            }
-            if (firstNameError == null ||
-                firstNameError!.isNotEmpty ||
-                lastNameError == null ||
-                lastNameError!.isNotEmpty ||
-                phoneNumberError == null ||
-                phoneNumberError!.isNotEmpty ||
-                bloodGroupError == null ||
-                bloodGroupError!.isNotEmpty) {
-              setState(() {});
-              showSnackBar(context, 'Please Resolve the Errors');
-              return;
-            }
-            setState(() {
-              isInProgress = true;
-            });
-            var isSuccess = await updateProfile(
-                firstNameController.text,
-                lastNameController.text,
-                phoneNumberController.text,
-                bloodGroupController.text,
-                bioController.text);
-            if (isSuccess) {
-              showSnackBarApiSuccess(context);
-            } else {
-              showSnackBarApiError(context);
-            }
-            setState(() {
-              isInProgress = false;
-            });
-          },
-          child: Text("Save"),
-        ),
-      ),
     );
   }
 

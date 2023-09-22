@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:tripzie/api/ride.dart';
 import 'package:tripzie/api/user_data.dart';
-import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 
 import '../ui/main/rides/create_new_ride_screen.dart';
@@ -145,12 +144,15 @@ Future<bool> updateProfile(
 ) async {
   try {
     await Future.delayed(Duration(seconds: 1));
-    var imageUri = Authentication.getImageUri();
+    var imageUri = FirebaseAuth.instance.currentUser!.photoURL;
     var email = FirebaseAuth.instance.currentUser!.email;
     var uid = FirebaseAuth.instance.currentUser!.uid;
     var idToken = await FirebaseAuth.instance.currentUser!.getIdToken();
-
     email ??= '';
+    if (imageUri == null) {
+      imageUri =
+          'https://www.vhv.rs/dpng/d/256-2569650_men-profile-icon-png-image-free-download-searchpng.png';
+    }
     var resp = await patchData('/profiles/650dccc084ecde531353af80', {
       'first_name': fName,
       'last_name': lName,
