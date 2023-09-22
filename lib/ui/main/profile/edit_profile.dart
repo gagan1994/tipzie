@@ -22,10 +22,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController bloodGroupController = TextEditingController();
   TextEditingController bioController = TextEditingController();
   String? firstNameError = null;
-  String? lastNameError = null;
   String? phoneNumberError = null;
   String? bloodGroupError = null;
   bool isInProgress = false;
+  @override
+  void initState() {
+    updateUi();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +73,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       'Last Name',
                       'Enter Last Name',
                       width: MediaQuery.of(context).size.width * 0.45,
-                      errorMessage: lastNameError,
                     ),
                   ],
                 ),
@@ -131,14 +135,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: ElevatedButton(
               onPressed: () async {
                 firstNameError = '';
-                lastNameError = '';
                 phoneNumberError = '';
                 bloodGroupError = '';
                 if (firstNameController.text.isEmpty) {
                   firstNameError = 'This field cannot be empty';
-                }
-                if (lastNameController.text.isEmpty) {
-                  lastNameError = 'This field cannot be empty';
                 }
                 if (phoneNumberController.text.isEmpty) {
                   phoneNumberError = 'This field cannot be empty';
@@ -148,8 +148,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 }
                 if (firstNameError == null ||
                     firstNameError!.isNotEmpty ||
-                    lastNameError == null ||
-                    lastNameError!.isNotEmpty ||
                     phoneNumberError == null ||
                     phoneNumberError!.isNotEmpty ||
                     bloodGroupError == null ||
@@ -169,6 +167,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     bloodGroupController.text,
                     bioController.text);
                 if (isSuccess) {
+                  updateUi();
                   showSnackBarApiSuccess(context);
                 } else {
                   showSnackBarApiError(context);
@@ -187,15 +186,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   _getProfileIconCircle() {
-    if (Authentication.getUser().photoURL != null &&
-        Authentication.getUser().photoURL!.isNotEmpty) {
+    if (Authentication.loggedInUser!.imageUri != null &&
+        Authentication.loggedInUser!.imageUri!.isNotEmpty) {
       return Container(
         width: 100.0,
         height: 100.0,
         decoration: BoxDecoration(
           color: accent_color,
           image: DecorationImage(
-            image: NetworkImage(Authentication.getImageUri()),
+            image: NetworkImage(Authentication.loggedInUser!.imageUri!),
             fit: BoxFit.cover,
           ),
           borderRadius: BorderRadius.all(Radius.circular(60.0)),
@@ -256,5 +255,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     : null),
       ),
     );
+  }
+
+  void updateUi() {
+    firstNameController.text = Authentication.loggedInUser!.firstName!;
+    lastNameController.text = Authentication.loggedInUser!.lastName!;
+    phoneNumberController.text = Authentication.loggedInUser!.phoneNumber!;
+    bloodGroupController.text = Authentication.loggedInUser!.bloodGroup!;
+    bioController.text = Authentication.loggedInUser!.bio!;
   }
 }

@@ -110,15 +110,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   _getProfileIconCircle() {
-    if (Authentication.getUser().photoURL != null &&
-        Authentication.getUser().photoURL!.isNotEmpty) {
+    if (Authentication.loggedInUser!.imageUri != null &&
+        Authentication.loggedInUser!.imageUri!.isNotEmpty) {
       return Container(
         width: 100.0,
         height: 100.0,
         decoration: BoxDecoration(
           color: accent_color,
           image: DecorationImage(
-            image: NetworkImage(Authentication.getImageUri()),
+            image: NetworkImage(Authentication.loggedInUser!.imageUri!),
             fit: BoxFit.cover,
           ),
           borderRadius: BorderRadius.all(Radius.circular(60.0)),

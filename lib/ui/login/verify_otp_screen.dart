@@ -150,10 +150,6 @@ class _VerrifyOTPState extends State<VerifyOTP> {
                           '',
                           '',
                           isCreate: true);
-                      if (isSuccess && Authentication.isLoggedIn()) {
-                        var userObj = await fetchCurrentUserProfile();
-                        Authentication.setUser(userObj);
-                      }
                       Navigator.pushNamedAndRemoveUntil(
                           context,
                           MainScreen.PAGE_NAME,

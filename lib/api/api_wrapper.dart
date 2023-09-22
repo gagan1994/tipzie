@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:tripzie/api/ride.dart';
 import 'package:tripzie/api/user_data.dart';
+import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/db/shared_pref_wrapper.dart';
 import 'package:tripzie/norification/firebase_notifcation_wrapper.dart';
 import 'package:tripzie/utils/ui_utils.dart';
@@ -176,6 +177,7 @@ Future<bool> updateProfile(String fName, String lName, String phoneNumber,
         'last_name': lName,
         'phone': phoneNumber,
         'bio': bio,
+        'blood_group': bloodGroup,
         'email': email,
         'image_uri': imageUri,
         'firebase_uid': uid,
@@ -196,11 +198,14 @@ Future<bool> updateProfile(String fName, String lName, String phoneNumber,
         'last_name': lName,
         'phone': phoneNumber,
         'bio': bio,
+        'blood_group': bloodGroup,
         'email': email,
         'image_uri': imageUri,
         'firebase_uid': uid,
         'firebase_login_token': idToken
       });
+      var user = await fetchCurrentUserProfile();
+      Authentication.loggedInUser = user;
     }
     return resp.statusCode == 200;
   } on Exception {}

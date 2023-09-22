@@ -4,6 +4,7 @@ class UserProfile {
   String? lastName;
   String? phoneNumber;
   String? bio;
+  String? bloodGroup;
   String? email;
   String? imageUri;
   String? firebaseUid;
@@ -36,6 +37,7 @@ class UserProfile {
     email = json['email'];
     imageUri = json['image_uri'];
     firebaseUid = json['firebase_uid'];
+    bloodGroup = json['blood_group'];
   }
 
   Map<String, dynamic> toJson() {
@@ -48,6 +50,7 @@ class UserProfile {
     data['email'] = this.email;
     data['image_uri'] = this.imageUri;
     data['firebase_uid'] = this.firebaseUid;
+    data['blood_group'] = this.bloodGroup;
     return data;
   }
 
