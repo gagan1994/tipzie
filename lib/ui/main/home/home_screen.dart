@@ -215,31 +215,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          Material(
-            elevation: 2,
-            child: Container(
-              color: Colors.white,
-              height: 50,
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    child: SvgPicture.asset(
-                      ic_hamburger_menu,
-                      height: 15,
-                      width: 15,
-                    ),
-                    onTap: () {
-                      Navigator.pushNamed(context, ProfileScreen.PAGE_NAME);
-                    },
-                  ),
-                  Text("Home"),
-                  SizedBox()
-                ],
+          titleBar(context, 'Home',
+              rightItem: GestureDetector(
+                child: SvgPicture.asset(
+                  ic_hamburger_menu,
+                  height: 15,
+                  width: 15,
+                ),
+                onTap: () {
+                  Navigator.pushNamed(context, ProfileScreen.PAGE_NAME);
+                },
               ),
-            ),
-          ),
+              top: 1.0)
         ],
       ),
     );

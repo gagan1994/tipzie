@@ -6,6 +6,7 @@ import 'package:tripzie/utils/trippit_assets.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
 import '../../../auth/authentication.dart';
+import '../../../utils/ui_utils.dart';
 
 class ProfileScreen extends TripzieBottomNavBarScreen {
   static const PAGE_NAME = 'profile_screen';
@@ -26,86 +27,90 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.white,
-        child: Column(
-          children: [
-            Container(
-              margin: EdgeInsets.only(top: 50),
-              height: 50,
-              alignment: Alignment.center,
-              child: Text("Profile"),
+      body: Stack(
+        children: [
+          Container(
+            color: Colors.white,
+            margin: EdgeInsets.only(
+              top: MediaQuery.of(context).viewPadding.top + 20,
             ),
-            const SizedBox(
-              width: 30,
-            ),
-            _getProfileIconCircle(),
-            const SizedBox(
-              height: 10,
-            ),
-            Text.rich(
-              TextSpan(
-                text: '${Authentication.loggedInUser!.firstName}',
-                style: const TextStyle(
-                    color: accent_color,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-                children: <TextSpan>[
+            child: Column(
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).viewPadding.top + 15,
+                ),
+                _getProfileIconCircle(),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text.rich(
                   TextSpan(
-                      text: '\n\n${Authentication.loggedInUser!.email}',
-                      style: const TextStyle(
-                          color: accent_color,
-                          fontSize: 13,
-                          fontWeight: FontWeight.normal)),
-                  TextSpan(
-                      text: '\n\n${Authentication.loggedInUser!.phoneNumber}',
-                      style: const TextStyle(
-                          color: accent_color,
-                          fontSize: 13,
-                          fontWeight: FontWeight.normal))
-                ],
-              ),
-              textAlign: TextAlign.center,
-              style: TextStyle(height: 0.6),
+                    text: '${Authentication.loggedInUser!.firstName}',
+                    style: const TextStyle(
+                        color: accent_color,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: '\n\n${Authentication.loggedInUser!.email}',
+                          style: const TextStyle(
+                              color: accent_color,
+                              fontSize: 13,
+                              fontWeight: FontWeight.normal)),
+                      TextSpan(
+                          text:
+                              '\n\n${Authentication.loggedInUser!.phoneNumber}',
+                          style: const TextStyle(
+                              color: accent_color,
+                              fontSize: 13,
+                              fontWeight: FontWeight.normal))
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(height: 0.6),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: list.length,
+                    itemBuilder: (context, i) {
+                      return Material(
+                        color: Colors.white,
+                        child: InkWell(
+                          onTap: () async {
+                            print("clicked $i");
+                            if (i == EditProfileScreen.INDEX) {
+                              await Navigator.pushNamed(
+                                  context, EditProfileScreen.PAGE_NAME);
+                              setState(() {});
+                            }
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Padding(
+                                child: SvgPicture.asset(list[i]['image']!),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                              ),
+                              Expanded(child: Text(list[i]['title']!)),
+                              Padding(
+                                child: SvgPicture.asset(ic_riight_arrow),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                )
+              ],
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: list.length,
-                itemBuilder: (context, i) {
-                  return Material(
-                    color: Colors.white,
-                    child: InkWell(
-                      onTap: () async {
-                        print("clicked $i");
-                        if (i == EditProfileScreen.INDEX) {
-                          await Navigator.pushNamed(
-                              context, EditProfileScreen.PAGE_NAME);
-                          setState(() {});
-                        }
-                      },
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            child: SvgPicture.asset(list[i]['image']!),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                          ),
-                          Expanded(child: Text(list[i]['title']!)),
-                          Padding(
-                            child: SvgPicture.asset(ic_riight_arrow),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            )
-          ],
-        ),
+          ),
+          titleBar(context, 'Profiles', rightItem: SizedBox())
+        ],
       ),
     );
   }

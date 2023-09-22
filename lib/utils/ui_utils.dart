@@ -369,3 +369,21 @@ void checkAndOpenNotification(BuildContext context) async {
     );
   }
 }
+
+Widget titleBar(BuildContext context, String title,
+    {rightItem: Widget, top = 0}) {
+  return Material(
+    elevation: 2,
+    child: Container(
+      color: Colors.white,
+      height: 50,
+      margin: EdgeInsets.only(
+        top: (top > 0) ? top : MediaQuery.of(context).viewPadding.top,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [if (rightItem != null) rightItem, Text(title), SizedBox()],
+      ),
+    ),
+  );
+}

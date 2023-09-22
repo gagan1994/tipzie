@@ -42,16 +42,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       body: Stack(children: [
         SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).viewPadding.top + 15,
-                right: 10,
-                left: 10),
+            padding: EdgeInsets.only(right: 10, left: 10),
+            margin: EdgeInsets.only(
+                top: MediaQuery.of(context).viewPadding.top + 50),
             child: Column(
               children: [
-                Container(
-                  alignment: Alignment.center,
-                  child: const Text("Edit Profile"),
-                ),
                 const SizedBox(
                   height: 10,
                 ),
@@ -166,22 +161,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
         ),
-        Material(
-          elevation: 2,
-          child: Container(
-            color: Colors.white,
-            height: 50,
-            width: double.infinity,
-            alignment: Alignment.center,
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).viewPadding.top + 5,
-              right: 10,
-              left: 10,
-            ),
-            margin: EdgeInsets.only(bottom: 10),
-            child: Text("Edit Text"),
-          ),
-        ),
+        titleBar(context, 'Edit Text', rightItem: SizedBox()),
         Positioned(
           bottom: 10,
           left: 10,
