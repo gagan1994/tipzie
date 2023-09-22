@@ -1,6 +1,8 @@
 import 'package:background_locator_2/location_dto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../api/user_data.dart';
+
 class LiveLocationModel {
   late String? userId;
   String? userName;
@@ -20,16 +22,16 @@ class LiveLocationModel {
     email = user?.email;
     photoURL = user?.photoURL;
   }
-  LiveLocationModel(LocationDto dto, User? user) {
-    userId = user?.uid;
-    userName = user?.displayName;
+  LiveLocationModel(LocationDto dto, UserProfile? user) {
+    userId = user?.firebaseUid;
+    userName = user?.firstName;
     phoneNumber = user?.phoneNumber;
     email = user?.email;
     latitude = dto.latitude;
     longitude = dto.longitude;
     altitude = dto.altitude;
     time = dto.time;
-    photoURL = user?.photoURL;
+    photoURL = user?.imageUri;
   }
 
   LiveLocationModel.fromJson(Map<String, dynamic> json)

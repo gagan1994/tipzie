@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:tripzie/api/user_data.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/login/login_screen.dart';
 
@@ -10,6 +11,8 @@ import '../norification/firebase_notifcation_wrapper.dart';
 import '../utils/ui_utils.dart';
 
 class Authentication {
+  static UserProfile? loggedInUser = null;
+
   static Future<void> signOut({required BuildContext context}) async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
@@ -163,5 +166,9 @@ class Authentication {
 
   static String getImageUri() {
     return 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
+  }
+
+  static void setUser(UserProfile? user) {
+    loggedInUser = user;
   }
 }

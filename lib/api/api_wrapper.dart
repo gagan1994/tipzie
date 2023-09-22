@@ -14,6 +14,7 @@ import '../ui/main/rides/create_new_ride_screen.dart';
 
 const BASE_URL = 'http://13.233.26.160:3000';
 const LOCAL_DATA = 404;
+
 Future<http.Response> fetchData(String endpoint) async {
   try {
     var uri = Uri.parse(BASE_URL + endpoint);
@@ -64,6 +65,22 @@ Future<http.Response> patchData(String endpoint, dynamic object) async {
   } catch (e) {
     return Future.value(http.Response(e.toString(), 100));
   }
+}
+
+Future<UserProfile?> fetchCurrentUserProfile() async {
+  var userId = await SharedPrefWrapper.instance.getUserId();
+  var response1 = await fetchProfiles();
+  if (response1.containsKey(userId)) {
+    return response1[userId];
+  }
+
+  var response = await fetchData("/profiles/$userId");
+  print("profiles response status: ${response.statusCode}");
+  if (response.statusCode == 200) {
+    Map<String, dynamic> responseBody = json.decode(response.body);
+    return UserProfile.fromJson(responseBody);
+  }
+  return null;
 }
 
 Future<HashMap<String, UserProfile>> fetchProfiles() async {

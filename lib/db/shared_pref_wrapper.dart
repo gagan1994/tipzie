@@ -33,7 +33,7 @@ class SharedPrefWrapper extends VMWrapper {
   }
 
   getUserId() async {
-    return await getJsonData('_id');
+    return (await getJsonData('_id')).toString();
   }
 
   saveUser(String userId) async {

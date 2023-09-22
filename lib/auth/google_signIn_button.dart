@@ -34,6 +34,11 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                 bool isSuccess = await updateProfile(
                     user.displayName ?? '', '', user.phoneNumber ?? '', '', '',
                     isCreate: true);
+                if (isSuccess && Authentication.isLoggedIn()) {
+                  var userObj = await fetchCurrentUserProfile();
+                  Authentication.setUser(userObj);
+                  isSuccess = userObj != null;
+                }
                 if (isSuccess) {
                   showSnackBarApiSuccess(context);
                   Navigator.pushNamedAndRemoveUntil(context,

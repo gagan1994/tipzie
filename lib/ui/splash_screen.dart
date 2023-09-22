@@ -5,6 +5,7 @@ import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/background_task/background_location.dart';
 import 'package:tripzie/ui/main/main_screen.dart';
 
+import '../api/api_wrapper.dart';
 import '../utils/trppit_color.dart';
 import 'login/login_page_1.dart';
 
@@ -69,6 +70,14 @@ class SplashScreenState extends State<SplashPage> {
 
   void checkAndMoveToNextScreen() async {
     await BackgroundLocationWrapper.instance.initialize();
+    if (Authentication.isLoggedIn()) {
+      print("fetchCurrentUserProfile");
+      var user = await fetchCurrentUserProfile();
+      print("fetchCurrentUserProfile result: $user");
+      Authentication.setUser(user);
+    } else {
+      return;
+    }
     Timer(
         const Duration(seconds: 3),
         () => {

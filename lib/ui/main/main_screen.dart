@@ -166,7 +166,7 @@ class _MainScreenState extends State<MainScreen>
   }
 
   void initAll() async {
-    SocketWrapper.instance.setUser(Authentication.getUser());
+    SocketWrapper.instance.setUser(Authentication.loggedInUser);
   }
 
   void onFabButtonClick(int current_index) async {

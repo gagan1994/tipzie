@@ -45,20 +45,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             Text.rich(
               TextSpan(
-                text: '${Authentication.getName()}',
+                text: '${Authentication.loggedInUser!.firstName}',
                 style: const TextStyle(
                     color: accent_color,
                     fontSize: 16,
                     fontWeight: FontWeight.bold),
                 children: <TextSpan>[
                   TextSpan(
-                      text: '\n\n${Authentication.getEmail()}',
+                      text: '\n\n${Authentication.loggedInUser!.email}',
                       style: const TextStyle(
                           color: accent_color,
                           fontSize: 13,
                           fontWeight: FontWeight.normal)),
                   TextSpan(
-                      text: '\n\n${Authentication.getPhoneNumber()}',
+                      text: '\n\n${Authentication.loggedInUser!.phoneNumber}',
                       style: const TextStyle(
                           color: accent_color,
                           fontSize: 13,

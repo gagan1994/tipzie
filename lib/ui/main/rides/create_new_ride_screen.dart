@@ -301,7 +301,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                               children: [
                                                 Text(
                                                   "${userList[index].firstName} ,"
-                                                  " ${userList[index].surName}",
+                                                  " ${userList[index].lastName}",
                                                   style:
                                                       TextStyle(fontSize: 12),
                                                 ),

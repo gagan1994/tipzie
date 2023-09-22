@@ -9,6 +9,7 @@ import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 import 'package:tripzie/widgets/trippit_mainlayout.dart';
 
+import '../../api/api_wrapper.dart';
 import '../../utils/trippit_assets.dart';
 import '../../utils/trppit_color.dart';
 import '../../widgets/tripzie_button.dart';
@@ -142,6 +143,17 @@ class _VerrifyOTPState extends State<VerifyOTP> {
                         context, widget.phoneDetails.verifyId, otp_text!!);
                     print("user: $user");
                     if (user != null) {
+                      bool isSuccess = await updateProfile(
+                          user.displayName ?? '',
+                          '',
+                          user.phoneNumber ?? '',
+                          '',
+                          '',
+                          isCreate: true);
+                      if (isSuccess && Authentication.isLoggedIn()) {
+                        var userObj = await fetchCurrentUserProfile();
+                        Authentication.setUser(userObj);
+                      }
                       Navigator.pushNamedAndRemoveUntil(
                           context,
                           MainScreen.PAGE_NAME,

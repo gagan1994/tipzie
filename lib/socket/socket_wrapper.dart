@@ -6,6 +6,8 @@ import 'package:tripzie/socket/models/models.dart';
 import 'package:tripzie/socket/socket_receive.dart';
 import 'package:tripzie/socket/socket_send.dart';
 
+import '../api/user_data.dart';
+
 class SocketWrapper {
   late SocketSender _sender;
   late SocketReceiver _receiver;
@@ -13,7 +15,7 @@ class SocketWrapper {
   bool isInit = false;
   static final SocketWrapper instance = SocketWrapper();
 
-  User? user = null;
+  UserProfile? user = null;
 
   SocketWrapper() {}
   static void initSocket() {
@@ -29,7 +31,7 @@ class SocketWrapper {
     instance.isInit = true;
   }
 
-  void setUser(User? user) {
+  void setUser(UserProfile? user) {
     print("updated user to socket $user hashCode: $hashCode");
     this.user = user;
   }
@@ -52,7 +54,6 @@ class SocketWrapper {
   void sendData(LocationDto locationDto) async {
     try {
       print("SocketWrapper: sendData ${FirebaseAuth.instance.currentUser}");
-      user ??= FirebaseAuth.instance.currentUser;
       var ride_id = await SharedPrefWrapper.instance.getOnGoingRide();
       _sendData(
           'rides_' + ride_id, LiveLocationModel(locationDto, user).toJson());
