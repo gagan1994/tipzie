@@ -127,7 +127,7 @@ class Authentication {
     }
   }
 
-  static isLoggedIn() {
+  static bool isLoggedIn() {
     return FirebaseAuth.instance.currentUser != null;
   }
 

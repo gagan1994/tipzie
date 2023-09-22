@@ -2,8 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/db/shared_pref_wrapper.dart';
 
+import '../api/api_wrapper.dart';
 import '../background_task/background_location.dart';
 import '../utils/ui_utils.dart';
 
@@ -49,6 +51,7 @@ class FirebasePushNotificationWrapper {
         print('Message also contained a notification: ${message.notification}');
       }
     });
+    uploadTokenToServer();
   }
 
   Future<void> setupFlutterNotifications() async {
@@ -105,6 +108,15 @@ class FirebasePushNotificationWrapper {
           ),
         ),
       );
+    }
+  }
+
+  void uploadTokenToServer() async {
+    if (Authentication.isLoggedIn()) {
+      print("fetch token from firebase");
+      var token = await FirebaseMessaging.instance.getToken();
+      print("token from firebase $token");
+      if (token != null) uploadFcm(token);
     }
   }
 }

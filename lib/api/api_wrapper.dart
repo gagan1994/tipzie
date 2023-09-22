@@ -42,6 +42,25 @@ Future<http.Response> postData(String endpoint, dynamic object) {
   }
 }
 
+Future<http.Response> patchData(String endpoint, dynamic object) {
+  try {
+    var body = jsonEncode(object);
+    print("uploading patch $endpoint Body: $body");
+    var resp = http.patch(
+      Uri.parse(
+        BASE_URL + endpoint,
+      ),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: body,
+    );
+    return resp;
+  } catch (e) {
+    return Future.value(http.Response(e.toString(), 100));
+  }
+}
+
 Future<HashMap<String, UserProfile>> fetchProfiles() async {
   print("fetchProfiles");
 
@@ -73,6 +92,16 @@ Future<bool> createRides(NewRideObject object) async {
   var jsonPost = toJson(object);
   var response = await postData("/rides", jsonPost);
   print("createRides response ${response.statusCode}");
+  if (response.statusCode == 200) {
+    return Future.value(true);
+  }
+  return Future.value(false);
+}
+
+Future<bool> uploadFcm(String token) async {
+  var jsonPost = {'fcm_token': token, 'userid': '649e80a17f729edf3809f3f2'};
+  var response = await patchData("/fcm_token", jsonPost);
+  print("fcm upload response ${response.statusCode}");
   if (response.statusCode == 200) {
     return Future.value(true);
   }
