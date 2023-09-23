@@ -14,11 +14,15 @@ class Places {
     lat = json['latitude'];
     lng = json['longitude'];
   }
+  @override
+  String toString() {
+    return "{'name':$name , 'latitude':$lat,'longitude':$lng}";
+  }
 }
 
 Widget getSourceDestinationUI(MarkMapUI? selectedOption, MarkMapUI source,
     MarkMapUI destination, Function(MarkMapUI) callback,
-    [top = 55.00, shadow = Colors.white]) {
+    [top = 55.00, shadow = Colors.white, isPickFromLocation = null]) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
@@ -29,9 +33,17 @@ Widget getSourceDestinationUI(MarkMapUI? selectedOption, MarkMapUI source,
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          getSourceEditText(source, callback),
+          Row(
+            children: [
+              getSourceEditText(source, callback),
+            ],
+          ),
           SizedBox(height: 10),
-          getSourceEditText(destination, callback),
+          Row(
+            children: [
+              getSourceEditText(destination, callback),
+            ],
+          ),
         ],
       )
     ],
@@ -44,6 +56,7 @@ getSourceEditText(MarkMapUI mapUI, Function(MarkMapUI) callback) {
       if (mapUI != null) {
         callback(mapUI);
       }
+      print("callback(mapUI) $mapUI");
     },
     child: Container(
       width: 250,

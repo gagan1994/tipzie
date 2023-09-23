@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_webservice/places.dart';
+import 'package:tripzie/ui/main/map/select_places_on_map.dart';
 
 import '../../../utils/map_utils.dart';
 
 class TripziePlacesSearch extends PlacesAutocompleteWidget {
   static const PAGE_NAME = "/places_search";
-  TripziePlacesSearch()
+  MarkMapUI selectedOption;
+  TripziePlacesSearch(this.selectedOption)
       : super(
             apiKey: MapUtils.kGoogleApiKey,
             sessionToken: Uuid().generateV4(),

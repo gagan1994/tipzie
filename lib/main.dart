@@ -7,6 +7,7 @@ import 'package:tripzie/ui/login/login_page_1.dart';
 import 'package:tripzie/ui/login/login_screen.dart';
 import 'package:tripzie/ui/login/verify_otp_screen.dart';
 import 'package:tripzie/ui/main/discovery/disovery_details_screen.dart';
+import 'package:tripzie/ui/main/map/TripziePlacesSearchTextFiled.dart';
 import 'package:tripzie/ui/main/map/select_places_on_map.dart';
 import 'package:tripzie/ui/main/map/tripzie_places_search.dart';
 import 'package:tripzie/ui/main/profile/edit_profile.dart';
@@ -95,7 +96,13 @@ class MyApp extends StatelessWidget {
           case ProfileScreen.PAGE_NAME:
             return transition(ProfileScreen(), PageTransitionType.leftToRight);
           case TripziePlacesSearch.PAGE_NAME:
-            return transition(TripziePlacesSearch(), PageTransitionType.fade);
+            MarkMapUI selectedOption = settings.arguments as MarkMapUI;
+            return transition(
+                TripziePlacesSearch(selectedOption), PageTransitionType.fade);
+          case TripziePlacesSearchTextField.PAGE_NAME:
+            MarkMapUI selectedOption = settings.arguments as MarkMapUI;
+            return transition(TripziePlacesSearchTextField(selectedOption),
+                PageTransitionType.fade);
           case EditProfileScreen.PAGE_NAME:
             return transition(EditProfileScreen(), PageTransitionType.fade);
           case TripzieMarkOnMap.PAGE_NAME:

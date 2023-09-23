@@ -3,22 +3,26 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:tripzie/auth/authentication.dart';
-import 'package:tripzie/socket/models/models.dart';
 import 'package:tripzie/ui/main/map/tripit_map_ui.dart';
 import 'package:tripzie/ui/main/rides/create_new_ride_screen.dart';
-import 'package:tripzie/utils/map_utils.dart';
+import 'package:tripzie/utils/ui_utils.dart';
 
+import '../../../utils/map_utils.dart';
 import '../../../widgets/tripzie_button.dart';
+import 'TripziePlacesSearchTextFiled.dart';
 
 class MarkMapUI {
-  String title;
+  String title = '';
   Places? place;
   MarkMapUI(this.title, {this.place});
 
   String getText() {
-    if (place == null) return title;
-    return "Lat: ${place!.lat}, Lng:${place!.lng}";
+    return title;
+  }
+
+  @override
+  String toString() {
+    return "Title: $title";
   }
 }
 
@@ -65,7 +69,6 @@ class _MyAppState extends State<TripzieMarkOnMap> {
     } else {
       selectedOption = source;
     }
-    getUserCurrentLocationUpdateUi();
   }
 
   @override
@@ -99,8 +102,9 @@ class _MyAppState extends State<TripzieMarkOnMap> {
               final lat =
                   (bounds.northeast.latitude + bounds.southwest.latitude) / 2;
               print("selected lat: $lat, long: $lon");
+
               setState(() {
-                selectedOption.place = Places(selectedOption.title, lat, lon);
+                selectedOption.place = Places("", lat, lon);
               });
             }),
         Wrap(
@@ -111,9 +115,28 @@ class _MyAppState extends State<TripzieMarkOnMap> {
                 padding:
                     EdgeInsets.only(top: 50, left: 10, right: 10, bottom: 20),
                 child: getSourceDestinationUI(
-                    selectedOption, source, destination, (selected) {
+                    selectedOption, source, destination, (selected) async {
+                  if (selectedOption == selected) {
+                    print("selected loc : ${selected.place}");
+                    selected.place!.name = selected.title;
+                    var selectedOptionFromPlaces = await Navigator.pushNamed(
+                        context, TripziePlacesSearchTextField.PAGE_NAME,
+                        arguments: selected) as Places;
+
+                    if (selectedOptionFromPlaces != null &&
+                        selectedOptionFromPlaces.name != null) {
+                      selectedOption.place = selectedOptionFromPlaces;
+                      selectedOption.title = selectedOptionFromPlaces.name!;
+                      this.selectedOption = selected;
+                      updateMarkers();
+                      print(
+                          "selected loc from search: ${selectedOptionFromPlaces}");
+                    } else {
+                      showSnackBar(context, "Cannot update Selected Place");
+                    }
+                  }
                   setState(() {
-                    this.selectedOption = selected;
+                    selectedOption = selected;
                   });
                 }),
               ),
@@ -133,7 +156,9 @@ class _MyAppState extends State<TripzieMarkOnMap> {
             onPressed: () {
               widget.newride.source = source.place;
               widget.newride.destination = destination.place;
-              Navigator.pop(context, widget.newride);
+              print("source: ${widget.newride.source!}");
+              print("source: ${widget.newride.destination!}");
+              // Navigator.pop(context, widget.newride);
             },
           ),
         )
@@ -141,7 +166,7 @@ class _MyAppState extends State<TripzieMarkOnMap> {
     );
   }
 
-  void getUserCurrentLocationUpdateUi() async {
+  /*void getUserCurrentLocationUpdateUi() async {
     currentLocation = await getUserCurrentLocation();
     var currentMarker = LiveLocationModel.fromData(
         currentLocation!.latitude,
@@ -175,6 +200,32 @@ class _MyAppState extends State<TripzieMarkOnMap> {
         100.0,
       ));
     }
+    setState(() {});
+  }
+*/
+  void updateMarkers() async {
+    markers.clear();
+    if (source.place != null) {
+      var marker = Marker(
+        markerId: MarkerId(source.place!.name!),
+        position: LatLng(source.place!.lat!, source.place!.lng!),
+        infoWindow: InfoWindow(title: source.place!.name!),
+      );
+      markers.add(marker);
+    }
+    if (destination.place != null) {
+      var marker = Marker(
+        markerId: MarkerId(destination.place!.name!),
+        position: LatLng(destination.place!.lat!, destination.place!.lng!),
+        infoWindow: InfoWindow(title: destination.place!.name!),
+      );
+      markers.add(marker);
+    }
+    final GoogleMapController controller = await _controller.future;
+    controller.moveCamera(CameraUpdate.newLatLngBounds(
+      MapUtils.boundsFromLatLngList(markers),
+      100.0,
+    ));
     setState(() {});
   }
 }
