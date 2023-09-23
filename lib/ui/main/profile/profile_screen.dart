@@ -22,8 +22,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     {'title': 'Address', 'image': ic_address},
     {'title': 'Wishlist', 'image': ic_wishlist},
     {'title': 'Notification', 'image': ic_notification},
-    {'title': 'Payment Settings', 'image': ic_payment_setting},
+    {'title': 'Logout', 'image': ic_payment_setting},
   ];
+
+  static const int LOGOUT_INDEX = 4;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,6 +85,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               await Navigator.pushNamed(
                                   context, EditProfileScreen.PAGE_NAME);
                               setState(() {});
+                            }
+                            if (i == LOGOUT_INDEX) {
+                              Authentication.logout(context);
                             }
                           },
                           child: Row(

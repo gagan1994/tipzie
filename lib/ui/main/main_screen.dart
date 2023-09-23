@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/ui/main/home/home_screen.dart';
+import 'package:tripzie/ui/main/profile/edit_profile.dart';
 import 'package:tripzie/ui/main/wallet/wallet_screen.dart';
 
 import '../../auth/authentication.dart';
@@ -43,6 +44,7 @@ class _MainScreenState extends State<MainScreen>
         print("Log listener");
       });
     });
+    checkIdWeNeedUserUpdate();
   }
 
   @override
@@ -172,6 +174,14 @@ class _MainScreenState extends State<MainScreen>
   void onFabButtonClick(int current_index) async {
     if (current_index == 1) {
       Navigator.pushNamed(context, CreateNewRideScreen.PAGE_NAME);
+    }
+  }
+
+  void checkIdWeNeedUserUpdate() async {
+    if (Authentication.loggedInUser!.firstName!.isEmpty ||
+        Authentication.loggedInUser!.phoneNumber!.isEmpty) {
+      await Future.delayed(Duration(seconds: 2));
+      Navigator.pushNamed(context, EditProfileScreen.PAGE_NAME);
     }
   }
 }

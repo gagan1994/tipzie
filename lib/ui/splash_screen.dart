@@ -72,9 +72,7 @@ class SplashScreenState extends State<SplashPage> {
     await BackgroundLocationWrapper.instance.initialize();
     if (Authentication.isLoggedIn()) {
       print("fetchCurrentUserProfile");
-      var user = await fetchCurrentUserProfile();
-      print("fetchCurrentUserProfile result: $user");
-      Authentication.setUser(user);
+      await fetchCurrentUserProfile();
     }
     Timer(
         const Duration(seconds: 3),

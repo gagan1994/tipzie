@@ -71,7 +71,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Card(
+          Container(
             color: Colors.white,
             child: Stack(
               children: [
@@ -321,7 +321,9 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                     child: Row(
                                       children: [
                                         Container(
-                                          child: UserAvatar(),
+                                          child: UserAvatar(
+                                              imageUrl:
+                                                  userList[index].imageUri),
                                           width: 30,
                                           height: 30,
                                         ),
@@ -332,8 +334,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                "${userList[index].firstName} ,"
-                                                " ${userList[index].lastName}",
+                                                "${userList[index].firstName}",
                                                 style: TextStyle(fontSize: 12),
                                               ),
                                             ],

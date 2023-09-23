@@ -42,4 +42,11 @@ class SharedPrefWrapper extends VMWrapper {
       userId,
     );
   }
+
+  deleteUser() async {
+    await saveData(
+      '_id',
+      '',
+    );
+  }
 }

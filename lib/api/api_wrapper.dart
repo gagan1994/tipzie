@@ -72,16 +72,12 @@ Future<http.Response> patchData(String endpoint, dynamic object) async {
 
 Future<UserProfile?> fetchCurrentUserProfile() async {
   var userId = await SharedPrefWrapper.instance.getUserId();
-  var response1 = await fetchProfiles();
-  if (response1.containsKey(userId)) {
-    return response1[userId];
-  }
-
   var response = await fetchData("/profiles/$userId");
   print("profiles response status: ${response.statusCode}");
   if (response.statusCode == 200) {
     Map<String, dynamic> responseBody = json.decode(response.body);
-    return UserProfile.fromJson(responseBody);
+    Authentication.loggedInUser = UserProfile.fromJson(responseBody);
+    return Authentication.loggedInUser;
   }
   return null;
 }
@@ -96,7 +92,9 @@ Future<HashMap<String, UserProfile>> fetchProfiles() async {
     HashMap<String, UserProfile> userList = HashMap();
     for (var item in list) {
       var profile = UserProfile.fromJson(item);
-
+      if (profile.userId == Authentication.loggedInUser!.userId) {
+        continue;
+      }
       userList[profile.userId!] = profile;
     }
     return userList;
@@ -159,17 +157,21 @@ Future<Ride?> fetchRideById(String rideId) async {
 
 Future<bool> updateProfile(String fName, String lName, String phoneNumber,
     String bloodGroup, String bio,
-    {isCreate = false, uploadFile: File}) async {
+    {isCreate = false, uploadFile = "", email}) async {
   try {
     await Future.delayed(Duration(seconds: 1));
     var imageUri = FirebaseAuth.instance.currentUser!.photoURL;
-    var email = FirebaseAuth.instance.currentUser!.email;
+    if (email == null && email.toString().isEmpty) {
+      email = FirebaseAuth.instance.currentUser!.email;
+    }
     var uid = FirebaseAuth.instance.currentUser!.uid;
     var idToken = await FirebaseAuth.instance.currentUser!.getIdToken();
     email ??= '';
-    if (!isCreate && uploadFile != null) {
-      imageUri = await firebaseProfileUpload(uploadFile);
-    }
+    try {
+      if (!isCreate && uploadFile != null && uploadFile.toString().isNotEmpty) {
+        imageUri = await firebaseProfileUpload(File(uploadFile));
+      }
+    } on Exception {}
     if (imageUri == null || imageUri.isEmpty) {
       imageUri =
           'https://www.vhv.rs/dpng/d/256-2569650_men-profile-icon-png-image-free-download-searchpng.png';
@@ -204,12 +206,13 @@ Future<bool> updateProfile(String fName, String lName, String phoneNumber,
           'firebase_uid': uid,
           'firebase_login_token': idToken
         });
-        var user = await fetchCurrentUserProfile();
-        Authentication.loggedInUser = user;
+        await fetchCurrentUserProfile();
       }
       return resp.statusCode == 200;
     } else {
+      print("fetch");
       var userId = await SharedPrefWrapper.instance.getUserId();
+      print("userId $userId");
       resp = await patchData('/profiles/$userId', {
         'first_name': fName,
         'last_name': lName,
@@ -221,8 +224,8 @@ Future<bool> updateProfile(String fName, String lName, String phoneNumber,
         'firebase_uid': uid,
         'firebase_login_token': idToken
       });
-      var user = await fetchCurrentUserProfile();
-      Authentication.loggedInUser = user;
+      print("resp:  ${resp.statusCode}");
+      await fetchCurrentUserProfile();
     }
     return resp.statusCode == 200;
   } on Exception {}

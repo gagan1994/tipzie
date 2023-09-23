@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tripzie/api/user_data.dart';
+import 'package:tripzie/db/shared_pref_wrapper.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/login/login_screen.dart';
 
@@ -136,7 +137,9 @@ class Authentication {
 
   static void logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
+    Authentication.loggedInUser = null;
     SocketWrapper.instance.setUser(null);
+    SharedPrefWrapper.instance.deleteUser();
     Navigator.pushNamedAndRemoveUntil(
         context, LoginPage.PAGE_NAME, (Route<dynamic> route) => false);
   }

@@ -150,10 +150,12 @@ class _VerrifyOTPState extends State<VerifyOTP> {
                           '',
                           '',
                           isCreate: true);
-                      Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          MainScreen.PAGE_NAME,
-                          (Route<dynamic> route) => false);
+                      if (isSuccess) {
+                        Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            MainScreen.PAGE_NAME,
+                            (Route<dynamic> route) => false);
+                      }
                     }
                   },
                 ),

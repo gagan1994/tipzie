@@ -384,7 +384,25 @@ Widget titleBar(BuildContext context, String title,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [if (rightItem != null) rightItem, Text(title), SizedBox()],
+        children: [
+          if (!(rightItem is SizedBox))
+            Container(
+              child: rightItem,
+              padding: EdgeInsets.symmetric(horizontal: 10),
+            ),
+          if (rightItem is SizedBox)
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                child: Icon(Icons.arrow_back_ios_rounded),
+                padding: EdgeInsets.symmetric(horizontal: 10),
+              ),
+            ),
+          Text(title),
+          SizedBox()
+        ],
       ),
     ),
   );

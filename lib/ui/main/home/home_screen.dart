@@ -256,6 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   loadData() async {
     print("load data home screen");
+    await fetchCurrentUserProfile();
     await fetchUsersAndStore();
     await fetchRideAndUpdateUi();
   }

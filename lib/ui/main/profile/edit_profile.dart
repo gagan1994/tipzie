@@ -22,12 +22,14 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController bloodGroupController = TextEditingController();
   TextEditingController bioController = TextEditingController();
   String? firstNameError = null;
   String? phoneNumberError = null;
   String? bloodGroupError = null;
+  String? emailError = null;
   bool isInProgress = false;
   File? selectedImageFile = null;
   @override
@@ -130,6 +132,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   height: 10,
                 ),
                 getEditText(
+                  emailController,
+                  'Email',
+                  'Enter Email',
+                  errorMessage: emailError,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                getEditText(
                   phoneNumberController,
                   'Phone number',
                   'Enter Phone Number',
@@ -161,22 +172,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
         ),
-        titleBar(context, 'Edit Text', rightItem: SizedBox()),
+        titleBar(context, 'My Profile', rightItem: SizedBox()),
         Positioned(
           bottom: 10,
           left: 10,
           right: 10,
           child: Container(
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: accent_color, // Background color
+              ),
               onPressed: () async {
                 firstNameError = '';
                 phoneNumberError = '';
                 bloodGroupError = '';
+                emailError = '';
                 if (firstNameController.text.isEmpty) {
                   firstNameError = 'This field cannot be empty';
                 }
                 if (phoneNumberController.text.isEmpty) {
                   phoneNumberError = 'This field cannot be empty';
+                }
+                if (emailController.text.isEmpty) {
+                  emailError = 'This field cannot be empty';
                 }
                 if (bloodGroupController.text.isEmpty) {
                   bloodGroupError = 'This field cannot be empty';
@@ -185,6 +203,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     firstNameError!.isNotEmpty ||
                     phoneNumberError == null ||
                     phoneNumberError!.isNotEmpty ||
+                    emailError == null ||
+                    emailError!.isNotEmpty ||
                     bloodGroupError == null ||
                     bloodGroupError!.isNotEmpty) {
                   setState(() {});
@@ -201,7 +221,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     phoneNumberController.text,
                     bloodGroupController.text,
                     bioController.text,
-                    uploadFile: selectedImageFile);
+                    email: emailController.text,
+                    uploadFile: selectedImageFile?.path);
                 if (isSuccess) {
                   updateUi();
                   showSnackBarApiSuccess(context);
@@ -306,6 +327,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     phoneNumberController.text = Authentication.loggedInUser!.phoneNumber!;
     bloodGroupController.text = Authentication.loggedInUser!.bloodGroup!;
     bioController.text = Authentication.loggedInUser!.bio!;
+    if (Authentication.loggedInUser!.email != null) {
+      emailController.text = Authentication.loggedInUser!.email!;
+    }
   }
 
   void pickImage(ImageSource camera) async {
