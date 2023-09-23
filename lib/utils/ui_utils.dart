@@ -59,43 +59,44 @@ void showSnackBar(BuildContext context, String content) {
       )));
 }
 
-void showSnackBarApiSuccess(BuildContext context) {
-  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+void showSnackBarApiSuccess(BuildContext context, {message = "Successful"}) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       backgroundColor: Colors.green,
       content: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.check_circle,
             size: 15,
             color: Colors.white,
           ),
-          SizedBox(
+          const SizedBox(
             width: 10,
           ),
           Text(
-            'Successful',
+            message,
             style: TextStyle(color: Colors.white, fontSize: 10),
           )
         ],
       )));
 }
 
-void showSnackBarApiError(BuildContext context) {
-  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+void showSnackBarApiError(BuildContext context,
+    {message = "Cannot perform action. Please try again later"}) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       backgroundColor: Colors.red,
       content: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.close_rounded,
             size: 15,
             color: Colors.white,
           ),
-          SizedBox(
+          const SizedBox(
             width: 10,
           ),
           Flexible(
             child: Text(
-              'Cannot perform action. Please try again later',
+              message,
               style: TextStyle(color: Colors.white, fontSize: 10),
             ),
           )

@@ -5,14 +5,15 @@ import '../utils/trppit_color.dart';
 class UserAvatar extends StatelessWidget {
   String? imageUrl =
       "https://newprofilepic2.photo-cdn.net//assets/images/article/profile.jpg";
-  UserAvatar({this.imageUrl});
+  double? radius = 30;
+  UserAvatar({this.imageUrl, this.radius});
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(3),
       child: Container(
-        width: 30.0,
-        height: 30.0,
+        width: radius,
+        height: radius,
         decoration: BoxDecoration(
           color: accent_color,
           image: DecorationImage(

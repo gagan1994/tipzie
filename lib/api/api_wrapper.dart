@@ -104,6 +104,7 @@ Future<HashMap<String, UserProfile>> fetchProfiles() async {
 
 Future<bool> createRides(NewRideObject object) async {
   var jsonPost = toJson(object);
+  jsonPost['created_userid'] = Authentication.loggedInUser!.userId;
   var response = await postData("/rides", jsonPost);
   print("createRides response ${response.statusCode}");
   if (response.statusCode == 200) {

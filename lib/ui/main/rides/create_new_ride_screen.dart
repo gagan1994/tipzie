@@ -19,7 +19,7 @@ class NewRideObject {
   Places? destination;
   DateTime? startDate;
   DateTime? endDate;
-  Map<String, String> selectedUsers = new HashMap();
+  Map<String, UserProfile> selectedUsers = new HashMap();
 
   String? name;
   bool isSelectedUser(UserProfile user) {
@@ -28,9 +28,9 @@ class NewRideObject {
 
   void toggleUser(UserProfile user) {
     if (isSelectedUser(user)) {
-      selectedUsers.remove(user.userId);
+      selectedUsers.remove(user);
     } else {
-      selectedUsers[user.userId!] = user.firstName!;
+      selectedUsers[user.userId!] = user;
     }
   }
 
@@ -282,6 +282,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                         }),
                         if (newRideObject.selectedUsers.isNotEmpty)
                           Container(
+                            margin: EdgeInsets.only(bottom: 10),
                             child: getSelectedList(),
                           ),
                         if (userList.isEmpty && originalList.isNotEmpty)
@@ -396,11 +397,13 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                   isInProgress = false;
                 });
                 if (res) {
-                  showSnackBar(context, "Ride Created Successfully");
-                  Navigator.pop(context);
+                  showSnackBarApiSuccess(context,
+                      message: "Ride Created Successfully");
+                  // Navigator.pop(context);
                 } else {
-                  showSnackBar(context,
-                      "Unable to create Rides at this movement Please try again later");
+                  showSnackBarApiError(context,
+                      message:
+                          "Unable to create Rides at this movement Please try again later");
                 }
               },
             )
@@ -500,35 +503,54 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
       },
       child: Wrap(
           children: newRideObject.selectedUsers.keys
-              .map((k) => Container(
-                    margin:
-                        EdgeInsets.symmetric(horizontal: 2.5, vertical: 2.5),
-                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        color: otp_background_color,
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                              text: newRideObject.selectedUsers[k],
-                              style: TextStyle(color: accent_color)),
-                          WidgetSpan(
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  newRideObject.removeUser(k);
-                                });
-                              },
-                              child: const Icon(
-                                Icons.close_rounded,
-                                size: 14,
-                                color: accent_color,
+              .map((k) => GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        newRideObject.removeUser(k);
+                      });
+                    },
+                    child: Card(
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 2.5, vertical: 2.5),
+                      color: otp_background_color,
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 3, vertical: 3),
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            children: [
+                              WidgetSpan(
+                                alignment: PlaceholderAlignment.middle,
+                                child: UserAvatar(
+                                  imageUrl:
+                                      newRideObject.selectedUsers[k]!.imageUri,
+                                  radius: 18,
+                                ),
                               ),
-                            ),
+                              TextSpan(
+                                  text: newRideObject
+                                      .selectedUsers[k]!.firstName!,
+                                  style: TextStyle(
+                                      color: accent_color, fontSize: 16)),
+                              WidgetSpan(
+                                alignment: PlaceholderAlignment.middle,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      newRideObject.removeUser(k);
+                                    });
+                                  },
+                                  child: const Icon(
+                                    Icons.close_rounded,
+                                    size: 15,
+                                    color: accent_color,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ))
