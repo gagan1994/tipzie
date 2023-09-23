@@ -75,8 +75,6 @@ class SplashScreenState extends State<SplashPage> {
       var user = await fetchCurrentUserProfile();
       print("fetchCurrentUserProfile result: $user");
       Authentication.setUser(user);
-    } else {
-      return;
     }
     Timer(
         const Duration(seconds: 3),

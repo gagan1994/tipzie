@@ -167,7 +167,7 @@ Future<bool> updateProfile(String fName, String lName, String phoneNumber,
     var uid = FirebaseAuth.instance.currentUser!.uid;
     var idToken = await FirebaseAuth.instance.currentUser!.getIdToken();
     email ??= '';
-    if (uploadFile != null) {
+    if (!isCreate && uploadFile != null) {
       imageUri = await firebaseProfileUpload(uploadFile);
     }
     if (imageUri == null || imageUri.isEmpty) {
@@ -193,6 +193,19 @@ Future<bool> updateProfile(String fName, String lName, String phoneNumber,
         print('user Id received from server: $userId');
         await SharedPrefWrapper.instance.saveUser(userId);
         FirebasePushNotificationWrapper.getInstance().uploadTokenToServer();
+        resp = await patchData('/profiles/$userId', {
+          'first_name': fName,
+          'last_name': lName,
+          'phone': phoneNumber,
+          'bio': bio,
+          'blood_group': bloodGroup,
+          'email': email,
+          'image_uri': imageUri,
+          'firebase_uid': uid,
+          'firebase_login_token': idToken
+        });
+        var user = await fetchCurrentUserProfile();
+        Authentication.loggedInUser = user;
       }
       return resp.statusCode == 200;
     } else {
