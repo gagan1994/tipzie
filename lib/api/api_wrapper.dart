@@ -100,15 +100,6 @@ Future<HashMap<String, UserProfile>> fetchProfiles() async {
       userList[profile.userId!] = profile;
     }
     return userList;
-  } else if (response.statusCode == LOCAL_DATA) {
-    List<dynamic> list = temp_profiles;
-    HashMap<String, UserProfile> userList = HashMap();
-    for (var item in list) {
-      var profile = UserProfile.fromJson(item);
-
-      userList[profile.userId!] = profile;
-    }
-    return userList;
   }
   return HashMap();
 }
@@ -134,7 +125,7 @@ Future<bool> uploadFcm(String token) async {
   return Future.value(false);
 }
 
-Future<List<Ride>> fetchRides(BuildContext context) async {
+Future<List<Ride>> fetchRides() async {
   print("fetchRides");
   var response = await fetchData("/rides");
   print("response status: ${response.statusCode}");
@@ -146,17 +137,25 @@ Future<List<Ride>> fetchRides(BuildContext context) async {
     }
     return rideList;
   } else {
-    showSnackBar(context, "Unable to load Please Refresh");
+    showSnackBar(
+        navigatorKey.currentState!.context, "Unable to load Please Refresh");
   }
   return [];
 }
 
-/*
-* firstNameController.text,
-                lastNameController.text,
-                phoneNumberController.text,
-                bloodGroupController.text,
-                bioController.text*/
+Future<Ride?> fetchRideById(String rideId) async {
+  print("fetchRideById");
+  var response = await fetchData("/rides/$rideId");
+  print("response status: ${response.statusCode}");
+  if (response.statusCode == 200) {
+    var list = json.decode(response.body);
+    return Ride.fromJson(list);
+  } else {
+    showSnackBar(
+        navigatorKey.currentState!.context, "Unable to load Please Refresh");
+  }
+  return null;
+}
 
 Future<bool> updateProfile(String fName, String lName, String phoneNumber,
     String bloodGroup, String bio,
@@ -171,7 +170,7 @@ Future<bool> updateProfile(String fName, String lName, String phoneNumber,
     if (uploadFile != null) {
       imageUri = await firebaseProfileUpload(uploadFile);
     }
-    if (imageUri == null) {
+    if (imageUri == null || imageUri.isEmpty) {
       imageUri =
           'https://www.vhv.rs/dpng/d/256-2569650_men-profile-icon-png-image-free-download-searchpng.png';
     }
@@ -228,13 +227,6 @@ Future<List<Ride>> fetchOnGoingRides(BuildContext context) async {
       rideList.add(Ride.fromJson(item));
     }
     return rideList;
-  } else if (response.statusCode == LOCAL_DATA) {
-    List<dynamic> list = temp_current_rides;
-    List<Ride> rideList = [];
-    for (var item in list) {
-      rideList.add(Ride.fromJson(item));
-    }
-    return rideList;
   } else {
     showSnackBar(context, "Unable to load Please Refresh");
   }
@@ -261,124 +253,3 @@ Map<String, dynamic> toJson(NewRideObject object) {
     "riders": object.selectedUsers.keys.toList(),
   };
 }
-
-const temp_profiles = [
-  {
-    "_id": "649e80a17f729edf3809f3f2",
-    "FirstName": "punith",
-    "SurName": "degavi",
-    "phone": 999999999,
-    "__v": 0
-  },
-  {
-    "_id": "64aa9ad3a2e83d87e054c0b1",
-    "FirstName": "Devraj",
-    "SurName": "kuruva",
-    "phone": 999999999
-  },
-  {
-    "_id": "64aa9aeda2e83d87e054c0b2",
-    "FirstName": "Gagan",
-    "SurName": "Patil",
-    "phone": 999999999
-  },
-  {
-    "_id": "64aaaae7771d3e66c28a64fd",
-    "FirstName": "Gagan",
-    "SurName": "Patil",
-    "phone": 999999999
-  },
-  {
-    "_id": "64aab59ed8f24cbcfab2e01d",
-    "FirstName": "Gagan",
-    "SurName": "Patil",
-    "phone": 999999999
-  },
-  {
-    "_id": "64aab5d3b583a26cbebea464",
-    "FirstName": "Deepak",
-    "SurName": "honnali",
-    "phone": 777777777
-  },
-  {
-    "_id": "64aabd1002343f44c4f95f7c",
-    "FirstName": "Gagan",
-    "SurName": "Patil",
-    "phone": 88888888
-  },
-  {
-    "_id": "64d79c133dc882f5338e1696",
-    "FirstName": "viju",
-    "SurName": "degavi",
-    "phone": 999999999
-  },
-  {
-    "_id": "64d79c1b3dc882f5338e1697",
-    "FirstName": "viju2",
-    "SurName": "degavi",
-    "phone": "999999999"
-  },
-  {
-    "_id": "64d79d1f3dc882f5338e1698",
-    "FirstName": "viju2",
-    "SurName": "degavi",
-    "phone": "999999999",
-    "image": "https://www.gstatic.com/webp/gallery3/1.sm.png"
-  }
-];
-
-const temp_current_rides = [
-  {
-    "_id": "64aabdb502343f44c4f95f7d",
-    "name": "Male Trip",
-    "location": {
-      "source": {"name": "shimoga", "latitude": 40.7829, "longitude": -73.9654},
-      "destination": {"name": "goa", "latitude": 40.7829, "longitude": -73.9654}
-    },
-    "start_time": "2023-07-09 12:30:00",
-    "end_time": "2023-07-10 12:30:00",
-    "riders": ["6173748a73b3c48b78e4e7f1", "6173748a73b3c48b78e4e7f2"]
-  },
-  {
-    "_id": "64aaca73b8920393bbcc20aa",
-    "name": "Newyearride3",
-    "location": {
-      "source": {"name": "shimoga", "latitude": 40.7829, "longitude": -73.9654},
-      "destination": {"name": "goa", "latitude": 40.7829, "longitude": -73.9654}
-    },
-    "start_time": "2023-07-09 12:30:00",
-    "end_time": "2023-07-10 12:30:00",
-    "riders": ["6173748a73b3c48b78e4e7f1", "6173748a73b3c48b78e4e7f2"]
-  },
-  {
-    "_id": "64d3a4b5cbfb4721e73f65f8",
-    "name": "dasara ride",
-    "location": {
-      "source": {"name": "shimoga", "latitude": 40.7829, "longitude": -73.9654},
-      "destination": {"name": "goa", "latitude": 40.7829, "longitude": -73.9654}
-    },
-    "start_time": "2023-07-09 12:30:00",
-    "end_time": "2023-07-10 12:30:00",
-    "riders": ["6173748a73b3c48b78e4e7f1", "6173748a73b3c48b78e4e7f2"]
-  },
-  {
-    "_id": "64d79e0a3dc882f5338e1699",
-    "name": "Trip_aug_12",
-    "location": {
-      "source": {
-        "name": "Shikaripura",
-        "latitude": 40.7829,
-        "longitude": -73.9654
-      },
-      "destination": {
-        "name": "Bhadravathi",
-        "latitude": 40.7829,
-        "longitude": -73.9654
-      }
-    },
-    "start_time": "2023-07-09 12:30:00",
-    "end_time": "2023-07-10 12:30:00",
-    "riders": ["6173748a73b3c48b78e4e7f1", "6173748a73b3c48b78e4e7f2"],
-    "created_userid": "6173748a73b3c48b78e4e7f1"
-  }
-];

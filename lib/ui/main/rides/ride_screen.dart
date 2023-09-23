@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:tripzie/api/api_wrapper.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 
+import '../../../api/ride.dart';
 import '../../../utils/tab_view.dart';
 import '../../../utils/ui_utils.dart';
-import 'models.dart';
 
 class RideScreen extends TripzieBottomNavBarScreen {
   @override
@@ -11,22 +12,38 @@ class RideScreen extends TripzieBottomNavBarScreen {
 }
 
 class _MyAppState extends State<RideScreen> {
+  List<Ride> currentRides = [];
+  List<Ride> myRidesRides = [];
+
+  @override
+  void initState() {
+    fetchRidesAndUpdateUi();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return TrippitTabView((selectedTab) {}, [
       TrippitTabDetails(
         'Current Rides',
-        _getRideDetails(),
+        currentRides.isEmpty
+            ? Container(
+                alignment: Alignment.center,
+                child: Text("Oops No Rides to show please Create new ride"))
+            : _getRideDetails(currentRides),
       ),
       TrippitTabDetails(
         'My rides',
-        _getRideDetails(),
+        myRidesRides.isEmpty
+            ? Container(
+                alignment: Alignment.center,
+                child: Text("Oops No Rides to show please Create new ride"))
+            : _getRideDetails(currentRides),
       )
     ]);
   }
 
-  Widget _getRideDetails({Widget? bottomWidget: null}) {
-    var rideList = getRideList();
+  Widget _getRideDetails(List<Ride> rideList) {
     return Stack(
       children: [
         ListView.builder(
@@ -38,5 +55,9 @@ class _MyAppState extends State<RideScreen> {
             }),
       ],
     );
+  }
+
+  void fetchRidesAndUpdateUi() {
+    var rides = fetchRides();
   }
 }

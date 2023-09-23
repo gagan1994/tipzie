@@ -236,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       isInProgress = true;
     });
-    allRides = await fetchRides(context);
+    allRides = await fetchRides();
     allRides.sort((a, b) {
       return b.startDate!.compareTo(a.startDate!);
     });

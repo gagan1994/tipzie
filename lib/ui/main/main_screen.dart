@@ -62,7 +62,7 @@ class _MainScreenState extends State<MainScreen>
           children: [
             bottom_screens[current_index],
             Positioned(
-              bottom: MediaQuery.of(context).viewPadding.top,
+              bottom: 60,
               right: 20,
               child: _buildPlay(context),
             ),

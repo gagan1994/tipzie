@@ -103,12 +103,15 @@ void showSnackBarApiError(BuildContext context) {
       )));
 }
 
-Widget rideDetails(RideListItem item) {
+Widget rideDetails(Ride item) {
+  var imageUri =
+      "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
+  if (item.imageUri != null && item.imageUri!.isEmpty) {
+    imageUri = item.imageUri!;
+  }
   return ListTile(
     leading: CircleAvatar(
-      backgroundImage: NetworkImage(item.imageUri.isEmpty
-          ? "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-          : item.imageUri),
+      backgroundImage: NetworkImage(imageUri),
     ),
     title: Text(
       item.name,
@@ -133,7 +136,7 @@ Widget rideDetails(RideListItem item) {
                 child: CircleAvatar(radius: 5, backgroundColor: Colors.green)),
           if (!item.isAvailable)
             Text(
-              timeAgo(item.lastSeen),
+              timeAgo(item.endTime),
               style: const TextStyle(fontSize: 10),
             ),
         ],
@@ -337,8 +340,7 @@ void checkAndOpenNotification(BuildContext context) async {
   print('checkAndOpenNotification: $notification');
   if (notification.keys.isNotEmpty) {
     print("notification came on background: ${notification.keys}");
-    temp_current_rides
-        .firstWhere((ride) => ride['_id'] == notification.keys.first);
+    var ride = await fetchRideById(notification.keys.first);
     showDialog(
       context: context,
       builder: (context) {
@@ -357,7 +359,7 @@ void checkAndOpenNotification(BuildContext context) async {
                   onPressed: () {
                     Navigator.pop(context);
                     Navigator.pushNamed(context, CurrentRideScreen.PAGE_NAME,
-                        arguments: notification);
+                        arguments: ride);
                   },
                   child: const Text("Join now"),
                 ),

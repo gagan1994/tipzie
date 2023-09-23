@@ -5,13 +5,16 @@ import '../ui/main/map/tripit_map_ui.dart';
 
 class Ride {
   String _id = '';
+  String name = '';
   Places? source;
   Places? destination;
   DateTime? startDate;
   DateTime? endDate;
+  String? imageUri;
+  bool isAvailable = false;
+  DateTime endTime = DateTime.now();
   List<UserProfile>? selectedUsers = [];
 
-  String? name;
   String getId() {
     return _id;
   }
