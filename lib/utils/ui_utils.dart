@@ -397,7 +397,7 @@ Widget titleBar(BuildContext context, String title,
               },
               child: Container(
                 child: Icon(Icons.arrow_back_ios_rounded),
-                padding: EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.only(left: 10),
               ),
             ),
           Text(title),
