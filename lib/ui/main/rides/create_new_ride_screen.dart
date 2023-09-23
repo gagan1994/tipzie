@@ -303,7 +303,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                           ),
                         if (userList.isNotEmpty)
                           SizedBox(
-                            height: 200,
+                            height: MediaQuery.of(context).size.height * 0.2,
                             child: ListView.separated(
                                 separatorBuilder: (context, index) {
                                   return Divider();

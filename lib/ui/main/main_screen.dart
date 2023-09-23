@@ -179,8 +179,9 @@ class _MainScreenState extends State<MainScreen>
 
   void checkIdWeNeedUserUpdate() async {
     if (Authentication.loggedInUser!.firstName!.isEmpty ||
-        Authentication.loggedInUser!.phoneNumber!.isEmpty) {
-      await Future.delayed(Duration(seconds: 2));
+        Authentication.loggedInUser!.phoneNumber!.isEmpty ||
+        Authentication.loggedInUser!.email!.isEmpty) {
+      await Future.delayed(Duration.zero);
       Navigator.pushNamed(context, EditProfileScreen.PAGE_NAME);
     }
   }
