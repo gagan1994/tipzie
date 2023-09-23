@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:tripzie/api/api_wrapper.dart';
 import 'package:tripzie/api/user_data.dart';
 import 'package:tripzie/db/users.dart';
@@ -58,6 +59,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
   bool isSelectedUsersEmpty = false;
 
   var isInProgress = false;
+  int tripDistance = 0;
   @override
   void initState() {
     fetchProfileData();
@@ -71,266 +73,295 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
         children: [
           Card(
             color: Colors.white,
-            child: Column(
+            child: Stack(
               children: [
-                Container(
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 50),
-                  color: Colors.white,
-                  child: Row(
-                    children: [
-                      const Expanded(
-                          child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Create New Ride",
+                SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Container(
+                    margin: EdgeInsets.only(
+                        top: MediaQuery.of(context).viewPadding.top + 40,
+                        right: 10,
+                        left: 10),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        verticalDivider(),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 40,
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: edit_text_bg_color,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(5)),
+                            border: (isNameEmpty)
+                                ? Border.all(
+                                    width: 0.5,
+                                    color: Colors.red,
+                                    style: BorderStyle.solid,
+                                  )
+                                : null,
+                          ),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              labelText: isNameEmpty
+                                  ? "Please enter valid ride name"
+                                  : 'Enter Ride Name',
+                              labelStyle: TextStyle(
+                                  color: isNameEmpty ? Colors.red : null),
+                              border: InputBorder.none,
+                            ),
+                            onChanged: (text) {
+                              newRideObject.name = text;
+                            },
+                            style: const TextStyle(fontSize: 12),
+                          ),
                         ),
-                      )),
-                      GestureDetector(
-                        child: const Icon(
-                          Icons.clear,
-                          color: accent_color,
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 10),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          verticalDivider(),
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 40,
-                            padding: EdgeInsets.all(10),
+                        verticalDivider(),
+                        Container(
+                            padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: edit_text_bg_color,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(5)),
-                              border: (isNameEmpty)
-                                  ? Border.all(
-                                      width: 0.5,
-                                      color: Colors.red,
-                                      style: BorderStyle.solid,
-                                    )
-                                  : null,
-                            ),
-                            child: TextField(
-                              decoration: InputDecoration(
-                                labelText: isNameEmpty
-                                    ? "Please enter valid ride name"
-                                    : 'Enter Ride Name',
-                                labelStyle: TextStyle(
-                                    color: isNameEmpty ? Colors.red : null),
-                                border: InputBorder.none,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(15),
                               ),
-                              onChanged: (text) {
-                                newRideObject.name = text;
-                              },
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ),
-                          verticalDivider(),
-                          Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(15),
-                                ),
-                                border: Border.all(
-                                  width: 0.5,
-                                  color: isSourceOrDestinationEmpty
-                                      ? Colors.red
-                                      : Colors.black,
-                                  style: BorderStyle.solid,
-                                ),
+                              border: Border.all(
+                                width: 0.5,
+                                color: isSourceOrDestinationEmpty
+                                    ? Colors.red
+                                    : Colors.black,
+                                style: BorderStyle.solid,
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Select Source and Destination",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: isSourceOrDestinationEmpty
-                                            ? Colors.red
-                                            : null),
-                                  ),
-                                  verticalDivider(),
-                                  getSourceDestinationUI(
-                                    null,
-                                    MarkMapUI("Enter Source",
-                                        place: newRideObject.source),
-                                    MarkMapUI("Enter Source",
-                                        place: newRideObject.destination),
-                                    (selected) async {
-                                      await Navigator.pushNamed(
-                                          context, TripzieMarkOnMap.PAGE_NAME,
-                                          arguments: newRideObject);
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Select Source and Destination",
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: isSourceOrDestinationEmpty
+                                          ? Colors.red
+                                          : null),
+                                ),
+                                verticalDivider(),
+                                getSourceDestinationUI(
+                                  null,
+                                  MarkMapUI(
+                                      (newRideObject.source != null &&
+                                              newRideObject.source!.name !=
+                                                  null &&
+                                              newRideObject
+                                                  .source!.name!.isNotEmpty)
+                                          ? newRideObject.source!.name!
+                                          : "Enter Source",
+                                      place: newRideObject.source),
+                                  MarkMapUI(
+                                      (newRideObject.destination != null &&
+                                              newRideObject.destination!.name !=
+                                                  null &&
+                                              newRideObject.destination!.name!
+                                                  .isNotEmpty)
+                                          ? newRideObject.destination!.name!
+                                          : "Enter Destination",
+                                      place: newRideObject.destination),
+                                  (selected) async {
+                                    print("onClick ui");
+                                    if (newRideObject.source != null) {
+                                      print(
+                                          "source: ${newRideObject.source!.name!}");
+                                    }
+                                    if (newRideObject.destination != null) {
+                                      print(
+                                          "Destination: ${newRideObject.destination!.name!}");
+                                    }
+
+                                    var temprideObject =
+                                        await Navigator.pushNamed(context,
+                                                TripzieMarkOnMap.PAGE_NAME,
+                                                arguments: newRideObject)
+                                            as NewRideObject?;
+                                    if (temprideObject != null) {
+                                      tripDistance = 0;
+                                      tripDistance = await distance2point(
+                                            GeoPoint(
+                                              longitude:
+                                                  newRideObject.source!.lng!,
+                                              latitude:
+                                                  newRideObject.source!.lat!,
+                                            ),
+                                            GeoPoint(
+                                              longitude: newRideObject
+                                                  .destination!.lng!,
+                                              latitude: newRideObject
+                                                  .destination!.lat!,
+                                            ),
+                                          ) ~/
+                                          1000;
+
                                       setState(() {});
-                                    },
-                                    10.00,
-                                    Colors.transparent,
-                                  ),
-                                ],
-                              )),
-                          verticalDivider(),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Select Start and End Date",
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: isStartDateEndDateEmpty
-                                        ? Colors.red
-                                        : null),
-                              ),
-                              verticalDivider(),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  datePicker(
-                                      "Start Date", newRideObject.startDate,
-                                      (selectedDate) {
-                                    setState(() {
-                                      newRideObject.startDate = selectedDate;
-                                    });
-                                  }),
-                                  datePicker("End Date", newRideObject.endDate,
-                                      (selectedDate) {
-                                    setState(() {
-                                      newRideObject.endDate = selectedDate;
-                                    });
-                                  }, true),
-                                ],
-                              ),
-                              verticalDivider(),
-                              if (newRideObject.startDate != null &&
-                                  newRideObject.endDate != null)
-                                Container(
-                                  height: 80,
-                                  margin: EdgeInsets.only(bottom: 10),
-                                  child: getDatePickerSingleLine(
-                                      newRideObject.startDate!,
-                                      newRideObject.endDate!),
+                                    }
+                                  },
+                                  10.00,
+                                  Colors.transparent,
                                 ),
-                            ],
-                          ),
-                          const Text(
-                            "Select Riders",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          TrippitSearchInput((textChanged) {
-                            setState(() {
-                              userList.clear();
-                              if (textChanged.isEmpty) {
-                                userList.addAll(originalList);
-                              } else {
-                                for (var item in originalList) {
-                                  if (item
-                                      .toString()
-                                      .toLowerCase()
-                                      .contains(textChanged.toLowerCase())) {
-                                    userList.add(item);
-                                  }
+                                verticalDivider(),
+                                if (tripDistance > 0)
+                                  Container(
+                                    alignment: Alignment.centerRight,
+                                    child: Text(
+                                      "Total distance $tripDistance Kms",
+                                      style: TextStyle(fontSize: 10),
+                                    ),
+                                  )
+                              ],
+                            )),
+                        verticalDivider(),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Select Start and End Date",
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: isStartDateEndDateEmpty
+                                      ? Colors.red
+                                      : null),
+                            ),
+                            verticalDivider(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                datePicker(
+                                    "Start Date", newRideObject.startDate,
+                                    (selectedDate) {
+                                  setState(() {
+                                    newRideObject.startDate = selectedDate;
+                                  });
+                                }),
+                                datePicker("End Date", newRideObject.endDate,
+                                    (selectedDate) {
+                                  setState(() {
+                                    newRideObject.endDate = selectedDate;
+                                  });
+                                }, true),
+                              ],
+                            ),
+                            verticalDivider(),
+                            if (newRideObject.startDate != null &&
+                                newRideObject.endDate != null)
+                              Container(
+                                height: 80,
+                                margin: EdgeInsets.only(bottom: 10),
+                                child: getDatePickerSingleLine(
+                                    newRideObject.startDate!,
+                                    newRideObject.endDate!),
+                              ),
+                          ],
+                        ),
+                        const Text(
+                          "Select Riders",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        TrippitSearchInput((textChanged) {
+                          setState(() {
+                            userList.clear();
+                            if (textChanged.isEmpty) {
+                              userList.addAll(originalList);
+                            } else {
+                              for (var item in originalList) {
+                                if (item
+                                    .toString()
+                                    .toLowerCase()
+                                    .contains(textChanged.toLowerCase())) {
+                                  userList.add(item);
                                 }
                               }
-                            });
-                          }),
-                          if (newRideObject.selectedUsers.isNotEmpty)
-                            Container(
-                              child: getSelectedList(),
-                            ),
-                          if (userList.isEmpty && originalList.isNotEmpty)
-                            Container(
-                                alignment: Alignment.center,
-                                child: const Text("No user found for search")),
-                          if (userList.isEmpty && originalList.isEmpty)
-                            Container(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Text(
-                                      "User list empty refresh to update"),
-                                  GestureDetector(
-                                      onTap: fetchProfileData,
-                                      child: Icon(Icons.refresh))
-                                ],
-                              ),
+                            }
+                          });
+                        }),
+                        if (newRideObject.selectedUsers.isNotEmpty)
+                          Container(
+                            child: getSelectedList(),
+                          ),
+                        if (userList.isEmpty && originalList.isNotEmpty)
+                          Container(
                               alignment: Alignment.center,
+                              child: const Text("No user found for search")),
+                        if (userList.isEmpty && originalList.isEmpty)
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text("User list empty refresh to update"),
+                                GestureDetector(
+                                    onTap: fetchProfileData,
+                                    child: Icon(Icons.refresh))
+                              ],
                             ),
-                          if (userList.isNotEmpty)
-                            SizedBox(
-                              height: 200,
-                              child: ListView.separated(
-                                  separatorBuilder: (context, index) {
-                                    return Divider();
-                                  },
-                                  padding: EdgeInsets.zero,
-                                  itemCount: userList.length,
-                                  itemBuilder: (context, index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          newRideObject
-                                              .toggleUser(userList[index]);
-                                        });
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            child: UserAvatar(),
-                                            width: 30,
-                                            height: 30,
+                            alignment: Alignment.center,
+                          ),
+                        if (userList.isNotEmpty)
+                          SizedBox(
+                            height: 200,
+                            child: ListView.separated(
+                                separatorBuilder: (context, index) {
+                                  return Divider();
+                                },
+                                padding: EdgeInsets.zero,
+                                itemCount: userList.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        newRideObject
+                                            .toggleUser(userList[index]);
+                                      });
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          child: UserAvatar(),
+                                          width: 30,
+                                          height: 30,
+                                        ),
+                                        horizontalDivider(),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "${userList[index].firstName} ,"
+                                                " ${userList[index].lastName}",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
                                           ),
-                                          horizontalDivider(),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  "${userList[index].firstName} ,"
-                                                  " ${userList[index].lastName}",
-                                                  style:
-                                                      TextStyle(fontSize: 12),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                              alignment: Alignment.topCenter,
-                                              child: Icon(
-                                                newRideObject.isSelectedUser(
-                                                        userList[index])
-                                                    ? Icons.check_box
-                                                    : Icons
-                                                        .check_box_outline_blank,
-                                                size: 15,
-                                              ))
-                                        ],
-                                      ),
-                                    );
-                                  }),
-                            ),
-                          const SizedBox(
-                            height: 250,
-                          )
-                        ],
-                      ),
+                                        ),
+                                        Container(
+                                            alignment: Alignment.topCenter,
+                                            child: Icon(
+                                              newRideObject.isSelectedUser(
+                                                      userList[index])
+                                                  ? Icons.check_box
+                                                  : Icons
+                                                      .check_box_outline_blank,
+                                              size: 15,
+                                            ))
+                                      ],
+                                    ),
+                                  );
+                                }),
+                          ),
+                        const SizedBox(
+                          height: 250,
+                        )
+                      ],
                     ),
                   ),
-                )
+                ),
+                titleBar(context, "Create New Ride", rightItem: SizedBox())
               ],
             ),
           ),

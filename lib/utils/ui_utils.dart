@@ -378,7 +378,7 @@ Widget titleBar(BuildContext context, String title,
     elevation: 2,
     child: Container(
       color: Colors.white,
-      height: 50,
+      height: 40,
       margin: EdgeInsets.only(
         top: (top > 0) ? top : MediaQuery.of(context).viewPadding.top,
       ),

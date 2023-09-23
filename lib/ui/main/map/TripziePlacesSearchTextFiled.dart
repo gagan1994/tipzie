@@ -29,8 +29,7 @@ class _TripziePlacesSearchTextFieldState
   Position? currentLocation;
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> markers = Set();
-  Places selectedPlace = Places("", 0, 0);
-
+  Places? selectedPlace;
   @override
   void initState() {
     print("widget.selectedPlace.place: ${widget.selectedPlace.place}");
@@ -39,6 +38,7 @@ class _TripziePlacesSearchTextFieldState
     } else {
       selectedPlace = widget.selectedPlace.place!;
     }
+    updateMarkers();
     super.initState();
   }
 
@@ -86,9 +86,11 @@ class _TripziePlacesSearchTextFieldState
                   TextEditingController textEditingController,
                   FocusNode focusNode,
                   VoidCallback onFieldSubmitted) {
-                if (selectedPlace.name != null &&
-                    selectedPlace.name!.isNotEmpty) {
-                  textEditingController.text = selectedPlace.name!;
+                var hinText = "Search Places";
+                if (selectedPlace != null &&
+                    selectedPlace!.name != null &&
+                    selectedPlace!.name!.isNotEmpty) {
+                  hinText = selectedPlace!.name!;
                 }
                 return Container(
                   height: 40,
@@ -99,7 +101,7 @@ class _TripziePlacesSearchTextFieldState
                     focusNode: focusNode,
                     style: TextStyle(fontSize: 10),
                     decoration: InputDecoration(
-                      hintText: "Search Places",
+                      hintText: hinText,
                       disabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       border: InputBorder.none,
@@ -133,6 +135,7 @@ class _TripziePlacesSearchTextFieldState
             child: TripzieButton(
               button_text: "Done",
               onPressed: () {
+                widget.selectedPlace.place = selectedPlace;
                 Navigator.pop(context, selectedPlace);
               },
             ),
@@ -174,7 +177,7 @@ class _TripziePlacesSearchTextFieldState
   updateMarkers() async {
     final GoogleMapController controller = await _controller.future;
     CameraPosition cameraPosition = CameraPosition(
-      target: LatLng(selectedPlace.lat!, selectedPlace.lng!),
+      target: LatLng(selectedPlace!.lat!, selectedPlace!.lng!),
       zoom: 16,
     );
     controller.moveCamera(CameraUpdate.newCameraPosition(cameraPosition));

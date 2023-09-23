@@ -42,9 +42,11 @@ class _MyAppState extends State<TripzieMarkOnMap> {
   var source = MarkMapUI("Enter Source");
   var destination = MarkMapUI("Enter Destination");
   late MarkMapUI selectedOption;
-  void _onMapCreated(GoogleMapController controller) {
+  void _onMapCreated(GoogleMapController controller) async {
     if (!_controller.isCompleted) {
       _controller.complete(controller);
+      await Future.delayed(Duration(seconds: 1));
+      updateMarkers();
     }
   }
 
@@ -61,9 +63,21 @@ class _MyAppState extends State<TripzieMarkOnMap> {
   @override
   void initState() {
     super.initState();
-    source = MarkMapUI("Enter Source", place: widget.newride.source);
+    var enterSource = "Enter Source";
+    var enterDestination = "Enter Destination";
+    if (widget.newride.source != null &&
+        widget.newride.source!.name != null &&
+        widget.newride.source!.name!.isNotEmpty) {
+      enterSource = widget.newride.source!.name!;
+    }
+    if (widget.newride.destination != null &&
+        widget.newride.destination!.name != null &&
+        widget.newride.destination!.name!.isNotEmpty) {
+      enterDestination = widget.newride.destination!.name!;
+    }
+    source = MarkMapUI(enterSource, place: widget.newride.source);
     destination =
-        MarkMapUI("Enter Destination", place: widget.newride.destination);
+        MarkMapUI(enterDestination, place: widget.newride.destination);
     if (source.place != null) {
       selectedOption = destination;
     } else {
@@ -79,34 +93,21 @@ class _MyAppState extends State<TripzieMarkOnMap> {
           color: Colors.white,
         ),
         GoogleMap(
-            zoomGesturesEnabled: true,
-            onMapCreated: _onMapCreated,
-            mapType: MapType.terrain,
-            markers: markers,
-            zoomControlsEnabled: false,
-            initialCameraPosition: CameraPosition(
-                target: currentLocation == null
-                    ? const LatLng(
-                        12.9716,
-                        77.5946,
-                      )
-                    : LatLng(
-                        currentLocation!.latitude, currentLocation!.longitude),
-                zoom: 16),
-            onCameraIdle: () async {
-              var controller = await _controller.future;
-
-              LatLngBounds bounds = await controller.getVisibleRegion();
-              final lon =
-                  (bounds.northeast.longitude + bounds.southwest.longitude) / 2;
-              final lat =
-                  (bounds.northeast.latitude + bounds.southwest.latitude) / 2;
-              print("selected lat: $lat, long: $lon");
-
-              setState(() {
-                selectedOption.place = Places("", lat, lon);
-              });
-            }),
+          zoomGesturesEnabled: true,
+          onMapCreated: _onMapCreated,
+          mapType: MapType.terrain,
+          markers: markers,
+          zoomControlsEnabled: false,
+          initialCameraPosition: CameraPosition(
+              target: currentLocation == null
+                  ? const LatLng(
+                      12.9716,
+                      77.5946,
+                    )
+                  : LatLng(
+                      currentLocation!.latitude, currentLocation!.longitude),
+              zoom: 16),
+        ),
         Wrap(
           children: [
             Card(
@@ -117,20 +118,19 @@ class _MyAppState extends State<TripzieMarkOnMap> {
                 child: getSourceDestinationUI(
                     selectedOption, source, destination, (selected) async {
                   if (selectedOption == selected) {
-                    print("selected loc : ${selected.place}");
-                    selected.place!.name = selected.title;
+                    print(
+                        "selected loc : ${selected.place} ${selected.hashCode}");
                     var selectedOptionFromPlaces = await Navigator.pushNamed(
                         context, TripziePlacesSearchTextField.PAGE_NAME,
                         arguments: selected) as Places;
 
                     if (selectedOptionFromPlaces != null &&
                         selectedOptionFromPlaces.name != null) {
-                      selectedOption.place = selectedOptionFromPlaces;
-                      selectedOption.title = selectedOptionFromPlaces.name!;
-                      this.selectedOption = selected;
+                      selected.place = selectedOptionFromPlaces;
+                      selected.title = selectedOptionFromPlaces.name!;
                       updateMarkers();
                       print(
-                          "selected loc from search: ${selectedOptionFromPlaces}");
+                          "selected loc from search: ${selectedOption.hashCode} ${this.selectedOption.title}  ${this.selectedOption.place}");
                     } else {
                       showSnackBar(context, "Cannot update Selected Place");
                     }
@@ -143,11 +143,6 @@ class _MyAppState extends State<TripzieMarkOnMap> {
             )
           ],
         ),
-        Center(
-            child: Icon(
-          Icons.location_on_rounded,
-          size: 30,
-        )),
         Container(
           margin: EdgeInsets.only(bottom: 50),
           alignment: Alignment.bottomCenter,
@@ -157,8 +152,8 @@ class _MyAppState extends State<TripzieMarkOnMap> {
               widget.newride.source = source.place;
               widget.newride.destination = destination.place;
               print("source: ${widget.newride.source!}");
-              print("source: ${widget.newride.destination!}");
-              // Navigator.pop(context, widget.newride);
+              print("destination: ${widget.newride.destination!}");
+              Navigator.pop(context, widget.newride);
             },
           ),
         )
@@ -205,6 +200,7 @@ class _MyAppState extends State<TripzieMarkOnMap> {
 */
   void updateMarkers() async {
     markers.clear();
+    print("update Markers ${source.place} ${destination.place}");
     if (source.place != null) {
       var marker = Marker(
         markerId: MarkerId(source.place!.name!),
@@ -221,11 +217,14 @@ class _MyAppState extends State<TripzieMarkOnMap> {
       );
       markers.add(marker);
     }
+    print("added marker");
     final GoogleMapController controller = await _controller.future;
+    print("added controlller future");
     controller.moveCamera(CameraUpdate.newLatLngBounds(
       MapUtils.boundsFromLatLngList(markers),
       100.0,
     ));
+    print("added controlller moveCamera");
     setState(() {});
   }
 }
