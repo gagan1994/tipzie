@@ -11,7 +11,7 @@ class SocketSender {
 
   void emit(String event, Map<String, dynamic> data) {
     var sendData = jsonEncode(data);
-    print("${socket.id} Sent:\nevent $event\ndata=> $sendData");
+    print(" ${socket.id} Sent:\nevent $event\ndata=> $sendData");
     socket.emit(event, sendData);
   }
 }

@@ -11,6 +11,8 @@ import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/utils/map_utils.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
+import '../../../background_task/background_location.dart';
+
 class TripzieMap extends StatefulWidget {
   Ride ride;
   TripzieMap(this.ride);
@@ -44,8 +46,15 @@ class _MyAppState extends State<TripzieMap> {
   void initState() {
     super.initState();
     getUserCurrentLocationUpdateUi();
+    BackgroundLocationWrapper.instance.startLiveRide();
     SocketWrapper.instance
         .startListeningForLocationUpdates(widget.ride.getId(), addMarker);
+  }
+
+  @override
+  void dispose() {
+    BackgroundLocationWrapper.instance.stopLocationService();
+    super.dispose();
   }
 
   @override

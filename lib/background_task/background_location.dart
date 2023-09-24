@@ -23,6 +23,7 @@ class BackgroundLocationWrapper {
 
   LocationDto? lastLocation;
   void startLiveRide() {
+    print('startLiveRide');
     if (BackgroundLocationWrapper.instance.isRunning.value) {
       print('location is running');
       return;
