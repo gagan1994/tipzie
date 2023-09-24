@@ -222,7 +222,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     bloodGroupController.text,
                     bioController.text,
                     email: emailController.text,
-                    uploadFile: selectedImageFile?.path);
+                    uploadFile: selectedImageFile?.path,
+                    isUpdate: true);
                 if (isSuccess) {
                   updateUi();
                   showSnackBarApiSuccess(context);

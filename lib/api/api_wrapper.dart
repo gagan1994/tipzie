@@ -159,14 +159,15 @@ Future<bool> startRide(String rideId) async {
 Future<bool> completeRide(String rideId) async {
   print("fetchRideById");
   var json = {"rideId": rideId};
-  var response = await postData("/complete_ride", json);
-  print("response status: ${response.statusCode}");
-  if (response.statusCode == 200) {
-    return true;
-  } else {
-    showSnackBarApiError(navigatorKey.currentState!.context);
-    return false;
-  }
+  // var response = await postData("/complete_ride", json);
+  // print("response status: ${response.statusCode}");
+  // if (response.statusCode == 200) {
+  //   return true;
+  // } else {
+  //   showSnackBarApiError(navigatorKey.currentState!.context);
+  //   return false;
+  // }
+  return true;
 }
 
 Future<Ride?> fetchRideById(String rideId) async {
@@ -185,10 +186,12 @@ Future<Ride?> fetchRideById(String rideId) async {
 
 Future<bool> updateProfile(String fName, String lName, String phoneNumber,
     String bloodGroup, String bio,
-    {isCreate = false, uploadFile = "", email}) async {
+    {isCreate = false, uploadFile = "", email, isUpdate = false}) async {
   try {
     await Future.delayed(Duration(seconds: 1));
-    var imageUri = FirebaseAuth.instance.currentUser!.photoURL;
+    var imageUri = (isCreate)
+        ? FirebaseAuth.instance.currentUser!.photoURL
+        : Authentication.loggedInUser!.imageUri;
     if (email == null && email.toString().isEmpty) {
       email = FirebaseAuth.instance.currentUser!.email;
     }
@@ -223,6 +226,14 @@ Future<bool> updateProfile(String fName, String lName, String phoneNumber,
         print('user Id received from server: $userId');
         await SharedPrefWrapper.instance.saveUser(userId);
         FirebasePushNotificationWrapper.getInstance().uploadTokenToServer();
+        await fetchCurrentUserProfile();
+      }
+      return resp.statusCode == 200;
+    } else {
+      print("fetch");
+      var userId = await SharedPrefWrapper.instance.getUserId();
+      print("userId $userId");
+      if (isUpdate) {
         resp = await patchData('/profiles/$userId', {
           'first_name': fName,
           'last_name': lName,
@@ -234,28 +245,11 @@ Future<bool> updateProfile(String fName, String lName, String phoneNumber,
           'firebase_uid': uid,
           'firebase_login_token': idToken
         });
-        await fetchCurrentUserProfile();
+        print("resp:  ${resp.statusCode}");
       }
-      return resp.statusCode == 200;
-    } else {
-      print("fetch");
-      var userId = await SharedPrefWrapper.instance.getUserId();
-      print("userId $userId");
-      resp = await patchData('/profiles/$userId', {
-        'first_name': fName,
-        'last_name': lName,
-        'phone': phoneNumber,
-        'bio': bio,
-        'blood_group': bloodGroup,
-        'email': email,
-        'image_uri': imageUri,
-        'firebase_uid': uid,
-        'firebase_login_token': idToken
-      });
-      print("resp:  ${resp.statusCode}");
       await fetchCurrentUserProfile();
+      return true;
     }
-    return resp.statusCode == 200;
   } on Exception {}
   return Future.value(false);
 }

@@ -151,8 +151,6 @@ class _MyAppState extends State<TripzieMarkOnMap> {
             onPressed: () {
               widget.newride.source = source.place;
               widget.newride.destination = destination.place;
-              print("source: ${widget.newride.source!}");
-              print("destination: ${widget.newride.destination!}");
               Navigator.pop(context, widget.newride);
             },
           ),

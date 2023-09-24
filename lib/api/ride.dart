@@ -28,6 +28,10 @@ class Ride {
     return createdBy == Authentication.loggedInUser!.userId!;
   }
 
+  bool isCompleted() {
+    return rideStatus == RideStatus.COMPLETED;
+  }
+
   Ride.fromJson(Map<String, dynamic> json) {
     _id = json['_id'];
     name = json['name'];

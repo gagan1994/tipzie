@@ -149,7 +149,7 @@ class _VerrifyOTPState extends State<VerifyOTP> {
                           user.phoneNumber ?? '',
                           '',
                           '',
-                          isCreate: true);
+                          isCreate: false);
                       if (isSuccess) {
                         Navigator.pushNamedAndRemoveUntil(
                             context,

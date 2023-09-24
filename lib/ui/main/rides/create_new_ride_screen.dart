@@ -124,7 +124,10 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                             decoration: InputDecoration(
                               labelText: isNameEmpty
                                   ? "Please enter valid ride name"
-                                  : 'Enter Ride Name',
+                                  : (widget.ride == null ||
+                                          widget.ride!.isCompleted())
+                                      ? ''
+                                      : 'Enter Ride Name',
                               labelStyle: TextStyle(
                                   color: isNameEmpty ? Colors.red : null),
                               border: InputBorder.none,
@@ -184,6 +187,10 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                       place: newRideObject.destination),
                                   (selected) async {
                                     print("onClick ui");
+                                    if (widget.ride != null &&
+                                        widget.ride!.isCompleted()) {
+                                      return;
+                                    }
                                     if (newRideObject.source != null) {
                                       print(
                                           "source: ${newRideObject.source!.name!}");
@@ -192,7 +199,6 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                       print(
                                           "Destination: ${newRideObject.destination!.name!}");
                                     }
-
                                     var temprideObject =
                                         await Navigator.pushNamed(context,
                                                 TripzieMarkOnMap.PAGE_NAME,
@@ -276,28 +282,32 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                               ),
                           ],
                         ),
-                        const Text(
-                          "Select Riders",
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        TrippitSearchInput((textChanged) {
-                          setState(() {
-                            userList.clear();
-                            if (textChanged.isEmpty) {
-                              userList.addAll(originalList);
-                            } else {
-                              for (var item in originalList) {
-                                if (item
-                                    .toString()
-                                    .toLowerCase()
-                                    .contains(textChanged.toLowerCase())) {
-                                  userList.add(item);
+                        if (widget.ride == null || !widget.ride!.isCompleted())
+                          const Text(
+                            "Select Riders",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        if (widget.ride == null || !widget.ride!.isCompleted())
+                          TrippitSearchInput((textChanged) {
+                            setState(() {
+                              userList.clear();
+                              if (textChanged.isEmpty) {
+                                userList.addAll(originalList);
+                              } else {
+                                for (var item in originalList) {
+                                  if (item
+                                      .toString()
+                                      .toLowerCase()
+                                      .contains(textChanged.toLowerCase())) {
+                                    userList.add(item);
+                                  }
                                 }
                               }
-                            }
-                          });
-                        }),
-                        if (newRideObject.selectedUsers.isNotEmpty)
+                            });
+                          }),
+                        if (newRideObject.selectedUsers.isNotEmpty &&
+                            (widget.ride == null ||
+                                !widget.ride!.isCompleted()))
                           Container(
                             margin: EdgeInsets.only(bottom: 10),
                             child: getSelectedList(),
@@ -331,6 +341,10 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                 itemBuilder: (context, index) {
                                   return GestureDetector(
                                     onTap: () {
+                                      if (widget.ride != null &&
+                                          !widget.ride!.isCompleted()) {
+                                        return;
+                                      }
                                       setState(() {
                                         newRideObject
                                             .toggleUser(userList[index]);
@@ -358,16 +372,18 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                             ],
                                           ),
                                         ),
-                                        Container(
-                                            alignment: Alignment.topCenter,
-                                            child: Icon(
-                                              newRideObject.isSelectedUser(
-                                                      userList[index])
-                                                  ? Icons.check_box
-                                                  : Icons
-                                                      .check_box_outline_blank,
-                                              size: 15,
-                                            ))
+                                        if (widget.ride == null ||
+                                            !widget.ride!.isCompleted())
+                                          Container(
+                                              alignment: Alignment.topCenter,
+                                              child: Icon(
+                                                newRideObject.isSelectedUser(
+                                                        userList[index])
+                                                    ? Icons.check_box
+                                                    : Icons
+                                                        .check_box_outline_blank,
+                                                size: 15,
+                                              ))
                                       ],
                                     ),
                                   );
@@ -388,97 +404,11 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
           showProgress(isInProgress)
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: !isInProgress
-          ? (isEdit)
-              ? TripzieButton(
-                  button_text: "Create Ride",
-                  onPressed: () async {
-                    isNameEmpty = newRideObject.name == null ||
-                        newRideObject.name!.isEmpty;
-                    isSourceOrDestinationEmpty = newRideObject.source == null ||
-                        newRideObject.destination == null;
-                    isStartDateEndDateEmpty = newRideObject.startDate == null ||
-                        newRideObject.endDate == null;
-                    isSelectedUsersEmpty = newRideObject.selectedUsers.isEmpty;
-                    if (isNameEmpty ||
-                        isSourceOrDestinationEmpty ||
-                        isStartDateEndDateEmpty) {
-                      setState(() {});
-                      showSnackBar(context, "Please Resolve the Errors");
-                      return;
-                    }
-                    setState(() {
-                      isInProgress = true;
-                    });
-                    var res = await createRides(newRideObject);
-                    setState(() {
-                      isInProgress = false;
-                    });
-                    if (res) {
-                      showSnackBarApiSuccess(context,
-                          message: "Ride Created Successfully");
-                      // Navigator.pop(context);
-                    } else {
-                      showSnackBarApiError(context,
-                          message:
-                              "Unable to create Rides at this movement Please try again later");
-                    }
-                  },
-                )
-              : Container(
-                  padding: EdgeInsets.symmetric(horizontal: 50),
-                  width: MediaQuery.of(context).size.width,
-                  child: SwipeableButtonView(
-                    buttonColor: Colors.transparent,
-                    indicatorColor: AlwaysStoppedAnimation(Colors.transparent),
-                    buttonText: 'Slide to start ride',
-                    buttonWidget: Container(
-                      child: Image(
-                        image: AssetImage(logo_image),
-                        width: 30,
-                        height: 30,
-                      ),
-                    ),
-                    activeColor: accent_color,
-                    isFinished: isFinished,
-                    onWaitingProcess: () {
-                      setState(() {
-                        isFinished = true;
-                      });
-                    },
-                    onFinish: () async {
-                      print("start ride api");
-
-                      var isSuccess = await startRide(widget.ride!.getId());
-                      if (isSuccess) {
-                        showSnackBarApiSuccess(context,
-                            message: "Ride Started successfully");
-
-                        var permissionStatus =
-                            await Permission.microphone.request();
-                        if (permissionStatus != PermissionStatus.granted) {
-                          showSnackBar(context, "Please provide permission");
-                          return;
-                        }
-                        permissionStatus = await Permission.location.request();
-                        if (permissionStatus != PermissionStatus.granted) {
-                          showSnackBar(context, "Please provide permission");
-                          return;
-                        }
-
-                        Navigator.popAndPushNamed(
-                            context, CurrentRideScreen.PAGE_NAME,
-                            arguments: widget.ride);
-                      } else {
-                        setState(() {
-                          isFinished = false;
-                        });
-                      }
-                    },
-                  ),
-                )
-          : null,
+      floatingActionButtonLocation:
+          (widget.ride != null && widget.ride!.isCompleted())
+              ? FloatingActionButtonLocation.endFloat
+              : FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: getFabButton(),
     );
   }
 
@@ -487,6 +417,9 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
       [isEndDate = false]) {
     return GestureDetector(
       onTap: () async {
+        if (widget.ride != null && widget.ride!.isCompleted()) {
+          return;
+        }
         var tempInitialDate = DateTime.now();
         var firstDate = DateTime.now();
         if (isEndDate) {
@@ -548,14 +481,19 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
       originalList.clear();
       originalList.addAll(data);
       userList.clear();
-      userList.addAll(data);
+      if (widget.ride != null) {
+        for (var item in widget.ride!.selectedUsers!) {
+          newRideObject.selectedUsers[item.userId!] = item;
+        }
+      }
+
+      if (widget.ride != null && widget.ride!.isCompleted()) {
+        userList.addAll(widget.ride!.selectedUsers!);
+      } else {
+        userList.addAll(data);
+      }
     });
     print("data: $data");
-    if (widget.ride != null) {
-      for (var item in widget.ride!.selectedUsers!) {
-        newRideObject.selectedUsers[item.userId!] = item;
-      }
-    }
     setState(() {
       isInProgress = false;
     });
@@ -581,6 +519,9 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
           children: newRideObject.selectedUsers.keys
               .map((k) => GestureDetector(
                     onTap: () {
+                      if (widget.ride != null && widget.ride!.isCompleted()) {
+                        return;
+                      }
                       setState(() {
                         newRideObject.removeUser(k);
                       });
@@ -613,6 +554,10 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                 alignment: PlaceholderAlignment.middle,
                                 child: GestureDetector(
                                   onTap: () {
+                                    if (widget.ride != null &&
+                                        widget.ride!.isCompleted()) {
+                                      return;
+                                    }
                                     setState(() {
                                       newRideObject.removeUser(k);
                                     });
@@ -631,6 +576,215 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                     ),
                   ))
               .toList()),
+    );
+  }
+
+  getFabButton() {
+    print("isInProgress: $isInProgress");
+    if (!isInProgress) {
+      if ((widget.ride == null || !widget.ride!.isCompleted())) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 50),
+          width: MediaQuery.of(context).size.width,
+          child: SwipeableButtonView(
+            buttonColor: Colors.transparent,
+            indicatorColor: AlwaysStoppedAnimation(Colors.transparent),
+            buttonText: 'Slide to start ride',
+            buttonWidget: Container(
+              child: Image(
+                image: AssetImage(logo_image),
+                width: 30,
+                height: 30,
+              ),
+            ),
+            activeColor: accent_color,
+            isFinished: isFinished,
+            onWaitingProcess: () {
+              setState(() {
+                isFinished = true;
+              });
+            },
+            onFinish: () async {
+              print("start ride api");
+
+              var isSuccess = await startRide(widget.ride!.getId());
+              if (isSuccess) {
+                showSnackBarApiSuccess(context,
+                    message: "Ride Started successfully");
+
+                var permissionStatus = await Permission.microphone.request();
+                if (permissionStatus != PermissionStatus.granted) {
+                  showSnackBar(context, "Please provide permission");
+                  return;
+                }
+                permissionStatus = await Permission.location.request();
+                if (permissionStatus != PermissionStatus.granted) {
+                  showSnackBar(context, "Please provide permission");
+                  return;
+                }
+
+                Navigator.popAndPushNamed(context, CurrentRideScreen.PAGE_NAME,
+                    arguments: widget.ride);
+              } else {
+                setState(() {
+                  isFinished = false;
+                });
+              }
+            },
+          ),
+        );
+      }
+      if (widget.ride != null && widget.ride!.isCompleted()) {
+        return getRideCompletedUi();
+      }
+      if (isEdit) {
+        return TripzieButton(
+          button_text: "Create Ride",
+          onPressed: () async {
+            isNameEmpty =
+                newRideObject.name == null || newRideObject.name!.isEmpty;
+            isSourceOrDestinationEmpty = newRideObject.source == null ||
+                newRideObject.destination == null;
+            isStartDateEndDateEmpty = newRideObject.startDate == null ||
+                newRideObject.endDate == null;
+            isSelectedUsersEmpty = newRideObject.selectedUsers.isEmpty;
+            if (isNameEmpty ||
+                isSourceOrDestinationEmpty ||
+                isStartDateEndDateEmpty) {
+              setState(() {});
+              showSnackBar(context, "Please Resolve the Errors");
+              return;
+            }
+            setState(() {
+              isInProgress = true;
+            });
+            var res = await createRides(newRideObject);
+            setState(() {
+              isInProgress = false;
+            });
+            if (res) {
+              showSnackBarApiSuccess(context,
+                  message: "Ride Created Successfully");
+              // Navigator.pop(context);
+            } else {
+              showSnackBarApiError(context,
+                  message:
+                      "Unable to create Rides at this movement Please try again later");
+            }
+          },
+        );
+      }
+    }
+    return null;
+    /*
+    * (!isInProgress &&
+        (widget.ride == null || !widget.ride!.isCompleted()))
+        ? (isEdit)
+        ? TripzieButton(
+      button_text: "Create Ride",
+      onPressed: () async {
+        isNameEmpty = newRideObject.name == null ||
+            newRideObject.name!.isEmpty;
+        isSourceOrDestinationEmpty = newRideObject.source == null ||
+            newRideObject.destination == null;
+        isStartDateEndDateEmpty = newRideObject.startDate == null ||
+            newRideObject.endDate == null;
+        isSelectedUsersEmpty = newRideObject.selectedUsers.isEmpty;
+        if (isNameEmpty ||
+            isSourceOrDestinationEmpty ||
+            isStartDateEndDateEmpty) {
+          setState(() {});
+          showSnackBar(context, "Please Resolve the Errors");
+          return;
+        }
+        setState(() {
+          isInProgress = true;
+        });
+        var res = await createRides(newRideObject);
+        setState(() {
+          isInProgress = false;
+        });
+        if (res) {
+          showSnackBarApiSuccess(context,
+              message: "Ride Created Successfully");
+          // Navigator.pop(context);
+        } else {
+          showSnackBarApiError(context,
+              message:
+              "Unable to create Rides at this movement Please try again later");
+        }
+      },
+    )
+        : Container(
+      padding: EdgeInsets.symmetric(horizontal: 50),
+      width: MediaQuery.of(context).size.width,
+      child: SwipeableButtonView(
+        buttonColor: Colors.transparent,
+        indicatorColor: AlwaysStoppedAnimation(Colors.transparent),
+        buttonText: 'Slide to start ride',
+        buttonWidget: Container(
+          child: Image(
+            image: AssetImage(logo_image),
+            width: 30,
+            height: 30,
+          ),
+        ),
+        activeColor: accent_color,
+        isFinished: isFinished,
+        onWaitingProcess: () {
+          setState(() {
+            isFinished = true;
+          });
+        },
+        onFinish: () async {
+          print("start ride api");
+
+          var isSuccess = await startRide(widget.ride!.getId());
+          if (isSuccess) {
+            showSnackBarApiSuccess(context,
+                message: "Ride Started successfully");
+
+            var permissionStatus =
+            await Permission.microphone.request();
+            if (permissionStatus != PermissionStatus.granted) {
+              showSnackBar(context, "Please provide permission");
+              return;
+            }
+            permissionStatus = await Permission.location.request();
+            if (permissionStatus != PermissionStatus.granted) {
+              showSnackBar(context, "Please provide permission");
+              return;
+            }
+
+            Navigator.popAndPushNamed(
+                context, CurrentRideScreen.PAGE_NAME,
+                arguments: widget.ride);
+          } else {
+            setState(() {
+              isFinished = false;
+            });
+          }
+        },
+      ),
+    )
+        : null*/
+  }
+
+  getRideCompletedUi() {
+    return SizedBox(
+      height: 30,
+      child: FittedBox(
+        child: FloatingActionButton.extended(
+          label: Text('Completed'), // <-- Text
+          backgroundColor: Colors.green,
+          icon: Icon(
+            // <-- Icon
+            Icons.check_circle,
+            size: 20.0,
+          ),
+          onPressed: () {},
+        ),
+      ),
     );
   }
 }

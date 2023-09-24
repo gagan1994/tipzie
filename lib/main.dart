@@ -83,8 +83,12 @@ class MyApp extends StatelessWidget {
             final phone = settings.arguments as PhoneNumberDetails;
             return rightToLeftTransition(VerifyOTP(phone));
           case CreateNewRideScreen.PAGE_NAME:
-            final rideItem = settings.arguments as Ride;
-            return rightToLeftTransition(CreateNewRideScreen(rideItem));
+            var rideItemTemp = settings.arguments;
+            Ride? ride = null;
+            if (rideItemTemp != null) {
+              ride = rideItemTemp as Ride;
+            }
+            return rightToLeftTransition(CreateNewRideScreen(ride));
           case DiscoveryDetailsScreen.PAGE_NAME:
             final discoveryItem = settings.arguments as DiscoveryListItem;
             return bottomToTop(DiscoveryDetailsScreen(discoveryItem));

@@ -290,7 +290,22 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   checkAndAddRightEndButton(Ride ride) {
-    if (ride.createdBy == Authentication.loggedInUser!.userId) {
+    if (ride.isCreatedByCurrentUser()) {
+      if (ride.isCompleted()) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(
+              Radius.circular(20),
+            ),
+            color: Colors.blue.shade100,
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 13),
+          child: Text(
+            "Completed",
+            style: TextStyle(color: accent_color, fontSize: 8),
+          ),
+        );
+      }
       return Container(
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(
@@ -299,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: accent_color,
         ),
         padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 13),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
