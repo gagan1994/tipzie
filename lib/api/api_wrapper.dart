@@ -152,8 +152,21 @@ Future<bool> startRide(String rideId) async {
   } else {
     showSnackBar(
         navigatorKey.currentState!.context, "Unable to load Please Refresh");
+    return false;
   }
-  return true;
+}
+
+Future<bool> completeRide(String rideId) async {
+  print("fetchRideById");
+  var json = {"rideId": rideId};
+  var response = await postData("/complete_ride", json);
+  print("response status: ${response.statusCode}");
+  if (response.statusCode == 200) {
+    return true;
+  } else {
+    showSnackBarApiError(navigatorKey.currentState!.context);
+    return false;
+  }
 }
 
 Future<Ride?> fetchRideById(String rideId) async {

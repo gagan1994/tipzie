@@ -9,7 +9,8 @@ import 'map/current_ride_screen.dart';
 
 class LiveRide extends StatefulWidget {
   Ride ride;
-  LiveRide(this.ride, {Key? key}) : super(key: key);
+  Function(bool) callback;
+  LiveRide(this.ride, this.callback, {Key? key}) : super(key: key);
 
   @override
   State<LiveRide> createState() => _LiveRideState();
@@ -84,8 +85,12 @@ class _LiveRideState extends State<LiveRide> {
       showSnackBar(context, "Please provide permission");
       return;
     }
-    Navigator.pushNamed(context, CurrentRideScreen.PAGE_NAME,
+    var result = await Navigator.pushNamed(context, CurrentRideScreen.PAGE_NAME,
         arguments: widget.ride);
+    print("nav result: $result");
+    if (result != null && result is bool) {
+      widget.callback(result);
+    }
   }
 
   _getLiveRideTiles(String text) {

@@ -71,7 +71,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             itemBuilder: (BuildContext context, int index) {
                               var item =
                                   onGoingRides[index % onGoingRides.length];
-                              return LiveRide(item);
+                              return LiveRide(item, (isRefresh) {
+                                if (isRefresh) {
+                                  loadData();
+                                }
+                              });
                             }),
                       verticalDivider(),
                       if (myRides.length != 0)

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:swipeable_button_view/swipeable_button_view.dart';
+import 'package:tripzie/api/api_wrapper.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/map/assistant_helper.dart';
 import 'package:tripzie/ui/user_avatar.dart';
@@ -134,7 +135,13 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
                     });
                   },
                   onFinish: () async {
-                    print("complete ride api");
+                    var isCompleteRide =
+                        await completeRide(widget.ride.getId());
+                    if (isCompleteRide) {
+                      Navigator.pop(context, true);
+                    }
+                    isFinished = false;
+                    setState(() {});
                   },
                 ),
               ))

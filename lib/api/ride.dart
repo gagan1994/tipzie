@@ -56,7 +56,6 @@ class Ride {
     try {
       startDate = DateTime.tryParse(start_time);
       endDate = DateTime.tryParse(end_time);
-      print("Riders: ${json['riders']}");
       selectedUsers = (json['riders'] as List)
           .map((item) => findUserWithId(item as String))
           .toList();
@@ -64,7 +63,6 @@ class Ride {
       startDate = DateTime.now();
       endDate = DateTime.now();
       selectedUsers = [];
-      print("_id:$_id: exception: ${e}");
     }
   }
 
