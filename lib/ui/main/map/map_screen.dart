@@ -97,12 +97,30 @@ class _MyAppState extends State<TripzieMap> {
         currentLocation!.longitude,
         currentLocation!.altitude,
         currentLocation!.timestamp!.millisecond.toDouble(),
-        Authentication.getUser());
+        Authentication.loggedInUser!);
     markers.clear();
+    if (widget.ride.source != null) {
+      var marker = Marker(
+        markerId: MarkerId(widget.ride.source!.name!),
+        position: LatLng(widget.ride.source!.lat!, widget.ride.source!.lng!),
+        infoWindow: InfoWindow(title: widget.ride!.name!),
+      );
+      markers.add(marker);
+    }
+    if (widget.ride.destination != null) {
+      var marker = Marker(
+        markerId: MarkerId(widget.ride.destination!.name!),
+        position: LatLng(
+            widget.ride.destination!.lat!, widget.ride.destination!.lng!),
+        infoWindow: InfoWindow(title: widget.ride.destination!.name!),
+      );
+      markers.add(marker);
+    }
     addMarker(currentMarker);
   }
 
   addMarker(LiveLocationModel model) async {
+    print("model - > ${model.email}");
     var image = await MapUtils.getMarkerIcon(model.photoURL!, Size(75, 75));
     CameraPosition cameraPosition = CameraPosition(
       target: LatLng(model.latitude!, model.longitude!),
@@ -115,15 +133,13 @@ class _MyAppState extends State<TripzieMap> {
         infoWindow: InfoWindow(title: MapUtils.getInfoWindow(model)),
         icon: BitmapDescriptor.fromBytes(image));
     markers.add(marker);
-    if (Authentication.isCurrentUser(model.userId)) {
-      controller.moveCamera(CameraUpdate.newCameraPosition(cameraPosition));
-      controller.showMarkerInfoWindow(marker.markerId);
-    } else {
-      controller.moveCamera(CameraUpdate.newLatLngBounds(
-        MapUtils.boundsFromLatLngList(markers),
-        100.0,
-      ));
-    }
+
+    // adding source and destination markers
+
+    controller.moveCamera(CameraUpdate.newLatLngBounds(
+      MapUtils.boundsFromLatLngList(markers),
+      100.0,
+    ));
     setState(() {});
   }
 }

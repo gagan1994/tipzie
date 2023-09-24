@@ -97,7 +97,7 @@ class _TestUiState extends State<TestUi> {
       77.5946,
       40.4376,
       DateTime.now().millisecond.toDouble(),
-      Authentication.getUser(),
+      Authentication.loggedInUser,
     );
     SocketWrapper.instance
         .sendDataToTopic("rides_$ride_id", currentMarker.toJson());
