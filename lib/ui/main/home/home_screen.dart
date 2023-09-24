@@ -263,14 +263,28 @@ class _HomeScreenState extends State<HomeScreen> {
       return b.startDate!.compareTo(a.startDate!);
     });
     for (var item in allRides) {
-      if (item.rideStatus == RideStatus.ACTIVE) {
+      if (item.rideActive()) {
         onGoingRides.add(item);
         continue;
       }
       if (item.createdBy == Authentication.loggedInUser!.userId) {
         myRides.add(item);
       } else {
-        suggestionRides.add(item);
+        bool isMyRide = false;
+        for (var user in item.selectedUsers!) {
+          print(
+              "user id: ${user.userId} current userId: ${Authentication.loggedInUser!.userId}");
+          if (user.userId == Authentication.loggedInUser!.userId) {
+            isMyRide = true;
+          }
+        }
+        if (isMyRide) {
+          myRides.add(item);
+        } else {
+          if (!item.isCompleted()) {
+            suggestionRides.add(item);
+          }
+        }
       }
     }
     setState(() {
@@ -331,6 +345,26 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     }
+    return Container(
+      alignment: Alignment.bottomRight,
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(
+          Radius.circular(5),
+        ),
+        color: accent_color,
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 13),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "See Details",
+            style: TextStyle(color: Colors.white, fontSize: 12),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget getSuggestionRide(Ride ride) {
@@ -387,12 +421,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   padding:
                       const EdgeInsets.symmetric(vertical: 7, horizontal: 13),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "Join",
+                        ride.isCompleted() ? "See Details" : "Join",
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ],

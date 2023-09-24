@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:swipeable_button_view/swipeable_button_view.dart';
 import 'package:tripzie/api/api_wrapper.dart';
 import 'package:tripzie/api/user_data.dart';
+import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/db/users.dart';
 import 'package:tripzie/ui/main/map/current_ride_screen.dart';
 import 'package:tripzie/ui/main/map/select_places_on_map.dart';
@@ -124,8 +125,8 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                             decoration: InputDecoration(
                               labelText: isNameEmpty
                                   ? "Please enter valid ride name"
-                                  : (widget.ride == null ||
-                                          widget.ride!.isCompleted())
+                                  : (widget.ride != null &&
+                                          widget.ride!.isEditable())
                                       ? ''
                                       : 'Enter Ride Name',
                               labelStyle: TextStyle(
@@ -188,7 +189,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                   (selected) async {
                                     print("onClick ui");
                                     if (widget.ride != null &&
-                                        widget.ride!.isCompleted()) {
+                                        widget.ride!.isEditable()) {
                                       return;
                                     }
                                     if (newRideObject.source != null) {
@@ -282,12 +283,12 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                               ),
                           ],
                         ),
-                        if (widget.ride == null || !widget.ride!.isCompleted())
+                        if (widget.ride == null || !widget.ride!.isEditable())
                           const Text(
                             "Select Riders",
                             style: TextStyle(fontSize: 12),
                           ),
-                        if (widget.ride == null || !widget.ride!.isCompleted())
+                        if (widget.ride == null || !widget.ride!.isEditable())
                           TrippitSearchInput((textChanged) {
                             setState(() {
                               userList.clear();
@@ -306,8 +307,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                             });
                           }),
                         if (newRideObject.selectedUsers.isNotEmpty &&
-                            (widget.ride == null ||
-                                !widget.ride!.isCompleted()))
+                            (widget.ride == null || !widget.ride!.isEditable()))
                           Container(
                             margin: EdgeInsets.only(bottom: 10),
                             child: getSelectedList(),
@@ -339,10 +339,14 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                 padding: EdgeInsets.zero,
                                 itemCount: userList.length,
                                 itemBuilder: (context, index) {
+                                  if (userList[index].userId ==
+                                      Authentication.loggedInUser!.userId) {
+                                    return SizedBox();
+                                  }
                                   return GestureDetector(
                                     onTap: () {
                                       if (widget.ride != null &&
-                                          !widget.ride!.isCompleted()) {
+                                          !widget.ride!.isEditable()) {
                                         return;
                                       }
                                       setState(() {
@@ -373,7 +377,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                           ),
                                         ),
                                         if (widget.ride == null ||
-                                            !widget.ride!.isCompleted())
+                                            !widget.ride!.isEditable())
                                           Container(
                                               alignment: Alignment.topCenter,
                                               child: Icon(
@@ -405,7 +409,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
         ],
       ),
       floatingActionButtonLocation:
-          (widget.ride != null && widget.ride!.isCompleted())
+          (widget.ride != null && widget.ride!.isEditable())
               ? FloatingActionButtonLocation.endFloat
               : FloatingActionButtonLocation.centerFloat,
       floatingActionButton: getFabButton(),
@@ -417,7 +421,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
       [isEndDate = false]) {
     return GestureDetector(
       onTap: () async {
-        if (widget.ride != null && widget.ride!.isCompleted()) {
+        if (widget.ride != null && widget.ride!.isEditable()) {
           return;
         }
         var tempInitialDate = DateTime.now();
@@ -486,8 +490,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
           newRideObject.selectedUsers[item.userId!] = item;
         }
       }
-
-      if (widget.ride != null && widget.ride!.isCompleted()) {
+      if (widget.ride != null && widget.ride!.isEditable()) {
         userList.addAll(widget.ride!.selectedUsers!);
       } else {
         userList.addAll(data);
@@ -519,7 +522,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
           children: newRideObject.selectedUsers.keys
               .map((k) => GestureDetector(
                     onTap: () {
-                      if (widget.ride != null && widget.ride!.isCompleted()) {
+                      if (widget.ride != null && widget.ride!.isEditable()) {
                         return;
                       }
                       setState(() {
@@ -555,7 +558,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                 child: GestureDetector(
                                   onTap: () {
                                     if (widget.ride != null &&
-                                        widget.ride!.isCompleted()) {
+                                        widget.ride!.isEditable()) {
                                       return;
                                     }
                                     setState(() {
@@ -582,7 +585,47 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
   getFabButton() {
     print("isInProgress: $isInProgress");
     if (!isInProgress) {
-      if ((widget.ride == null || !widget.ride!.isCompleted())) {
+      if (widget.ride != null && widget.ride!.isCompleted()) {
+        return getRideCompletedUi();
+      }
+      if ((widget.ride == null || !widget.ride!.isEditable())) {
+        if (isEdit) {
+          return TripzieButton(
+            button_text: "Create Ride",
+            onPressed: () async {
+              isNameEmpty =
+                  newRideObject.name == null || newRideObject.name!.isEmpty;
+              isSourceOrDestinationEmpty = newRideObject.source == null ||
+                  newRideObject.destination == null;
+              isStartDateEndDateEmpty = newRideObject.startDate == null ||
+                  newRideObject.endDate == null;
+              isSelectedUsersEmpty = newRideObject.selectedUsers.isEmpty;
+              if (isNameEmpty ||
+                  isSourceOrDestinationEmpty ||
+                  isStartDateEndDateEmpty) {
+                setState(() {});
+                showSnackBar(context, "Please Resolve the Errors");
+                return;
+              }
+              setState(() {
+                isInProgress = true;
+              });
+              var res = await createRides(newRideObject);
+              setState(() {
+                isInProgress = false;
+              });
+              if (res) {
+                showSnackBarApiSuccess(context,
+                    message: "Ride Created Successfully");
+                Navigator.pop(context);
+              } else {
+                showSnackBarApiError(context,
+                    message:
+                        "Unable to create Rides at this movement Please try again later");
+              }
+            },
+          );
+        }
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 50),
           width: MediaQuery.of(context).size.width,
@@ -632,46 +675,6 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
               }
             },
           ),
-        );
-      }
-      if (widget.ride != null && widget.ride!.isCompleted()) {
-        return getRideCompletedUi();
-      }
-      if (isEdit) {
-        return TripzieButton(
-          button_text: "Create Ride",
-          onPressed: () async {
-            isNameEmpty =
-                newRideObject.name == null || newRideObject.name!.isEmpty;
-            isSourceOrDestinationEmpty = newRideObject.source == null ||
-                newRideObject.destination == null;
-            isStartDateEndDateEmpty = newRideObject.startDate == null ||
-                newRideObject.endDate == null;
-            isSelectedUsersEmpty = newRideObject.selectedUsers.isEmpty;
-            if (isNameEmpty ||
-                isSourceOrDestinationEmpty ||
-                isStartDateEndDateEmpty) {
-              setState(() {});
-              showSnackBar(context, "Please Resolve the Errors");
-              return;
-            }
-            setState(() {
-              isInProgress = true;
-            });
-            var res = await createRides(newRideObject);
-            setState(() {
-              isInProgress = false;
-            });
-            if (res) {
-              showSnackBarApiSuccess(context,
-                  message: "Ride Created Successfully");
-              // Navigator.pop(context);
-            } else {
-              showSnackBarApiError(context,
-                  message:
-                      "Unable to create Rides at this movement Please try again later");
-            }
-          },
         );
       }
     }

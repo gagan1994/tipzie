@@ -28,6 +28,10 @@ class Ride {
     return createdBy == Authentication.loggedInUser!.userId!;
   }
 
+  bool isEditable() {
+    return rideStatus == RideStatus.COMPLETED || !isCreatedByCurrentUser();
+  }
+
   bool isCompleted() {
     return rideStatus == RideStatus.COMPLETED;
   }
@@ -68,6 +72,10 @@ class Ride {
       endDate = DateTime.now();
       selectedUsers = [];
     }
+  }
+
+  bool rideActive() {
+    return rideStatus == RideStatus.ACTIVE;
   }
 
   //"_id": "64aabdb502343f44c4f95f7d",

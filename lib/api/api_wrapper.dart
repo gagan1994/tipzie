@@ -92,9 +92,6 @@ Future<HashMap<String, UserProfile>> fetchProfiles() async {
     HashMap<String, UserProfile> userList = HashMap();
     for (var item in list) {
       var profile = UserProfile.fromJson(item);
-      if (profile.userId == Authentication.loggedInUser!.userId) {
-        continue;
-      }
       userList[profile.userId!] = profile;
     }
     return userList;
@@ -143,7 +140,7 @@ Future<List<Ride>> fetchRides() async {
 }
 
 Future<bool> startRide(String rideId) async {
-  print("fetchRideById");
+  print("startRide");
   var json = {"rideId": rideId};
   var response = await postData("/start_ride", json);
   print("response status: ${response.statusCode}");
