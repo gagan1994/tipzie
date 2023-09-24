@@ -3,6 +3,8 @@ import 'package:tripzie/db/users.dart';
 
 import '../ui/main/map/tripit_map_ui.dart';
 
+enum RideStatus { IDLE, ACTIVE, COMPLETED }
+
 class Ride {
   String _id = '';
   String name = '';
@@ -11,6 +13,8 @@ class Ride {
   DateTime? startDate;
   DateTime? endDate;
   String? imageUri;
+  RideStatus? rideStatus;
+  String? createdBy;
   bool isAvailable = false;
   DateTime endTime = DateTime.now();
   List<UserProfile>? selectedUsers = [];
@@ -22,6 +26,17 @@ class Ride {
   Ride.fromJson(Map<String, dynamic> json) {
     _id = json['_id'];
     name = json['name'];
+    createdBy = json['created_userid'];
+    var status = json['status'];
+    if (status == 'idle') {
+      rideStatus = RideStatus.IDLE;
+    }
+    if (status == 'active') {
+      rideStatus = RideStatus.ACTIVE;
+    }
+    if (status == 'completed') {
+      rideStatus = RideStatus.COMPLETED;
+    }
     if (name == null) {
       name = 'undefined';
     }

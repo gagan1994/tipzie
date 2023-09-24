@@ -2,13 +2,18 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:swipeable_button_view/swipeable_button_view.dart';
 import 'package:tripzie/api/api_wrapper.dart';
 import 'package:tripzie/api/user_data.dart';
 import 'package:tripzie/db/users.dart';
+import 'package:tripzie/ui/main/map/current_ride_screen.dart';
 import 'package:tripzie/ui/main/map/select_places_on_map.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 
+import '../../../api/ride.dart';
+import '../../../utils/trippit_assets.dart';
 import '../../../utils/ui/trippit_search_input.dart';
 import '../../../widgets/tripzie_button.dart';
 import '../../user_avatar.dart';
@@ -41,7 +46,8 @@ class NewRideObject {
 
 class CreateNewRideScreen extends StatefulWidget {
   static const PAGE_NAME = "/create_new_screen";
-  const CreateNewRideScreen({Key? key}) : super(key: key);
+  Ride? ride;
+  CreateNewRideScreen(this.ride, {Key? key}) : super(key: key);
 
   @override
   State<CreateNewRideScreen> createState() => _CreateNewRideScreenState();
@@ -49,10 +55,11 @@ class CreateNewRideScreen extends StatefulWidget {
 
 class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
   NewRideObject newRideObject = NewRideObject();
-
+  bool isFinished = false;
+  bool isEdit = true;
   List<UserProfile> originalList = [];
   List<UserProfile> userList = [];
-
+  TextEditingController controller = TextEditingController();
   bool isNameEmpty = false;
   bool isSourceOrDestinationEmpty = false;
   bool isStartDateEndDateEmpty = false;
@@ -63,6 +70,14 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
   @override
   void initState() {
     fetchProfileData();
+    if (widget.ride != null) {
+      isEdit = false;
+      newRideObject.startDate = widget.ride!.startDate;
+      newRideObject..destination = widget.ride!.destination;
+      newRideObject.source = widget.ride!.source;
+      controller.text = newRideObject.name = widget.ride!.name;
+      newRideObject.endDate = widget.ride!.endDate;
+    }
     super.initState();
   }
 
@@ -104,6 +119,8 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                 : null,
                           ),
                           child: TextField(
+                            enabled: isEdit,
+                            controller: controller,
                             decoration: InputDecoration(
                               labelText: isNameEmpty
                                   ? "Please enter valid ride name"
@@ -363,7 +380,8 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                     ),
                   ),
                 ),
-                titleBar(context, "Create New Ride", rightItem: SizedBox())
+                titleBar(context, !isEdit ? "Ride Details" : "Create New Ride",
+                    rightItem: SizedBox())
               ],
             ),
           ),
@@ -372,41 +390,94 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: !isInProgress
-          ? TripzieButton(
-              button_text: "Create Ride",
-              onPressed: () async {
-                isNameEmpty =
-                    newRideObject.name == null || newRideObject.name!.isEmpty;
-                isSourceOrDestinationEmpty = newRideObject.source == null ||
-                    newRideObject.destination == null;
-                isStartDateEndDateEmpty = newRideObject.startDate == null ||
-                    newRideObject.endDate == null;
-                isSelectedUsersEmpty = newRideObject.selectedUsers.isEmpty;
-                if (isNameEmpty ||
-                    isSourceOrDestinationEmpty ||
-                    isStartDateEndDateEmpty) {
-                  setState(() {});
-                  showSnackBar(context, "Please Resolve the Errors");
-                  return;
-                }
-                setState(() {
-                  isInProgress = true;
-                });
-                var res = await createRides(newRideObject);
-                setState(() {
-                  isInProgress = false;
-                });
-                if (res) {
-                  showSnackBarApiSuccess(context,
-                      message: "Ride Created Successfully");
-                  // Navigator.pop(context);
-                } else {
-                  showSnackBarApiError(context,
-                      message:
-                          "Unable to create Rides at this movement Please try again later");
-                }
-              },
-            )
+          ? (isEdit)
+              ? TripzieButton(
+                  button_text: "Create Ride",
+                  onPressed: () async {
+                    isNameEmpty = newRideObject.name == null ||
+                        newRideObject.name!.isEmpty;
+                    isSourceOrDestinationEmpty = newRideObject.source == null ||
+                        newRideObject.destination == null;
+                    isStartDateEndDateEmpty = newRideObject.startDate == null ||
+                        newRideObject.endDate == null;
+                    isSelectedUsersEmpty = newRideObject.selectedUsers.isEmpty;
+                    if (isNameEmpty ||
+                        isSourceOrDestinationEmpty ||
+                        isStartDateEndDateEmpty) {
+                      setState(() {});
+                      showSnackBar(context, "Please Resolve the Errors");
+                      return;
+                    }
+                    setState(() {
+                      isInProgress = true;
+                    });
+                    var res = await createRides(newRideObject);
+                    setState(() {
+                      isInProgress = false;
+                    });
+                    if (res) {
+                      showSnackBarApiSuccess(context,
+                          message: "Ride Created Successfully");
+                      // Navigator.pop(context);
+                    } else {
+                      showSnackBarApiError(context,
+                          message:
+                              "Unable to create Rides at this movement Please try again later");
+                    }
+                  },
+                )
+              : Container(
+                  padding: EdgeInsets.symmetric(horizontal: 50),
+                  width: MediaQuery.of(context).size.width,
+                  child: SwipeableButtonView(
+                    buttonColor: Colors.transparent,
+                    indicatorColor: AlwaysStoppedAnimation(Colors.transparent),
+                    buttonText: 'Slide to start ride',
+                    buttonWidget: Container(
+                      child: Image(
+                        image: AssetImage(logo_image),
+                        width: 30,
+                        height: 30,
+                      ),
+                    ),
+                    activeColor: accent_color,
+                    isFinished: isFinished,
+                    onWaitingProcess: () {
+                      setState(() {
+                        isFinished = true;
+                      });
+                    },
+                    onFinish: () async {
+                      print("start ride api");
+
+                      var isSuccess = await startRide(widget.ride!.getId());
+                      if (isSuccess) {
+                        showSnackBarApiSuccess(context,
+                            message: "Ride Started successfully");
+
+                        var permissionStatus =
+                            await Permission.microphone.request();
+                        if (permissionStatus != PermissionStatus.granted) {
+                          showSnackBar(context, "Please provide permission");
+                          return;
+                        }
+                        permissionStatus = await Permission.location.request();
+                        if (permissionStatus != PermissionStatus.granted) {
+                          showSnackBar(context, "Please provide permission");
+                          return;
+                        }
+
+                        Navigator.popAndPushNamed(
+                            context, CurrentRideScreen.PAGE_NAME,
+                            arguments: widget.ride);
+                      } else {
+                        setState(() {
+                          isFinished = false;
+                        });
+                      }
+                    },
+                  ),
+                )
           : null,
     );
   }
@@ -479,10 +550,15 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
       userList.clear();
       userList.addAll(data);
     });
+    print("data: $data");
+    if (widget.ride != null) {
+      for (var item in widget.ride!.selectedUsers!) {
+        newRideObject.selectedUsers[item.userId!] = item;
+      }
+    }
     setState(() {
       isInProgress = false;
     });
-    print("data: $data");
   }
 
   void sortItems() {

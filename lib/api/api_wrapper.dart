@@ -142,6 +142,20 @@ Future<List<Ride>> fetchRides() async {
   return [];
 }
 
+Future<bool> startRide(String rideId) async {
+  print("fetchRideById");
+  var json = {"rideId": rideId};
+  var response = await postData("/start_ride", json);
+  print("response status: ${response.statusCode}");
+  if (response.statusCode == 200) {
+    return true;
+  } else {
+    showSnackBar(
+        navigatorKey.currentState!.context, "Unable to load Please Refresh");
+  }
+  return true;
+}
+
 Future<Ride?> fetchRideById(String rideId) async {
   print("fetchRideById");
   var response = await fetchData("/rides/$rideId");
