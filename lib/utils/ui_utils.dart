@@ -51,6 +51,7 @@ SnackBar customSnackBar({required String content}) {
 }
 
 void showSnackBar(BuildContext context, String content) {
+  ScaffoldMessenger.of(context).hideCurrentSnackBar();
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       backgroundColor: Colors.black,
       content: Text(

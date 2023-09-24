@@ -1,4 +1,5 @@
 import 'package:tripzie/api/user_data.dart';
+import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/db/users.dart';
 
 import '../ui/main/map/tripit_map_ui.dart';
@@ -21,6 +22,10 @@ class Ride {
 
   String getId() {
     return _id;
+  }
+
+  bool isCreatedByCurrentUser() {
+    return createdBy == Authentication.loggedInUser!.userId!;
   }
 
   Ride.fromJson(Map<String, dynamic> json) {
