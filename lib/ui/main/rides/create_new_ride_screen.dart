@@ -74,7 +74,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
     if (widget.ride != null) {
       isEdit = false;
       newRideObject.startDate = widget.ride!.startDate;
-      newRideObject..destination = widget.ride!.destination;
+      newRideObject.destination = widget.ride!.destination;
       newRideObject.source = widget.ride!.source;
       controller.text = newRideObject.name = widget.ride!.name;
       newRideObject.endDate = widget.ride!.endDate;

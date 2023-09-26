@@ -50,9 +50,6 @@ class Ride {
     if (status == 'completed') {
       rideStatus = RideStatus.COMPLETED;
     }
-    if (name == null) {
-      name = 'undefined';
-    }
     if (json['location'] == null) {
       print(json);
     } else {
@@ -77,26 +74,4 @@ class Ride {
   bool rideActive() {
     return rideStatus == RideStatus.ACTIVE;
   }
-
-  //"_id": "64aabdb502343f44c4f95f7d",
-//         "name": "Male Trip",
-//         "location": {
-//             "source": {
-//                 "name": "shimoga",
-//                 "latitude": 40.7829,
-//                 "longitude": -73.9654
-//             },
-//             "destination": {
-//                 "name": "goa",
-//                 "latitude": 40.7829,
-//                 "longitude": -73.9654
-//             }
-//         },
-//         "start_time": "2023-07-09 12:30:00",
-//         "end_time": "2023-07-10 12:30:00",
-//         "riders": [
-//             "6173748a73b3c48b78e4e7f1",
-//             "6173748a73b3c48b78e4e7f2"
-//         ]
-//     },
 }

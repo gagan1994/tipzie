@@ -131,10 +131,7 @@ class _MyAppState extends State<TripzieMap> {
   addMarker(LiveLocationModel model) async {
     print("model - > ${model.email}");
     var image = await MapUtils.getMarkerIcon(model.photoURL!, Size(75, 75));
-    CameraPosition cameraPosition = CameraPosition(
-      target: LatLng(model.latitude!, model.longitude!),
-      zoom: 16,
-    );
+
     final GoogleMapController controller = await _controller.future;
     var marker = Marker(
         markerId: MarkerId(model.userId!),

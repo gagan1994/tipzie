@@ -1,7 +1,5 @@
 import 'package:background_locator_2/location_dto.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:tripzie/db/shared_pref_wrapper.dart';
 import 'package:tripzie/socket/models/models.dart';
 import 'package:tripzie/socket/socket_receive.dart';
 import 'package:tripzie/socket/socket_send.dart';
@@ -16,6 +14,7 @@ class SocketWrapper {
   static final SocketWrapper instance = SocketWrapper();
 
   UserProfile? user = null;
+  String ride_id = "";
 
   SocketWrapper() {}
   static void initSocket() {
@@ -39,7 +38,7 @@ class SocketWrapper {
   void init() {
     print("initSocket");
     try {
-      socket = IO.io("http://13.233.26.160:3001", <String, dynamic>{
+      socket = IO.io("http://192.168.1.2:3000", <String, dynamic>{
         "transports": ['websocket'],
         "autoConnect": true
       });
@@ -53,8 +52,7 @@ class SocketWrapper {
 
   void sendData(LocationDto locationDto) async {
     try {
-      print("SocketWrapper: sendData ${FirebaseAuth.instance.currentUser}");
-      var ride_id = await SharedPrefWrapper.instance.getOnGoingRide();
+      print("SocketWrapper: sendData ${user} ride_id: $ride_id");
       _sendData(
           'rides_' + ride_id, LiveLocationModel(locationDto, user).toJson());
     } catch (e) {
@@ -72,9 +70,11 @@ class SocketWrapper {
 
   void startListeningForLocationUpdates(
       String ride_id, Function(LiveLocationModel) callback) {
-    SharedPrefWrapper.instance.saveOnGoingRide(ride_id);
+    print("Saving OnGoingRide $ride_id");
+    this.ride_id = ride_id;
     _sender.emit('subscribe_rides', {'ride_id': ride_id});
     _receiver.listen('rides_' + ride_id, (data) async {
+      print("received from rides location $data");
       var liveData = LiveLocationModel.fromJson(data);
       callback(liveData);
     });
@@ -87,9 +87,8 @@ class SocketWrapper {
   onConnectSocket(data) async {
     print(
         "Socket connected id: ${socket.id} hashCode: ${SocketWrapper.instance.hashCode} $user");
-    var ride_id = await SharedPrefWrapper.instance.getOnGoingRide();
+    print('socket connected ride_id: ' + ride_id);
     if (ride_id.isNotEmpty) {
-      print('socket connected ride_id: ' + ride_id);
       _sender.emit('subscribe_rides', {'ride_id': ride_id});
     }
   }

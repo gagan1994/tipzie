@@ -20,7 +20,7 @@ class BackgroundLocationWrapper {
   BackgroundLocationWrapper._();
   static final instance = BackgroundLocationWrapper._();
   final isRunning = ValueNotifier<bool>(false);
-
+  BackgroundLocationWrapper() {}
   LocationDto? lastLocation;
   void startLiveRide() {
     print('startLiveRide');
@@ -34,9 +34,6 @@ class BackgroundLocationWrapper {
       IsolateNameServer.removePortNameMapping(
           LocationServiceRepository.isolateName);
     }
-
-    IsolateNameServer.registerPortWithName(
-        port.sendPort, LocationServiceRepository.isolateName);
     port.listen(
       (dynamic data) async {
         print('listened port data: $data');
@@ -45,6 +42,8 @@ class BackgroundLocationWrapper {
         }
       },
     );
+    IsolateNameServer.registerPortWithName(
+        port.sendPort, LocationServiceRepository.isolateName);
     BackgroundLocationWrapper.instance.startLocationService();
   }
 
