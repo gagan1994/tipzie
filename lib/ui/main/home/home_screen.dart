@@ -26,6 +26,7 @@ class HomeScreen extends TripzieBottomNavBarScreen {
 class _HomeScreenState extends State<HomeScreen> {
   bool isInProgress = false;
   bool isEmptyData = false;
+  bool isShowCreateRide = false;
 
   List<Ride> allRides = [];
   List<Ride> myRides = [];
@@ -45,17 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: accent_color_light_bg,
-      floatingActionButton: (isEmptyData)
+      floatingActionButton: (isEmptyData || isShowCreateRide)
           ? Padding(
               padding: const EdgeInsets.only(bottom: 50),
               child: FloatingActionButton.extended(
-                label: const Text('Create Ride'), // <-- Text
+                label: const Text('Create Rides'), // <-- Text
                 backgroundColor: accent_color,
-                icon: const Icon(
-                  // <-- Icon
-                  Icons.add,
-                  size: 15.0,
-                ),
                 onPressed: () async {
                   await Navigator.pushNamed(
                       context, CreateNewRideScreen.PAGE_NAME);
@@ -180,42 +176,51 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           MediaQuery.of(context)
                                                                   .size
                                                                   .width *
-                                                              0.6,
-                                                      height: 150,
+                                                              0.7,
                                                       margin:
                                                           EdgeInsets.all(10),
                                                       child: Stack(
                                                         children: [
                                                           Positioned(
+                                                            top: 0,
                                                             left: 0,
-                                                            top: 0,
-                                                            child: Text(
-                                                              ride.name,
-                                                              style: const TextStyle(
-                                                                  color:
-                                                                      accent_color,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize: 12),
-                                                            ),
-                                                          ),
-                                                          Positioned(
                                                             right: 0,
-                                                            top: 0,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .topRight,
-                                                              child: Text(
-                                                                dateFormat(ride
-                                                                    .startDate!),
-                                                                style: const TextStyle(
-                                                                    color:
-                                                                        accent_color,
-                                                                    fontSize:
-                                                                        8),
-                                                              ),
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Flexible(
+                                                                  child: Text(
+                                                                    "${ride.name}",
+                                                                    style: const TextStyle(
+                                                                        color:
+                                                                            accent_color,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        fontSize:
+                                                                            12),
+                                                                  ),
+                                                                ),
+                                                                Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .topRight,
+                                                                  child: Text(
+                                                                    dateFormat(ride
+                                                                        .startDate!),
+                                                                    style: const TextStyle(
+                                                                        color:
+                                                                            accent_color,
+                                                                        fontSize:
+                                                                            8),
+                                                                  ),
+                                                                )
+                                                              ],
                                                             ),
                                                           ),
                                                           for (var item in ride
@@ -475,6 +480,8 @@ class _HomeScreenState extends State<HomeScreen> {
         onGoingRides.isEmpty &&
         suggestionRides.isEmpty &&
         otherCompletedRides.isEmpty;
+    isShowCreateRide =
+        myRides.isEmpty && onGoingRides.isEmpty && suggestionRides.isEmpty;
     setState(() {
       isInProgress = false;
     });

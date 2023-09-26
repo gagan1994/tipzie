@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:tripzie/api/api_wrapper.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
+import 'package:tripzie/utils/trppit_color.dart';
 
 import '../../../api/ride.dart';
 import '../../../utils/tab_view.dart';
 import '../../../utils/ui_utils.dart';
+import 'create_new_ride_screen.dart';
 
 class RideScreen extends TripzieBottomNavBarScreen {
   @override
@@ -23,24 +25,36 @@ class _MyAppState extends State<RideScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return TrippitTabView((selectedTab) {}, [
-      TrippitTabDetails(
-        'Current Rides',
-        currentRides.isEmpty
-            ? Container(
-                alignment: Alignment.center,
-                child: Text("Oops No Rides to show please Create new ride"))
-            : _getRideDetails(currentRides),
+    return Scaffold(
+      body: TrippitTabView((selectedTab) {}, [
+        TrippitTabDetails(
+          'Current Rides',
+          currentRides.isEmpty
+              ? Container(
+                  alignment: Alignment.center,
+                  child: Text("Oops No Rides to show please Create new ride"))
+              : _getRideDetails(currentRides),
+        ),
+        TrippitTabDetails(
+          'My rides',
+          myRidesRides.isEmpty
+              ? Container(
+                  alignment: Alignment.center,
+                  child: Text("Oops No Rides to show please Create new ride"))
+              : _getRideDetails(currentRides),
+        )
+      ]),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 50),
+        child: FloatingActionButton.extended(
+          label: const Text('Create Rides'), // <-- Text
+          backgroundColor: accent_color,
+          onPressed: () async {
+            await Navigator.pushNamed(context, CreateNewRideScreen.PAGE_NAME);
+          },
+        ),
       ),
-      TrippitTabDetails(
-        'My rides',
-        myRidesRides.isEmpty
-            ? Container(
-                alignment: Alignment.center,
-                child: Text("Oops No Rides to show please Create new ride"))
-            : _getRideDetails(currentRides),
-      )
-    ]);
+    );
   }
 
   Widget _getRideDetails(List<Ride> rideList) {

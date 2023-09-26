@@ -63,11 +63,6 @@ class _MainScreenState extends State<MainScreen>
         child: Stack(
           children: [
             bottom_screens[current_index],
-            Positioned(
-              bottom: 60,
-              right: 20,
-              child: _buildPlay(context),
-            ),
           ],
         ),
       ),

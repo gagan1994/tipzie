@@ -21,8 +21,13 @@ LatLngBounds boundsFromLatLngList(List<LatLng> list) {
 }
 
 String dateFormat(DateTime date) {
-  final result = DateFormat('yMMMMEEEEd').format(date);
-  return result;
+  if (date.year == DateTime.now().year) {
+    final result = DateFormat('E d, MMM').format(date);
+    return result;
+  } else {
+    final result = DateFormat('E d, MMM, y').format(date);
+    return result;
+  }
 }
 
 String dateFormat2(DateTime src, DateTime dest) {
