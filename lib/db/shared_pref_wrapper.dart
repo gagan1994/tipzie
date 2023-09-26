@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tripzie/db/vm_wrapper.dart';
 
 class SharedPrefWrapper extends VMWrapper {
@@ -33,14 +34,13 @@ class SharedPrefWrapper extends VMWrapper {
   }
 
   getUserId() async {
-    return (await getJsonData('_id')).toString();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return await prefs.getString('_id');
   }
 
   saveUser(String userId) async {
-    await saveData(
-      '_id',
-      userId,
-    );
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('_id', userId);
   }
 
   deleteUser() async {

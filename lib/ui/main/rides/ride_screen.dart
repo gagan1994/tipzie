@@ -4,6 +4,7 @@ import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/utils/trppit_color.dart';
 
 import '../../../api/ride.dart';
+import '../../../auth/authentication.dart';
 import '../../../utils/tab_view.dart';
 import '../../../utils/ui_utils.dart';
 import 'create_new_ride_screen.dart';
@@ -50,6 +51,7 @@ class _MyAppState extends State<RideScreen> {
           label: const Text('Create Rides'), // <-- Text
           backgroundColor: accent_color,
           onPressed: () async {
+            print("current user: ${Authentication.loggedInUser}");
             await Navigator.pushNamed(context, CreateNewRideScreen.PAGE_NAME);
           },
         ),

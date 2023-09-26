@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/background_task/background_location.dart';
+import 'package:tripzie/db/shared_pref_wrapper.dart';
 import 'package:tripzie/ui/main/main_screen.dart';
 
 import '../api/api_wrapper.dart';
@@ -70,7 +71,10 @@ class SplashScreenState extends State<SplashPage> {
 
   void checkAndMoveToNextScreen() async {
     await BackgroundLocationWrapper.instance.initialize();
-    if (Authentication.isLoggedIn()) {
+    var userId = await SharedPrefWrapper.instance.getUserId();
+    print(
+        "checkAndMoveToNextScreen ${(Authentication.isLoggedIn() && userId != null && userId != "null")}");
+    if (Authentication.isLoggedIn() && userId != null && userId != "null") {
       print("fetchCurrentUserProfile");
       await fetchCurrentUserProfile();
     }
@@ -79,7 +83,9 @@ class SplashScreenState extends State<SplashPage> {
         () => {
               Navigator.pushReplacementNamed(
                   context,
-                  Authentication.isLoggedIn()
+                  (Authentication.isLoggedIn() &&
+                          userId != null &&
+                          userId != "null")
                       ? MainScreen.PAGE_NAME
                       : LoginPage1.PAGE_NAME)
             });

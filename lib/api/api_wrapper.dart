@@ -82,9 +82,24 @@ Future<UserProfile?> fetchCurrentUserProfile() async {
   return null;
 }
 
+Future<UserProfile?> getUserDetails(User user) async {
+  if (user.phoneNumber != null && user.phoneNumber!.isNotEmpty) {
+    var userFromPhone = await fetchData("/phone/${user.phoneNumber}");
+    if (userFromPhone.statusCode == 200) {
+      return UserProfile.fromJson(jsonDecode(userFromPhone.body));
+    }
+  }
+  if (user.email != null && user.email!.isNotEmpty) {
+    var userFromEmail = await fetchData("/email/${user.email}");
+    if (userFromEmail.statusCode == 200) {
+      return UserProfile.fromJson(jsonDecode(userFromEmail.body));
+    }
+  }
+  return null;
+}
+
 Future<HashMap<String, UserProfile>> fetchProfiles() async {
   print("fetchProfiles");
-
   var response = await fetchData("/profiles");
   print("profiles response status: ${response.statusCode}");
   if (response.statusCode == 200) {
@@ -181,14 +196,75 @@ Future<Ride?> fetchRideById(String rideId) async {
   return null;
 }
 
-Future<bool> updateProfile(String fName, String lName, String phoneNumber,
-    String bloodGroup, String bio,
-    {isCreate = false, uploadFile = "", email, isUpdate = false}) async {
+Future<bool> loginOrCreateUser(User user) async {
+  var existingUser = await getUserDetails(user);
+  var uid = user.uid;
+  var idToken = await user.getIdToken();
+  if (existingUser == null) {
+    var fName = user.displayName ?? "";
+    var lName = "";
+    var phoneNumber = user.phoneNumber ?? "";
+    var bio = "";
+    var bloodGroup = "";
+    var email = user.email ?? "";
+    var imageUri = user.photoURL ?? "";
+
+    var resp = await postData('/profiles', {
+      'first_name': fName,
+      'last_name': lName,
+      'phone': phoneNumber,
+      'bio': bio,
+      'blood_group': bloodGroup,
+      'email': email,
+      'image_uri': imageUri,
+      'firebase_uid': uid,
+      'firebase_login_token': idToken
+    });
+    if (resp.statusCode == 200) {
+      var body = jsonDecode(resp.body);
+      var userId = body['insertedId'];
+      print('user Id received from server: $userId');
+      await SharedPrefWrapper.instance.saveUser(userId);
+      FirebasePushNotificationWrapper.getInstance().uploadTokenToServer();
+      var user = await fetchCurrentUserProfile();
+      return user != null;
+    }
+    return false;
+  } else {
+    return await updateExistingUser(existingUser);
+  }
+}
+
+Future<bool> updateExistingUser(UserProfile existingUser) async {
+  return await updateProfile(
+      existingUser.firstName ?? "",
+      existingUser.lastName ?? "",
+      existingUser.phoneNumber ?? "",
+      existingUser.bloodGroup ?? "",
+      existingUser.bio ?? "",
+      email: existingUser.email ?? "",
+      imageUri: existingUser.imageUri ?? "");
+}
+
+Future<bool> updateProfile(
+  String fName,
+  String lName,
+  String phoneNumber,
+  String bloodGroup,
+  String bio, {
+  uploadFile = "",
+  imageUri = "",
+  email,
+}) async {
   try {
     await Future.delayed(Duration(seconds: 1));
-    var imageUri = (isCreate)
-        ? FirebaseAuth.instance.currentUser!.photoURL
-        : Authentication.loggedInUser!.imageUri;
+    if (imageUri.toString().isEmpty) {
+      imageUri = (Authentication.loggedInUser!.imageUri == null ||
+              Authentication.loggedInUser!.imageUri!.isEmpty)
+          ? FirebaseAuth.instance.currentUser!.photoURL
+          : "";
+    }
+
     if (email == null && email.toString().isEmpty) {
       email = FirebaseAuth.instance.currentUser!.email;
     }
@@ -196,7 +272,7 @@ Future<bool> updateProfile(String fName, String lName, String phoneNumber,
     var idToken = await FirebaseAuth.instance.currentUser!.getIdToken();
     email ??= '';
     try {
-      if (!isCreate && uploadFile != null && uploadFile.toString().isNotEmpty) {
+      if (uploadFile != null && uploadFile.toString().isNotEmpty) {
         imageUri = await firebaseProfileUpload(File(uploadFile));
       }
     } on Exception {}
@@ -205,48 +281,21 @@ Future<bool> updateProfile(String fName, String lName, String phoneNumber,
           'https://www.vhv.rs/dpng/d/256-2569650_men-profile-icon-png-image-free-download-searchpng.png';
     }
     http.Response? resp = null;
-    if (isCreate) {
-      resp = await postData('/profiles', {
-        'first_name': fName,
-        'last_name': lName,
-        'phone': phoneNumber,
-        'bio': bio,
-        'blood_group': bloodGroup,
-        'email': email,
-        'image_uri': imageUri,
-        'firebase_uid': uid,
-        'firebase_login_token': idToken
-      });
-      if (resp.statusCode == 200) {
-        var body = jsonDecode(resp.body);
-        var userId = body['insertedId'];
-        print('user Id received from server: $userId');
-        await SharedPrefWrapper.instance.saveUser(userId);
-        FirebasePushNotificationWrapper.getInstance().uploadTokenToServer();
-        await fetchCurrentUserProfile();
-      }
-      return resp.statusCode == 200;
-    } else {
-      print("fetch");
-      var userId = await SharedPrefWrapper.instance.getUserId();
-      print("userId $userId");
-      if (isUpdate) {
-        resp = await patchData('/profiles/$userId', {
-          'first_name': fName,
-          'last_name': lName,
-          'phone': phoneNumber,
-          'bio': bio,
-          'blood_group': bloodGroup,
-          'email': email,
-          'image_uri': imageUri,
-          'firebase_uid': uid,
-          'firebase_login_token': idToken
-        });
-        print("resp:  ${resp.statusCode}");
-      }
-      await fetchCurrentUserProfile();
-      return true;
-    }
+    var userId = await SharedPrefWrapper.instance.getUserId();
+    resp = await patchData('/profiles/$userId', {
+      'first_name': fName,
+      'last_name': lName,
+      'phone': phoneNumber,
+      'bio': bio,
+      'blood_group': bloodGroup,
+      'email': email,
+      'image_uri': imageUri,
+      'firebase_uid': uid,
+      'firebase_login_token': idToken
+    });
+    print("resp:  ${resp.statusCode}");
+    await fetchCurrentUserProfile();
+    return true;
   } on Exception {}
   return Future.value(false);
 }

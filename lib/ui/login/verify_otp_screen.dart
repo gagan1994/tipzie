@@ -6,14 +6,13 @@ import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/otp_field_style.dart';
 import 'package:otp_text_field/style.dart';
 import 'package:tripzie/auth/authentication.dart';
+import 'package:tripzie/auth/google_signIn_button.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 import 'package:tripzie/widgets/trippit_mainlayout.dart';
 
-import '../../api/api_wrapper.dart';
 import '../../utils/trippit_assets.dart';
 import '../../utils/trppit_color.dart';
 import '../../widgets/tripzie_button.dart';
-import '../main/main_screen.dart';
 
 class VerifyOTP extends StatefulWidget {
   static const PAGE_NAME = "/verify_otp";
@@ -140,22 +139,10 @@ class _VerrifyOTPState extends State<VerifyOTP> {
                       return;
                     }
                     var user = await Authentication.verifyOTP(
-                        context, widget.phoneDetails.verifyId, otp_text!!);
+                        context, widget.phoneDetails.verifyId, otp_text!);
                     print("user: $user");
                     if (user != null) {
-                      bool isSuccess = await updateProfile(
-                          user.displayName ?? '',
-                          '',
-                          user.phoneNumber ?? '',
-                          '',
-                          '',
-                          isCreate: false);
-                      if (isSuccess) {
-                        Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            MainScreen.PAGE_NAME,
-                            (Route<dynamic> route) => false);
-                      }
+                      loginAction(context, user);
                     }
                   },
                 ),
