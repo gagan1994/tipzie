@@ -69,14 +69,14 @@ class SocketWrapper {
   }
 
   void startListeningForLocationUpdates(
-      String ride_id, Function(LiveLocationModel) callback) {
+      String ride_id, Function(LiveLocationModel, bool) callback) {
     print("Saving OnGoingRide $ride_id");
     this.ride_id = ride_id;
     _sender.emit('subscribe_rides', {'ride_id': ride_id});
     _receiver.listen('rides_' + ride_id, (data) async {
       print("received from rides location $data");
       var liveData = LiveLocationModel.fromJson(data);
-      callback(liveData);
+      callback(liveData, false);
     });
   }
 

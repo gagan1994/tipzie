@@ -22,7 +22,7 @@ class LiveLocationModel {
     photoURL = user?.imageUri;
   }
   LiveLocationModel(LocationDto dto, UserProfile? user) {
-    userId = user?.firebaseUid;
+    userId = user?.userId;
     userName = user?.firstName;
     phoneNumber = user?.phoneNumber;
     email = user?.email;

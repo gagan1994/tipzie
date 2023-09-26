@@ -164,7 +164,7 @@ class Authentication {
 
   static bool isCurrentUser(String? userId) {
     if (userId == null) return false;
-    return (userId == getUser().uid);
+    return (userId == loggedInUser!.userId);
   }
 
   static String getImageUri() {

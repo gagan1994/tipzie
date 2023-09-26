@@ -47,8 +47,8 @@ class _MyAppState extends State<TripzieMap> {
     super.initState();
     getUserCurrentLocationUpdateUi();
     BackgroundLocationWrapper.instance.startLiveRide();
-    SocketWrapper.instance
-        .startListeningForLocationUpdates(widget.ride.getId(), addMarker);
+    SocketWrapper.instance.startListeningForLocationUpdates(
+        widget.ride.getId(), addMarkerFromLocation);
   }
 
   @override
@@ -59,20 +59,36 @@ class _MyAppState extends State<TripzieMap> {
 
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-        zoomGesturesEnabled: true,
-        onMapCreated: _onMapCreated,
-        mapType: MapType.terrain,
-        markers: markers,
-        zoomControlsEnabled: false,
-        initialCameraPosition: CameraPosition(
-            target: currentLocation == null
-                ? const LatLng(
-                    20.42796133580664,
-                    80.885749655962,
-                  )
-                : LatLng(currentLocation!.latitude, currentLocation!.longitude),
-            zoom: 16));
+    return Stack(
+      children: [
+        GoogleMap(
+            zoomGesturesEnabled: true,
+            onMapCreated: _onMapCreated,
+            mapType: MapType.terrain,
+            markers: markers,
+            zoomControlsEnabled: false,
+            initialCameraPosition: CameraPosition(
+                target: currentLocation == null
+                    ? const LatLng(
+                        20.42796133580664,
+                        80.885749655962,
+                      )
+                    : LatLng(
+                        currentLocation!.latitude, currentLocation!.longitude),
+                zoom: 16)),
+        Positioned(
+          right: 10,
+          top: MediaQuery.of(context).viewPadding.top + 10,
+          child: FloatingActionButton(
+            backgroundColor: accent_color,
+            onPressed: () {
+              updateCamera();
+            },
+            child: Icon(Icons.center_focus_strong),
+          ),
+        )
+      ],
+    );
   }
 
   Widget _currentUserMarker(LiveLocationModel model) {
@@ -100,13 +116,6 @@ class _MyAppState extends State<TripzieMap> {
   }
 
   void getUserCurrentLocationUpdateUi() async {
-    currentLocation = await getUserCurrentLocation();
-    var currentMarker = LiveLocationModel.fromData(
-        currentLocation!.latitude,
-        currentLocation!.longitude,
-        currentLocation!.altitude,
-        currentLocation!.timestamp!.millisecond.toDouble(),
-        Authentication.loggedInUser!);
     markers.clear();
     if (widget.ride.source != null) {
       var marker = Marker(
@@ -125,14 +134,14 @@ class _MyAppState extends State<TripzieMap> {
       );
       markers.add(marker);
     }
-    addMarker(currentMarker);
+    updateCurrentLocation(true);
   }
 
-  addMarker(LiveLocationModel model) async {
+  addMarker(LiveLocationModel model, bool isUpdateCameraPosition) async {
     print("model - > ${model.email}");
+
     var image = await MapUtils.getMarkerIcon(model.photoURL!, Size(75, 75));
 
-    final GoogleMapController controller = await _controller.future;
     var marker = Marker(
         markerId: MarkerId(model.userId!),
         position: LatLng(model.latitude!, model.longitude!),
@@ -141,11 +150,33 @@ class _MyAppState extends State<TripzieMap> {
     markers.add(marker);
 
     // adding source and destination markers
+    if (isUpdateCameraPosition) {
+      updateCamera();
+    }
+    setState(() {});
+  }
 
+  void updateCurrentLocation(bool isUpdateCameraPosition) async {
+    currentLocation = await getUserCurrentLocation();
+    var currentMarker = LiveLocationModel.fromData(
+        currentLocation!.latitude,
+        currentLocation!.longitude,
+        currentLocation!.altitude,
+        currentLocation!.timestamp!.millisecond.toDouble(),
+        Authentication.loggedInUser!);
+    addMarker(currentMarker, isUpdateCameraPosition);
+  }
+
+  addMarkerFromLocation(LiveLocationModel model, bool isUpdateCameraPosition) {
+    updateCurrentLocation(false);
+    addMarker(model, isUpdateCameraPosition);
+  }
+
+  void updateCamera() async {
+    final GoogleMapController controller = await _controller.future;
     controller.moveCamera(CameraUpdate.newLatLngBounds(
       MapUtils.boundsFromLatLngList(markers),
       100.0,
     ));
-    setState(() {});
   }
 }
