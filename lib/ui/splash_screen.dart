@@ -43,6 +43,12 @@ class SplashScreenState extends State<SplashPage>
   }
 
   @override
+  void dispose() {
+    controller.stop();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
