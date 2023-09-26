@@ -6,7 +6,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:swipeable_button_view/swipeable_button_view.dart';
 import 'package:tripzie/api/api_wrapper.dart';
 import 'package:tripzie/api/user_data.dart';
-import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/db/users.dart';
 import 'package:tripzie/ui/main/map/current_ride_screen.dart';
 import 'package:tripzie/ui/main/map/select_places_on_map.dart';
@@ -14,6 +13,7 @@ import 'package:tripzie/utils/trppit_color.dart';
 import 'package:tripzie/utils/ui_utils.dart';
 
 import '../../../api/ride.dart';
+import '../../../auth/authentication.dart';
 import '../../../utils/trippit_assets.dart';
 import '../../../utils/ui/trippit_search_input.dart';
 import '../../../widgets/tripzie_button.dart';
@@ -339,14 +339,14 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                 padding: EdgeInsets.zero,
                                 itemCount: userList.length,
                                 itemBuilder: (context, index) {
-                                  if (userList[index].userId ==
-                                      Authentication.loggedInUser!.userId) {
-                                    return SizedBox();
-                                  }
                                   return GestureDetector(
                                     onTap: () {
                                       if (widget.ride != null &&
                                           !widget.ride!.isEditable()) {
+                                        return;
+                                      }
+                                      if (userList[index].userId ==
+                                          Authentication.loggedInUser!.userId) {
                                         return;
                                       }
                                       setState(() {
@@ -370,7 +370,7 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                "${userList[index].firstName}",
+                                                "${(userList[index].userId == Authentication.loggedInUser!.userId) ? "You" : userList[index].firstName}",
                                                 style: TextStyle(fontSize: 12),
                                               ),
                                             ],
@@ -380,14 +380,23 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
                                             !widget.ride!.isEditable())
                                           Container(
                                               alignment: Alignment.topCenter,
-                                              child: Icon(
-                                                newRideObject.isSelectedUser(
-                                                        userList[index])
-                                                    ? Icons.check_box
-                                                    : Icons
-                                                        .check_box_outline_blank,
-                                                size: 15,
-                                              ))
+                                              child: (userList[index].userId ==
+                                                      Authentication
+                                                          .loggedInUser!.userId)
+                                                  ? Icon(
+                                                      Icons.check_box,
+                                                      size: 15,
+                                                    )
+                                                  : Icon(
+                                                      newRideObject
+                                                              .isSelectedUser(
+                                                                  userList[
+                                                                      index])
+                                                          ? Icons.check_box
+                                                          : Icons
+                                                              .check_box_outline_blank,
+                                                      size: 15,
+                                                    ))
                                       ],
                                     ),
                                   );
