@@ -110,41 +110,42 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
               ),
             ],
           ),
-          Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 50),
-                width: MediaQuery.of(context).size.width,
-                child: SwipeableButtonView(
-                  buttonColor: Colors.transparent,
-                  buttontextstyle: TextStyle(color: accent_color),
-                  indicatorColor: AlwaysStoppedAnimation(Colors.transparent),
-                  buttonText: '      Slide to Complete ride',
-                  buttonWidget: Image(
-                    image: AssetImage(logo_image),
-                    width: 30,
-                    height: 30,
+          if (widget.ride.isCreatedByCurrentUser())
+            Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 50),
+                  width: MediaQuery.of(context).size.width,
+                  child: SwipeableButtonView(
+                    buttonColor: Colors.transparent,
+                    buttontextstyle: TextStyle(color: accent_color),
+                    indicatorColor: AlwaysStoppedAnimation(Colors.transparent),
+                    buttonText: '      Slide to Complete ride',
+                    buttonWidget: Image(
+                      image: AssetImage(logo_image),
+                      width: 50,
+                      height: 50,
+                    ),
+                    activeColor: Colors.white,
+                    isFinished: isFinished,
+                    onWaitingProcess: () {
+                      setState(() {
+                        isFinished = true;
+                      });
+                    },
+                    onFinish: () async {
+                      var isCompleteRide =
+                          await completeRide(widget.ride.getId());
+                      if (isCompleteRide) {
+                        Navigator.pop(context, true);
+                      }
+                      isFinished = false;
+                      setState(() {});
+                    },
                   ),
-                  activeColor: Colors.white,
-                  isFinished: isFinished,
-                  onWaitingProcess: () {
-                    setState(() {
-                      isFinished = true;
-                    });
-                  },
-                  onFinish: () async {
-                    var isCompleteRide =
-                        await completeRide(widget.ride.getId());
-                    if (isCompleteRide) {
-                      Navigator.pop(context, true);
-                    }
-                    isFinished = false;
-                    setState(() {});
-                  },
-                ),
-              ))
+                ))
         ],
       ),
     );

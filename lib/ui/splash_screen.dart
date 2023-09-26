@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gif/flutter_gif.dart';
 import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/background_task/background_location.dart';
 import 'package:tripzie/db/shared_pref_wrapper.dart';
 import 'package:tripzie/ui/main/main_screen.dart';
 
 import '../api/api_wrapper.dart';
+import '../utils/trippit_assets.dart';
 import '../utils/trppit_color.dart';
 import 'login/login_page_1.dart';
 
@@ -17,7 +19,9 @@ class SplashPage extends StatefulWidget {
   SplashScreenState createState() => SplashScreenState();
 }
 
-class SplashScreenState extends State<SplashPage> {
+class SplashScreenState extends State<SplashPage>
+    with TickerProviderStateMixin {
+  late FlutterGifController controller;
   void _onTap() {
     // Navigator.pushNamed(
     //     context, isLoggedIn ? HomeScreen.PAGE_NAME : LoginPage1.PAGE_NAME);
@@ -26,7 +30,16 @@ class SplashScreenState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    checkAndMoveToNextScreen();
+    controller = FlutterGifController(vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.repeat(
+        min: 0,
+        max: 3,
+        period: const Duration(milliseconds: 200),
+      );
+    });
+
+// checkAndMoveToNextScreen();
   }
 
   @override
@@ -47,9 +60,18 @@ class SplashScreenState extends State<SplashPage> {
                       backgroundColor: Colors.white,
                     )),
                 //child: getSvgWidget(logo_image, 85, 85)),
-                const Positioned.fill(
-                    child:
-                        Align(alignment: Alignment.center, child: Text("LOGO")))
+                Positioned.fill(
+                    child: Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          margin: EdgeInsets.only(bottom: 10),
+                          child: GifImage(
+                            width: 60,
+                            height: 60,
+                            image: AssetImage(ride_gif),
+                            controller: controller,
+                          ),
+                        )))
               ],
             ),
             const SizedBox(
