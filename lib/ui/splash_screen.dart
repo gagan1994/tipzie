@@ -39,7 +39,7 @@ class SplashScreenState extends State<SplashPage>
       );
     });
 
-// checkAndMoveToNextScreen();
+    checkAndMoveToNextScreen();
   }
 
   @override
