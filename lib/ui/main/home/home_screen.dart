@@ -29,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Ride> allRides = [];
   List<Ride> myRides = [];
   List<Ride> suggestionRides = [];
+  List<Ride> completedRides = [];
   List<Ride> onGoingRides = [];
   double left = 0;
   double leftSuggestion = 0;
@@ -73,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onGoingRides[index % onGoingRides.length];
                               return LiveRide(item, (isRefresh) {
                                 if (isRefresh) {
+                                  print("is refresh $isRefresh");
                                   loadData();
                                 }
                               });
@@ -175,8 +177,57 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                         ),
+                      if (myRides.length != 0) verticalDivider(),
+                      if (myRides.length == 0)
+                        if (suggestionRides.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 10),
+                            decoration: const BoxDecoration(
+                                color: suggestion_bg,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Suggestion",
+                                      style: TextStyle(
+                                          color: accent_color, fontSize: 18),
+                                    ),
+                                    if (suggestionRides.length > 4)
+                                      const Text(
+                                        "See All",
+                                        style: TextStyle(
+                                            color: accent_color, fontSize: 14),
+                                      )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Container(
+                                    alignment: Alignment.centerLeft,
+                                    height: 200,
+                                    child: ListView.builder(
+                                        padding: EdgeInsets.zero,
+                                        shrinkWrap: true,
+                                        itemCount: suggestionRides.length,
+                                        scrollDirection: Axis.horizontal,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          var ride = suggestionRides[index];
+                                          leftSuggestion = 10;
+                                          return getSuggestionRide(ride);
+                                        })),
+                              ],
+                            ),
+                          ),
                       verticalDivider(),
-                      if (suggestionRides.isNotEmpty)
+                      if (completedRides.isNotEmpty)
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 10),
@@ -191,11 +242,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "Suggestion",
+                                    "Completed rides",
                                     style: TextStyle(
                                         color: accent_color, fontSize: 18),
                                   ),
-                                  if (suggestionRides.length > 4)
+                                  if (completedRides.length > 4)
                                     const Text(
                                       "See All",
                                       style: TextStyle(
@@ -212,11 +263,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: ListView.builder(
                                       padding: EdgeInsets.zero,
                                       shrinkWrap: true,
-                                      itemCount: suggestionRides.length,
+                                      itemCount: completedRides.length,
                                       scrollDirection: Axis.horizontal,
                                       itemBuilder:
                                           (BuildContext context, int index) {
-                                        var ride = suggestionRides[index];
+                                        var ride = completedRides[index];
                                         leftSuggestion = 10;
                                         return getSuggestionRide(ride);
                                       })),
@@ -256,6 +307,7 @@ class _HomeScreenState extends State<HomeScreen> {
     allRides.clear();
     suggestionRides.clear();
     onGoingRides.clear();
+    completedRides.clear();
     myRides.clear();
 
     allRides = await fetchRides();
@@ -273,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bool isMyRide = false;
         for (var user in item.selectedUsers!) {
           print(
-              "user id: ${user.userId} current userId: ${Authentication.loggedInUser!.userId}");
+              "user id: ${user.userId} current userId: ${Authentication.loggedInUser!.userId} ${item.name}");
           if (user.userId == Authentication.loggedInUser!.userId) {
             isMyRide = true;
           }
@@ -281,7 +333,9 @@ class _HomeScreenState extends State<HomeScreen> {
         if (isMyRide) {
           myRides.add(item);
         } else {
-          if (!item.isCompleted()) {
+          if (item.isCompleted()) {
+            completedRides.add(item);
+          } else {
             suggestionRides.add(item);
           }
         }

@@ -155,15 +155,15 @@ Future<bool> startRide(String rideId) async {
 
 Future<bool> completeRide(String rideId) async {
   print("fetchRideById");
-  var json = {"rideId": rideId};
-  // var response = await postData("/complete_ride", json);
-  // print("response status: ${response.statusCode}");
-  // if (response.statusCode == 200) {
-  //   return true;
-  // } else {
-  //   showSnackBarApiError(navigatorKey.currentState!.context);
-  //   return false;
-  // }
+  var json = {"ride_id": rideId};
+  var response = await postData("/complete_ride", json);
+  print("response status: ${response.statusCode}");
+  if (response.statusCode == 200) {
+    return true;
+  } else {
+    showSnackBarApiError(navigatorKey.currentState!.context);
+    return false;
+  }
   return true;
 }
 

@@ -8,6 +8,7 @@ UserProfile findUserWithId(String id) {
   if (allUsers.containsKey(id)) {
     return allUsers[id]!;
   }
+  print("not found user id: $id");
   return UserProfile(
       userId: "1", firstName: "fname", lastName: "sName", phoneNumber: "1234");
 }
