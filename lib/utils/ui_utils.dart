@@ -374,6 +374,51 @@ void checkAndOpenNotification(BuildContext context) async {
   }
 }
 
+getRideCompletedUi({isShadow = true}) {
+  print("IsShadow: $isShadow");
+  if (isShadow) {
+    return SizedBox(
+      height: 30,
+      child: FittedBox(
+        child: FloatingActionButton.extended(
+          label: Text('Completed'), // <-- Text
+          backgroundColor: Colors.green,
+          icon: Icon(
+            // <-- Icon
+            Icons.check_circle,
+            size: 20.0,
+          ),
+          onPressed: () {},
+        ),
+      ),
+    );
+  } else {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(
+          Radius.circular(20),
+        ),
+        color: Colors.green,
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+      child: RichText(
+        text: const TextSpan(
+          children: [
+            WidgetSpan(
+              child: Icon(
+                Icons.check_circle,
+                color: Colors.white,
+                size: 15.0,
+              ),
+            ),
+            TextSpan(text: " Completed", style: TextStyle(fontSize: 10)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 Widget titleBar(BuildContext context, String title,
     {rightItem: Widget, top = 0}) {
   return Material(

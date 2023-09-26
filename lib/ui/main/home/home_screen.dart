@@ -476,6 +476,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     }
+
     isEmptyData = myRides.isEmpty &&
         onGoingRides.isEmpty &&
         suggestionRides.isEmpty &&
@@ -501,19 +502,7 @@ class _HomeScreenState extends State<HomeScreen> {
   checkAndAddRightEndButton(Ride ride) {
     if (ride.isCreatedByCurrentUser()) {
       if (ride.isCompleted()) {
-        return Container(
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(
-              Radius.circular(20),
-            ),
-            color: Colors.blue.shade100,
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 13),
-          child: const Text(
-            "Completed",
-            style: TextStyle(color: accent_color, fontSize: 8),
-          ),
-        );
+        return getRideCompletedUi(isShadow: false);
       }
       return Container(
         decoration: const BoxDecoration(
@@ -621,7 +610,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        ride.isCompleted() ? "See Details" : "Join",
+                        ride.isCompleted()
+                            ? "See Details"
+                            : ride.isCreatedByCurrentUser()
+                                ? "Start"
+                                : "Join",
                         style:
                             const TextStyle(color: Colors.white, fontSize: 12),
                       ),

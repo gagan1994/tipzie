@@ -772,22 +772,4 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
     )
         : null*/
   }
-
-  getRideCompletedUi() {
-    return SizedBox(
-      height: 30,
-      child: FittedBox(
-        child: FloatingActionButton.extended(
-          label: Text('Completed'), // <-- Text
-          backgroundColor: Colors.green,
-          icon: Icon(
-            // <-- Icon
-            Icons.check_circle,
-            size: 20.0,
-          ),
-          onPressed: () {},
-        ),
-      ),
-    );
-  }
 }
