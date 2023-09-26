@@ -17,7 +17,16 @@ import 'location_service_repository.dart';
 class BackgroundLocationWrapper {
   ReceivePort port = ReceivePort();
 
-  BackgroundLocationWrapper._();
+  BackgroundLocationWrapper._() {
+    port.listen(
+      (dynamic data) async {
+        print('listened port data: $data');
+        if (data is Map<String, dynamic>) {
+          SocketWrapper.instance.sendData(LocationDto.fromJson(data));
+        }
+      },
+    );
+  }
   static final instance = BackgroundLocationWrapper._();
   final isRunning = ValueNotifier<bool>(false);
   BackgroundLocationWrapper() {}
@@ -34,14 +43,6 @@ class BackgroundLocationWrapper {
       IsolateNameServer.removePortNameMapping(
           LocationServiceRepository.isolateName);
     }
-    port.listen(
-      (dynamic data) async {
-        print('listened port data: $data');
-        if (data is Map<String, dynamic>) {
-          SocketWrapper.instance.sendData(LocationDto.fromJson(data));
-        }
-      },
-    );
     IsolateNameServer.registerPortWithName(
         port.sendPort, LocationServiceRepository.isolateName);
     BackgroundLocationWrapper.instance.startLocationService();

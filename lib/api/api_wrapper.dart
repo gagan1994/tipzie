@@ -156,7 +156,7 @@ Future<List<Ride>> fetchRides() async {
 
 Future<bool> startRide(String rideId) async {
   print("startRide");
-  var json = {"rideId": rideId};
+  var json = {"ride_id": rideId};
   var response = await postData("/start_ride", json);
   print("response status: ${response.statusCode}");
   if (response.statusCode == 200) {
@@ -258,12 +258,14 @@ Future<bool> updateProfile(
 }) async {
   try {
     await Future.delayed(Duration(seconds: 1));
+    print("Image uri1: $imageUri");
     if (imageUri.toString().isEmpty) {
       imageUri = (Authentication.loggedInUser!.imageUri == null ||
               Authentication.loggedInUser!.imageUri!.isEmpty)
           ? FirebaseAuth.instance.currentUser!.photoURL
           : "";
     }
+    print("Image uri2: $imageUri");
 
     if (email == null && email.toString().isEmpty) {
       email = FirebaseAuth.instance.currentUser!.email;
@@ -273,10 +275,12 @@ Future<bool> updateProfile(
     email ??= '';
     try {
       if (uploadFile != null && uploadFile.toString().isNotEmpty) {
+        print("Image uri3: $imageUri");
         imageUri = await firebaseProfileUpload(File(uploadFile));
       }
     } on Exception {}
     if (imageUri == null || imageUri.isEmpty) {
+      print("Image uri4: $imageUri");
       imageUri =
           'https://www.vhv.rs/dpng/d/256-2569650_men-profile-icon-png-image-free-download-searchpng.png';
     }

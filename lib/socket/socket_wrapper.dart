@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:background_locator_2/location_dto.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:tripzie/socket/models/models.dart';
@@ -69,14 +71,16 @@ class SocketWrapper {
   }
 
   void startListeningForLocationUpdates(
-      String ride_id, Function(LiveLocationModel, bool) callback) {
+      String ride_id, StreamController<LiveLocationModel> callback) {
     print("Saving OnGoingRide $ride_id");
     this.ride_id = ride_id;
     _sender.emit('subscribe_rides', {'ride_id': ride_id});
     _receiver.listen('rides_' + ride_id, (data) async {
       print("received from rides location $data");
       var liveData = LiveLocationModel.fromJson(data);
-      callback(liveData, false);
+      if (!callback.isClosed) {
+        callback.add(liveData);
+      }
     });
   }
 
