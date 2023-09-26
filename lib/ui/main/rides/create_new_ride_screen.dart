@@ -489,7 +489,12 @@ class _CreateNewRideScreenState extends State<CreateNewRideScreen> {
     if (allUsers.values.isEmpty) {
       allUsers = await fetchProfiles();
     }
-    var data = allUsers.values;
+    List<UserProfile> data = [];
+    for (var item in allUsers.values) {
+      if (item.userId != Authentication.loggedInUser!.userId) {
+        data.add(item);
+      }
+    }
     setState(() {
       originalList.clear();
       originalList.addAll(data);
