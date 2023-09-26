@@ -461,12 +461,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         }
         if (isMyRide) {
-          if (item.isCompleted()) {
-            myCompletedRides.add(item);
-            print("completed ride: $item");
-          } else {
-            myRides.add(item);
-          }
+          myRides.add(item);
         } else {
           if (item.isCompleted()) {
             otherCompletedRides.add(item);
