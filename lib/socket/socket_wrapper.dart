@@ -40,7 +40,7 @@ class SocketWrapper {
   void init() {
     print("initSocket");
     try {
-      socket = IO.io("http://13.233.26.160:3001", <String, dynamic>{
+      socket = IO.io("http://192.168.1.9:3001", <String, dynamic>{
         "transports": ['websocket'],
         "autoConnect": true
       });

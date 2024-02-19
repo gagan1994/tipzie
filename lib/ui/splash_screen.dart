@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gif/flutter_gif.dart';
+// import 'package:gif/gif.dart';
 import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/background_task/background_location.dart';
 import 'package:tripzie/db/shared_pref_wrapper.dart';
@@ -21,7 +21,7 @@ class SplashPage extends StatefulWidget {
 
 class SplashScreenState extends State<SplashPage>
     with TickerProviderStateMixin {
-  late FlutterGifController controller;
+  // late GifController controller;
   void _onTap() {
     // Navigator.pushNamed(
     //     context, isLoggedIn ? HomeScreen.PAGE_NAME : LoginPage1.PAGE_NAME);
@@ -30,13 +30,13 @@ class SplashScreenState extends State<SplashPage>
   @override
   void initState() {
     super.initState();
-    controller = FlutterGifController(vsync: this);
+    // controller = GifController(vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.repeat(
-        min: 0,
-        max: 3,
-        period: const Duration(milliseconds: 200),
-      );
+      // controller.repeat(
+      //   min: 0,
+      //   max: 3,
+      //   period: const Duration(milliseconds: 200),
+      // );
     });
 
     checkAndMoveToNextScreen();
@@ -44,7 +44,7 @@ class SplashScreenState extends State<SplashPage>
 
   @override
   void dispose() {
-    controller.stop();
+    // controller.stop();
     super.dispose();
   }
 
@@ -71,12 +71,7 @@ class SplashScreenState extends State<SplashPage>
                         alignment: Alignment.center,
                         child: Container(
                           margin: EdgeInsets.only(bottom: 10),
-                          child: GifImage(
-                            width: 60,
-                            height: 60,
-                            image: AssetImage(ride_gif),
-                            controller: controller,
-                          ),
+                          child: Image.asset(ride_gif),
                         )))
               ],
             ),

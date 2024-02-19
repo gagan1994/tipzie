@@ -5,7 +5,7 @@
         </trust-anchors>
     </base-config>
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">13.233.26.160</domain>
+        <domain includeSubdomains="true">192.168.1.9</domain>
     </domain-config>
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">192.168.1.2</domain>

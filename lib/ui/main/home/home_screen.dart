@@ -553,7 +553,7 @@ class _HomeScreenState extends State<HomeScreen> {
             arguments: ride);
       },
       child: Container(
-        width: 160,
+        width: MediaQuery.of(context).size.width * .5,
         padding: const EdgeInsets.only(left: 2.5, right: 2.5),
         child: Card(
           shape: RoundedRectangleBorder(
@@ -565,7 +565,12 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               children: [
                 verticalDivider(),
-                Text(ride.name),
+                Text(
+                  ride.name,
+                  overflow: TextOverflow.fade,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
                 verticalDivider(),
                 Container(
                   height: 30,
@@ -587,6 +592,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   "From ${ride.source!.name} To ${ride.destination!.name} \nOn ${dateFormat(ride.startDate!)}",
                   style: const TextStyle(fontSize: 10),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 3,
                 ),
                 verticalDivider(),
                 const Spacer(),

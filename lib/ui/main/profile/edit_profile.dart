@@ -180,7 +180,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Container(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                primary: accent_color, // Background color
+                foregroundColor: accent_color, // Background color
               ),
               onPressed: () async {
                 firstNameError = '';
