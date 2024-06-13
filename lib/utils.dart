@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 const String app_name = "Tripzie";
 // icon: i == 2 ? BitmapDescriptor.fromBytes(markerImageBytes): BitmapDescriptor.defaultMarker,
 
-const bool IS_SELECT_USER_ON_LOGIN = true;
+const bool IS_SELECT_USER_ON_LOGIN = false;
 
 LatLngBounds boundsFromLatLngList(List<LatLng> list) {
   double x0 = 0, x1 = 0, y0 = 0, y1 = 0;

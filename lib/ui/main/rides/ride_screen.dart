@@ -48,7 +48,10 @@ class _MyAppState extends State<RideScreen> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 50),
         child: FloatingActionButton.extended(
-          label: const Text('Create Rides'), // <-- Text
+          label: const Text(
+            'Create Rides',
+            style: TextStyle(color: Colors.white),
+          ), // <-- Text
           backgroundColor: accent_color,
           onPressed: () async {
             print("current user: ${Authentication.loggedInUser}");

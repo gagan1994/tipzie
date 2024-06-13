@@ -15,7 +15,7 @@ import 'package:tripzie/utils/ui_utils.dart';
 import '../filrebase/firebase_storage.dart';
 import '../ui/main/rides/create_new_ride_screen.dart';
 
-const BASE_URL = 'http://192.168.1.9:3000';
+const BASE_URL = 'http://192.168.1.5:3000';
 const LOCAL_DATA = 404;
 
 Future<http.Response> fetchData(String endpoint) async {
@@ -84,7 +84,7 @@ Future<UserProfile?> fetchCurrentUserProfile() async {
 
 Future<UserProfile?> getUserDetails(User user) async {
   if (user.phoneNumber != null && user.phoneNumber!.isNotEmpty) {
-    var userFromPhone = await fetchData("/phone/${user.phoneNumber}");
+    var userFromPhone = await fetchData("/profiles/phone/${user.phoneNumber}");
     if (userFromPhone.statusCode == 200) {
       return UserProfile.fromJson(jsonDecode(userFromPhone.body));
     }
@@ -209,6 +209,8 @@ Future<bool> loginOrCreateUser(User user) async {
     var email = user.email ?? "";
     var imageUri = user.photoURL ?? "";
 
+    var token =
+        await FirebasePushNotificationWrapper.getInstance().getFcmToken();
     var resp = await postData('/profiles', {
       'first_name': fName,
       'last_name': lName,
@@ -218,19 +220,21 @@ Future<bool> loginOrCreateUser(User user) async {
       'email': email,
       'image_uri': imageUri,
       'firebase_uid': uid,
-      'firebase_login_token': idToken
+      'firebase_login_token': idToken,
+      "fcmToken": token
     });
     if (resp.statusCode == 200) {
       var body = jsonDecode(resp.body);
-      var userId = body['insertedId'];
-      print('user Id received from server: $userId');
+      var userId = body['user_id'];
+      print('user Id received from server: $body');
       await SharedPrefWrapper.instance.saveUser(userId);
-      FirebasePushNotificationWrapper.getInstance().uploadTokenToServer();
       var user = await fetchCurrentUserProfile();
+      Authentication.loggedInUser = user;
       return user != null;
     }
     return false;
   } else {
+    await SharedPrefWrapper.instance.saveUser(existingUser.userId!);
     return await updateExistingUser(existingUser);
   }
 }
@@ -298,7 +302,8 @@ Future<bool> updateProfile(
       'firebase_login_token': idToken
     });
     print("resp:  ${resp.statusCode}");
-    await fetchCurrentUserProfile();
+    var user = await fetchCurrentUserProfile();
+    Authentication.loggedInUser = user;
     return true;
   } on Exception {}
   return Future.value(false);

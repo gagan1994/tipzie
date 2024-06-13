@@ -118,9 +118,13 @@ class FirebasePushNotificationWrapper {
   void uploadTokenToServer() async {
     if (Authentication.isLoggedIn()) {
       print("fetch token from firebase");
-      var token = await FirebaseMessaging.instance.getToken();
+      var token = await getFcmToken();
       print("token from firebase $token");
       if (token != null) uploadFcm(token);
     }
+  }
+
+  getFcmToken() async {
+    return FirebaseMessaging.instance.getToken();
   }
 }

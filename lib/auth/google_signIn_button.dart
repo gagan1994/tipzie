@@ -8,7 +8,6 @@ import 'package:tripzie/utils/ui_utils.dart';
 
 import '../db/shared_pref_wrapper.dart';
 import '../ui/main/main_screen.dart';
-import '../utils.dart';
 import '../utils/trippit_assets.dart';
 import 'authentication.dart';
 
@@ -52,7 +51,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
 }
 
 void loginAction(BuildContext context, User user) async {
-  if (IS_SELECT_USER_ON_LOGIN) {
+  if (false) {
     var usersHash = await fetchProfiles();
     List<UserProfile> values = [];
     values.addAll(usersHash.values);

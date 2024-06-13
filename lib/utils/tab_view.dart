@@ -56,6 +56,7 @@ class _TrippitTabViewState extends State<TrippitTabView>
             ),
             child: TabBar(
               controller: _tabController,
+              indicatorSize: TabBarIndicatorSize.tab,
               indicator: BoxDecoration(
                 borderRadius: BorderRadius.circular(25),
                 color: accent_color,

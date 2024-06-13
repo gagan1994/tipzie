@@ -99,7 +99,8 @@ class SplashScreenState extends State<SplashPage>
         "checkAndMoveToNextScreen ${(Authentication.isLoggedIn() && userId != null && userId != "null")}");
     if (Authentication.isLoggedIn() && userId != null && userId != "null") {
       print("fetchCurrentUserProfile");
-      await fetchCurrentUserProfile();
+      var user = await fetchCurrentUserProfile();
+      Authentication.loggedInUser = user;
     }
     Timer(
         const Duration(seconds: 3),
