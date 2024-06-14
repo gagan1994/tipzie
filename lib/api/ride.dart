@@ -4,7 +4,11 @@ import 'package:tripzie/db/users.dart';
 
 import '../ui/main/map/tripit_map_ui.dart';
 
-enum RideStatus { IDLE, ACTIVE, COMPLETED }
+enum RideStatus {
+  IDLE,
+  ACTIVE,
+  COMPLETED,
+}
 
 class Ride {
   String _id = '';
@@ -41,13 +45,13 @@ class Ride {
     name = json['name'];
     createdBy = json['created_userid'];
     var status = json['status'];
-    if (status == 'idle') {
+    if (status == 'IDLE') {
       rideStatus = RideStatus.IDLE;
     }
-    if (status == 'active') {
+    if (status == 'ONGOING' || status == 'STARTED') {
       rideStatus = RideStatus.ACTIVE;
     }
-    if (status == 'completed') {
+    if (status == 'COMPLETED') {
       rideStatus = RideStatus.COMPLETED;
     }
     if (json['location'] == null) {

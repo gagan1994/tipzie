@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       physics: AlwaysScrollableScrollPhysics(),
                       child: Container(
                         color: accent_color_light_bg,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        padding: EdgeInsets.symmetric(horizontal: 5),
                         child: Column(
                           children: [
                             verticalDivider(),

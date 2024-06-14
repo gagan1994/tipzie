@@ -33,7 +33,7 @@ class _LiveRideState extends State<LiveRide> {
           borderRadius: BorderRadius.circular(15),
         ),
         child: Container(
-          padding: EdgeInsets.all(10),
+          padding: EdgeInsets.all(5),
           child: Row(
             children: [
               Expanded(
