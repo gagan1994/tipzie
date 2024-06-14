@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/bottom_navbar_screen.dart';
 import 'package:tripzie/ui/main/home/home_screen.dart';
 import 'package:tripzie/ui/main/profile/edit_profile.dart';
@@ -32,7 +31,6 @@ class _MainScreenState extends State<MainScreen>
     super.initState();
     _controller = TabController(vsync: this, length: 3);
     WidgetsBinding.instance?.addObserver(this);
-    initAll();
     bottom_screens = [
       HomeScreen(),
       RideScreen(),
@@ -160,10 +158,6 @@ class _MainScreenState extends State<MainScreen>
       );
     }
     return SizedBox();
-  }
-
-  void initAll() async {
-    SocketWrapper.instance.setUser(Authentication.loggedInUser);
   }
 
   void onFabButtonClick(int current_index) async {

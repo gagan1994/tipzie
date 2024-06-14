@@ -1,45 +1,56 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:tripzie/webrtc/peer_connnection.dart';
+import 'package:tripzie/auth/authentication.dart';
+import 'package:tripzie/socket/models/models.dart';
+import 'package:tripzie/socket/models/webrtc/peer_connnection.dart';
 import 'package:web_socket_channel/io.dart';
 
-import '../api/api_wrapper.dart';
+import '../../../api/api_wrapper.dart';
+import '../../../api/ride.dart';
 
 class WebRtcHelper {
   static WebRtcHelper instance = WebRtcHelper();
 
   late Function() callback;
+  Ride? currentRide;
 
-  var room_id = 1;
+  var room_id = "";
+  StreamController<LiveLocationModel> liveLocationStream =
+      StreamController<LiveLocationModel>();
 
   static WebRtcHelper getInstance() {
     return instance;
   }
 
-  var users = {
-    "EC50",
-    "TC58e",
-    "TC15",
-  };
+  var users = [];
   SplayTreeMap<String, PeerConnection> peerConnections =
       SplayTreeMap<String, PeerConnection>();
   String userId = "";
   MediaStream? _localStream;
   RTCVideoRenderer localRenderer = RTCVideoRenderer();
   late IOWebSocketChannel _signalingChannel;
+  IOWebSocketChannel getSignalingChannel() {
+    return _signalingChannel;
+  }
+
   PeerConnection connectWithIndex(int index) {
     return peerConnections[peerConnections.keys.elementAt(index)]!;
   }
 
-  void init(Function() callback) async {
+  void init(Ride ride, Function() callback) async {
+    currentRide = ride;
     this.callback = callback;
-    userId = (await DeviceInfoPlugin().androidInfo).model;
-    users.remove(userId);
-
+    for (var item in ride.selectedUsers!) {
+      users.add(item.userId!);
+    }
+    userId = Authentication.loggedInUser!.userId!;
+    room_id = ride.getId();
+    print("creating socket with roomId: ${room_id}");
     _signalingChannel = IOWebSocketChannel.connect(BASE_URL_SOCKET);
+    createRoom();
     _localStream = await navigator.mediaDevices
         .getUserMedia({'audio': true, 'video': false});
     await localRenderer.initialize();
@@ -89,21 +100,23 @@ class WebRtcHelper {
       print("message received: $type");
       switch (type) {
         case 'invite':
-          List<String> toUserIds = List<String>.from(data['data']['toUserIds']);
+          List<String> toUserIds =
+              List<String>.from(data['data']['to_user_ids']);
           print("send invite from current $userId toUserIds: $toUserIds");
           for (var item in toUserIds) {
             startMeeting(peerConnections[item]!);
           }
           break;
         case 'end':
-          List<String> toUserIds = List<String>.from(data['data']['toUserIds']);
+          List<String> toUserIds =
+              List<String>.from(data['data']['to_user_ids']);
           print("send end from current $userId toUserIds: $toUserIds");
           for (var item in toUserIds) {
             endMeeting(peerConnections[item]!);
           }
           break;
         case 'offer':
-          final toUserId = data['toUserId'];
+          final toUserId = data['to_user_id'];
           print(
               "event $type userId:$userId fromUser: $fromUser toUserId: $toUserId");
           if (toUserId != userId) {
@@ -113,7 +126,7 @@ class WebRtcHelper {
           _handleOffer(data['offer'], fromUser);
           break;
         case 'answer':
-          final toUserId = data['toUserId'];
+          final toUserId = data['to_user_id'];
           print(
               "event $type userId:$userId fromUser: $fromUser toUserId: $toUserId");
           if (toUserId != userId) {
@@ -122,8 +135,8 @@ class WebRtcHelper {
           // Handle answer from remote peer
           _handleAnswer(data['answer'], fromUser);
           break;
-        case 'ice_candidate':
-          final toUserId = data['toUserId'];
+        case 'ice-candidate':
+          final toUserId = data['to_user_id'];
           print(
               "event $type userId:$userId fromUser: $fromUser toUserId: $toUserId");
           if (toUserId != userId) {
@@ -132,13 +145,17 @@ class WebRtcHelper {
           _handleIceCandidate(data['candidate'], fromUser);
           break;
         case 'close':
-          final toUserId = data['toUserId'];
+          final toUserId = data['to_user_id'];
           print(
               "event $type userId:$userId fromUser: $fromUser toUserId: $toUserId");
           if (toUserId != userId) {
             return;
           }
           _handleClose(peerConnections[fromUser]!);
+          break;
+        case 'location-update':
+          var location = LiveLocationModel.fromJson(data['data']);
+          liveLocationStream.add(location);
           break;
         default:
           print('Unknown message type: $type');
@@ -153,18 +170,18 @@ class WebRtcHelper {
       'offer': offer.toMap(),
       'room_id': room_id,
       'user_id': userId,
-      'toUserId': toUserId,
+      'to_user_id': toUserId,
     });
     _signalingChannel.sink.add(message);
   }
 
   void _sendIceCandidate(RTCIceCandidate candidate, String toUserId) {
     final message = jsonEncode({
-      'type': 'ice_candidate',
+      'type': 'ice-candidate',
       'candidate': candidate.toMap(),
       'room_id': room_id,
       'user_id': userId,
-      'toUserId': toUserId,
+      'to_user_id': toUserId,
     });
     _signalingChannel.sink.add(message);
   }
@@ -196,7 +213,7 @@ class WebRtcHelper {
       'answer': answer.toMap(),
       'room_id': room_id,
       'user_id': userId,
-      'toUserId': toUserId,
+      'to_user_id': toUserId,
     });
     _signalingChannel.sink.add(message);
   }
@@ -228,18 +245,19 @@ class WebRtcHelper {
 
   void createRoom() async {
     final message = jsonEncode({
-      'type': 'create_room',
+      'type': 'create-room',
       'room_id': room_id,
       'user_id': userId,
     });
-    print("create room");
+    print("create room room_id $room_id");
     _signalingChannel.sink.add(message);
+    print("create room sent data $room_id");
   }
 
   void joinRoom() {
     print("join room");
     final message = jsonEncode({
-      'type': 'join_room',
+      'type': 'join-room',
       'room_id': room_id,
       'user_id': userId,
     });
@@ -264,7 +282,7 @@ class WebRtcHelper {
       'type': 'close',
       'room_id': room_id,
       'user_id': userId,
-      'toUserId': toUserId,
+      'to_user_id': toUserId,
     });
     _signalingChannel.sink.add(message);
   }
@@ -285,7 +303,7 @@ class WebRtcHelper {
 
   void startMeetingForAll() {
     final message = jsonEncode({
-      'type': 'start_meeting',
+      'type': 'start-meeting',
       'user_id': userId,
       'room_id': room_id,
     });
@@ -294,10 +312,28 @@ class WebRtcHelper {
 
   void endMeetingForAll() {
     final message = jsonEncode({
-      'type': 'end_meeting',
+      'type': 'end-meeting',
       'user_id': userId,
       'room_id': room_id,
     });
     _signalingChannel.sink.add(message);
+  }
+
+  void sendLocationDetails(LiveLocationModel data) {
+    final message = jsonEncode({
+      'type': 'location-update',
+      'room_id': room_id,
+      'user_id': userId,
+      'data': data
+    });
+    print("send location $room_id $userId");
+    _signalingChannel.sink.add(message);
+  }
+
+  StreamController<LiveLocationModel> getLiveLocationStream() {
+    if (liveLocationStream.isClosed) {
+      liveLocationStream = StreamController<LiveLocationModel>();
+    }
+    return liveLocationStream;
   }
 }

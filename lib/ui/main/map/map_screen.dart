@@ -24,8 +24,6 @@ class TripzieMap extends StatefulWidget {
 class _MyAppState extends State<TripzieMap> {
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> markers = Set();
-  StreamController<LiveLocationModel> controller =
-      StreamController<LiveLocationModel>();
   Position? currentLocation;
 
   void _onMapCreated(GoogleMapController controller) {
@@ -49,9 +47,7 @@ class _MyAppState extends State<TripzieMap> {
     super.initState();
     getUserCurrentLocationUpdateUi();
     BackgroundLocationWrapper.instance.startLiveRide();
-    SocketWrapper.instance
-        .startListeningForLocationUpdates(widget.ride.getId(), controller);
-    controller.stream.listen((event) {
+    SocketWrapper.instance.getLiveLocationStream().stream.listen((event) {
       addMarkerFromLocation(event);
     });
   }
@@ -59,7 +55,7 @@ class _MyAppState extends State<TripzieMap> {
   @override
   void dispose() {
     BackgroundLocationWrapper.instance.stopLocationService();
-    controller.close();
+    SocketWrapper.instance.getLiveLocationStream().close();
     super.dispose();
   }
 

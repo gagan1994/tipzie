@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:tripzie/api/api_wrapper.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 
 import '../auth/authentication.dart';
@@ -44,8 +45,9 @@ class _TestUiState extends State<TestUi> {
               child: Text('registerFirebase'),
             ),
             ElevatedButton(
-              onPressed: () {
-                SocketWrapper.initSocket();
+              onPressed: () async {
+                var ride = await fetchRideById(ride_id);
+                SocketWrapper.initSocket(ride!);
               },
               child: Text('Init socket'),
             ),
@@ -78,10 +80,10 @@ class _TestUiState extends State<TestUi> {
   }
 
   void subscribe() {
-    SocketWrapper.instance.subscribeTopic("rides_${ride_id}", (response) {
-      var locationData = LiveLocationModel.fromJson(response);
-      print("received data: ${locationData.latitude}");
-    });
+    // SocketWrapper.instance.subscribeTopic("rides_${ride_id}", (response) {
+    //   var locationData = LiveLocationModel.fromJson(response);
+    //   print("received data: ${locationData.latitude}");
+    // });
   }
 
   void sendSubscribeRides() {

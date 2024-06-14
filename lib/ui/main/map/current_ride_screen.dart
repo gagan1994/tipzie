@@ -41,6 +41,7 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
 
   @override
   void dispose() {
+    SocketWrapper.instance.cleanup();
     assistantHelper.dispose();
     super.dispose();
   }
@@ -215,8 +216,9 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
   }
 
   void checkAndInitSocket() {
+    print("Check and init socket: ${SocketWrapper.instance.isInit}");
     if (!SocketWrapper.instance.isInit) {
-      SocketWrapper.initSocket();
+      SocketWrapper.initSocket(widget.ride);
     }
   }
 
