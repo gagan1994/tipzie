@@ -289,6 +289,8 @@ Future<bool> updateProfile(
           'https://www.vhv.rs/dpng/d/256-2569650_men-profile-icon-png-image-free-download-searchpng.png';
     }
     http.Response? resp = null;
+    var token =
+        await FirebasePushNotificationWrapper.getInstance().getFcmToken();
     var userId = await SharedPrefWrapper.instance.getUserId();
     resp = await patchData('/profiles/$userId', {
       'first_name': fName,
@@ -299,7 +301,8 @@ Future<bool> updateProfile(
       'email': email,
       'image_uri': imageUri,
       'firebase_uid': uid,
-      'firebase_login_token': idToken
+      'firebase_login_token': idToken,
+      'fcmToken': token
     });
     print("resp:  ${resp.statusCode}");
     var user = await fetchCurrentUserProfile();

@@ -9,10 +9,18 @@ import '../api/api_wrapper.dart';
 import '../background_task/background_location.dart';
 import '../utils/ui_utils.dart';
 
+const PUSH_NOTIFICATION = 1;
+const ADVERTISE_NOTIFICATION = 2;
+const RIDE_STATUS_NOTIFICATION = 3;
+
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Handling a background message ${message.data.toString()}');
+  if (int.parse(message.data['type']) == PUSH_NOTIFICATION) {
+    print("Received push notification title: data: ${message.data}");
+    return;
+  }
   SharedPrefWrapper.instance.saveBgNotification(message.data);
 }
 
@@ -45,17 +53,27 @@ class FirebasePushNotificationWrapper {
       print("onMessageOpenedApp");
     });
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print('Got a message whilst in the foreground!');
-
-      print('Message data: ${message.data}');
-      BackgroundLocationWrapper.instance.startLiveRide();
-      await SharedPrefWrapper.instance.saveBgNotification(message.data);
-      checkAndOpenNotification(navigatorKey.currentContext!);
-      if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification}');
+      print(
+          'Got a message whilst in the foreground! ${message.notification?.title} , '
+          '${message.notification?.body}, ${int.parse(message.data['type'])}');
+      if (int.parse(message.data['type']) == PUSH_NOTIFICATION) {
+        print("Received push notification title: data: ${message.data}");
+        showFlutterNotification(message);
+        return;
+      }
+      if (message.data['type'] == RIDE_STATUS_NOTIFICATION) {
+        print('Message data: ${message.data}');
+        BackgroundLocationWrapper.instance.startLiveRide();
+        await SharedPrefWrapper.instance.saveBgNotification(message.data);
+        checkAndOpenNotification(navigatorKey.currentContext!);
+        if (message.notification != null) {
+          print(
+              'Message also contained a notification: ${message.notification}');
+        }
       }
     });
     uploadTokenToServer();
+    setupFlutterNotifications();
   }
 
   Future<void> setupFlutterNotifications() async {
