@@ -20,6 +20,7 @@ const BASE_URL_SOCKET = 'ws://192.168.1.5:3000';
 const LOCAL_DATA = 404;
 
 Future<http.Response> fetchData(String endpoint) async {
+  print("fetchData $endpoint");
   try {
     var uri = Uri.parse(BASE_URL + endpoint);
     print("fetchData $uri");
@@ -84,6 +85,7 @@ Future<UserProfile?> fetchCurrentUserProfile() async {
 }
 
 Future<UserProfile?> getUserDetails(User user) async {
+  print("login user email: ${user.email} ph: ${user.phoneNumber}");
   if (user.phoneNumber != null && user.phoneNumber!.isNotEmpty) {
     var userFromPhone = await fetchData("/profiles/phone/${user.phoneNumber}");
     if (userFromPhone.statusCode == 200) {
@@ -91,7 +93,8 @@ Future<UserProfile?> getUserDetails(User user) async {
     }
   }
   if (user.email != null && user.email!.isNotEmpty) {
-    var userFromEmail = await fetchData("/email/${user.email}");
+    var end = "/profiles/email/${user.email}";
+    var userFromEmail = await fetchData(end);
     if (userFromEmail.statusCode == 200) {
       return UserProfile.fromJson(jsonDecode(userFromEmail.body));
     }

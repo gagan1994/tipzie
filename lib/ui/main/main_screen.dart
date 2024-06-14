@@ -119,7 +119,7 @@ class _MainScreenState extends State<MainScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print('lifcycleState $state');
     if (state == AppLifecycleState.resumed) {
-      checkAndOpenNotification(context);
+      if (context.mounted) checkAndOpenNotification(context);
     }
   }
 

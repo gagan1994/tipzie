@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_polygon/flutter_polygon.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tripzie/api/ride.dart';
+import 'package:tripzie/api/user_data.dart';
 import 'package:tripzie/auth/authentication.dart';
+import 'package:tripzie/db/users.dart';
 import 'package:tripzie/socket/models/models.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/utils/map_utils.dart';
@@ -93,30 +94,6 @@ class _MyAppState extends State<TripzieMap> {
     );
   }
 
-  Widget _currentUserMarker(LiveLocationModel model) {
-    //'https://newprofilepic2.photo-cdn.net//assets/images/article/profile.jpg'
-    return Container(
-      width: 30,
-      height: 30,
-      child: ClipPolygon(
-        sides: 6,
-        borderRadius: 5.0, // Default 0.0 degrees
-        boxShadows: [
-          PolygonBoxShadow(color: Colors.black, elevation: 1.0),
-          PolygonBoxShadow(color: Colors.grey, elevation: 5.0)
-        ],
-        child: (model.photoURL != null)
-            ? Image.network(model.photoURL!)
-            : Container(
-                color: accent_color,
-                child: Icon(
-                  Icons.person,
-                  color: Colors.white,
-                )),
-      ),
-    );
-  }
-
   void getUserCurrentLocationUpdateUi() async {
     markers.clear();
     if (widget.ride.source != null) {
@@ -140,22 +117,19 @@ class _MyAppState extends State<TripzieMap> {
   }
 
   addMarker(LiveLocationModel model, bool isUpdateCameraPosition) async {
-    print("model - > ${model.email}");
-
-    var image = await MapUtils.getMarkerIcon(model.photoURL!, Size(75, 75));
-
-    var marker = Marker(
-        markerId: MarkerId(model.userId!),
-        position: LatLng(model.latitude!, model.longitude!),
-        infoWindow: InfoWindow(title: MapUtils.getInfoWindow(model)),
-        icon: BitmapDescriptor.fromBytes(image));
-    markers.add(marker);
-
-    // adding source and destination markers
-    if (isUpdateCameraPosition) {
-      updateCamera();
+    print("model - > ${model.userId}");
+    UserProfile? userData;
+    for (var item in widget.ride.selectedUsers!) {
+      print(item.userId);
+      if (item.userId == model.userId) {
+        userData = item;
+        break;
+      }
     }
-    setState(() {});
+    if (userData == null && model.userId == widget.ride.createdBy) {
+      userData = allUsers[model.userId];
+    }
+    addUserMarker(model, userData, isUpdateCameraPosition);
   }
 
   void updateCurrentLocation(bool isUpdateCameraPosition) async {
@@ -166,7 +140,8 @@ class _MyAppState extends State<TripzieMap> {
         currentLocation!.altitude,
         currentLocation!.timestamp!.millisecond.toDouble(),
         Authentication.loggedInUser!);
-    addMarker(currentMarker, isUpdateCameraPosition);
+    addUserMarker(
+        currentMarker, Authentication.loggedInUser, isUpdateCameraPosition);
   }
 
   addMarkerFromLocation(LiveLocationModel model) {
@@ -180,5 +155,23 @@ class _MyAppState extends State<TripzieMap> {
       MapUtils.boundsFromLatLngList(markers),
       100.0,
     ));
+  }
+
+  void addUserMarker(LiveLocationModel model, UserProfile? userData,
+      bool isUpdateCameraPosition) async {
+    var image = await MapUtils.getMarkerIcon(userData!.imageUri!, Size(75, 75));
+
+    var marker = Marker(
+        markerId: MarkerId(model.userId!),
+        position: LatLng(model.latitude!, model.longitude!),
+        infoWindow: InfoWindow(title: MapUtils.getInfoWindow(userData!)),
+        icon: BitmapDescriptor.fromBytes(image));
+    markers.add(marker);
+
+    // adding source and destination markers
+    if (isUpdateCameraPosition) {
+      updateCamera();
+    }
+    setState(() {});
   }
 }

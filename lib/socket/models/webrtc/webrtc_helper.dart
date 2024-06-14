@@ -90,10 +90,6 @@ class WebRtcHelper {
       peerConnections.putIfAbsent(item, () => peerConnection);
     }
     _signalingChannel.stream.listen((message) {
-      try {
-        String s = new String.fromCharCodes(message);
-        message = s;
-      } catch (e) {}
       final data = jsonDecode(message);
       final fromUser = data['user_id'];
       final type = data['type'];
@@ -154,8 +150,13 @@ class WebRtcHelper {
           _handleClose(peerConnections[fromUser]!);
           break;
         case 'location-update':
+          print("location-update");
+          print(data['user_id']);
           var location = LiveLocationModel.fromJson(data['data']);
           liveLocationStream.add(location);
+          break;
+        case 'room-created':
+          print("room created");
           break;
         default:
           print('Unknown message type: $type');

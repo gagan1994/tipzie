@@ -11,15 +11,16 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image/image.dart' as imageLib;
 import 'package:image/image.dart';
 import 'package:tripzie/auth/authentication.dart';
-import 'package:tripzie/socket/models/models.dart';
 import 'package:tripzie/ui/main/map/tripzie_places_search.dart';
 
+import '../api/user_data.dart';
+
 class MapUtils {
-  static String? getInfoWindow(LiveLocationModel model) {
+  static String? getInfoWindow(UserProfile model) {
     if (Authentication.isCurrentUser(model.userId)) {
       return "You";
     }
-    return model.userName == null ? model.phoneNumber : model.userName;
+    return model.firstName == null ? model.phoneNumber : model.firstName;
   }
 
   static const kGoogleApiKey = "AIzaSyATbnH2M_82lBfpUtxJNq-ngQxqkpCXCpI";
