@@ -16,6 +16,7 @@ import '../filrebase/firebase_storage.dart';
 import '../ui/main/rides/create_new_ride_screen.dart';
 
 const BASE_URL = 'http://192.168.1.5:3000';
+const BASE_URL_SOCKET = 'ws://192.168.1.9:3000';
 const LOCAL_DATA = 404;
 
 Future<http.Response> fetchData(String endpoint) async {
