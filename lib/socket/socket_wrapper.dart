@@ -49,6 +49,10 @@ class SocketWrapper {
     return WebRtcHelper.getInstance().getLiveLocationStream();
   }
 
+  StreamController<List<dynamic>> userInRoom() {
+    return WebRtcHelper.getInstance().getUsersInRoom();
+  }
+
   void cleanup() {
     isInit = false;
   }

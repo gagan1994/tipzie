@@ -24,7 +24,7 @@ class LiveLocationModel {
       : userId = json['userId'],
         latitude = json['latitude'],
         longitude = json['longitude'],
-        altitude = json['altitude'],
+        altitude = json['altitude'].toDouble(),
         time = json['time'].toDouble();
 
   Map<String, dynamic> toJson() => {

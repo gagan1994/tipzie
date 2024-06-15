@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:swipeable_button_view/swipeable_button_view.dart';
 import 'package:tripzie/api/api_wrapper.dart';
+import 'package:tripzie/auth/authentication.dart';
 import 'package:tripzie/socket/socket_wrapper.dart';
 import 'package:tripzie/ui/main/map/assistant_helper.dart';
 import 'package:tripzie/ui/user_avatar.dart';
@@ -29,7 +30,7 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
   bool isMicSelected = false;
   AssistantHelper assistantHelper = AssistantHelper();
   Set<String> muteUsers = Set();
-
+  List<dynamic> activeUserId = [];
   @override
   void initState() {
     checkAndInitSocket();
@@ -42,6 +43,7 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
   @override
   void dispose() {
     SocketWrapper.instance.cleanup();
+    SocketWrapper.instance.userInRoom().close();
     assistantHelper.dispose();
     super.dispose();
   }
@@ -93,7 +95,7 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
                       isVolumeSelected = !isVolumeSelected;
                     });
                   }),
-                  _getIcon(Icons.mic_off, isMicSelected, () {
+                  _getIcon(Icons.mic_off, !isMicSelected, () {
                     setState(() {
                       isMicSelected = !isMicSelected;
                     });
@@ -219,6 +221,14 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
     print("Check and init socket: ${SocketWrapper.instance.isInit}");
     if (!SocketWrapper.instance.isInit) {
       SocketWrapper.initSocket(widget.ride);
+      SocketWrapper.instance.userInRoom().stream.listen((event) {
+        print("user joined event: - $event");
+
+        setState(() {
+          activeUserId.clear();
+          activeUserId.addAll(event);
+        });
+      });
     }
   }
 
@@ -243,7 +253,33 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
       );
     }
     var userProfile = widget.ride.selectedUsers![index - 1];
-
+    if (userProfile.userId == Authentication.loggedInUser!.userId) {
+      return SizedBox();
+    }
+    Widget tail;
+    if (activeUserId.contains(userProfile.userId)) {
+      tail = Container(
+        padding: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: muteUsers.contains(userProfile.userId)
+              ? Colors.white
+              : Colors.transparent,
+        ),
+        child: Icon(Icons.mic_off,
+            color: (muteUsers.contains(userProfile.userId) &&
+                    widget.ride.isCreatedByCurrentUser())
+                ? accent_color
+                : Colors.white),
+      );
+    } else {
+      tail = Container(
+          padding: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+          ),
+          child: Icon(Icons.cloud_off, color: Colors.white54));
+    }
     return ListTile(
       leading: UserAvatar(
         imageUrl: userProfile.imageUri,
@@ -268,20 +304,7 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
             setState(() {});
           }
         },
-        child: Container(
-          padding: EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: muteUsers.contains(userProfile.userId)
-                ? Colors.white
-                : Colors.transparent,
-          ),
-          child: Icon(Icons.mic_off,
-              color: (muteUsers.contains(userProfile.userId) &&
-                      widget.ride.isCreatedByCurrentUser())
-                  ? accent_color
-                  : Colors.white),
-        ),
+        child: tail,
       ),
     );
   }

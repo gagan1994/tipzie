@@ -20,6 +20,8 @@ class WebRtcHelper {
   var room_id = "";
   StreamController<LiveLocationModel> liveLocationStream =
       StreamController<LiveLocationModel>();
+  StreamController<List<dynamic>> userInRoom =
+      StreamController<List<dynamic>>();
 
   static WebRtcHelper getInstance() {
     return instance;
@@ -157,6 +159,10 @@ class WebRtcHelper {
           break;
         case 'room-created':
           print("room created");
+          break;
+        case 'user-joined':
+          print("user joined $data");
+          userInRoom.add(data['user_id']);
           break;
         default:
           print('Unknown message type: $type');
@@ -336,5 +342,12 @@ class WebRtcHelper {
       liveLocationStream = StreamController<LiveLocationModel>();
     }
     return liveLocationStream;
+  }
+
+  StreamController<List<dynamic>> getUsersInRoom() {
+    if (userInRoom.isClosed) {
+      userInRoom = StreamController<List<dynamic>>();
+    }
+    return userInRoom;
   }
 }

@@ -88,6 +88,7 @@ Future<UserProfile?> getUserDetails(User user) async {
   print("login user email: ${user.email} ph: ${user.phoneNumber}");
   if (user.phoneNumber != null && user.phoneNumber!.isNotEmpty) {
     var userFromPhone = await fetchData("/profiles/phone/${user.phoneNumber}");
+    print("response: ${userFromPhone.statusCode}");
     if (userFromPhone.statusCode == 200) {
       return UserProfile.fromJson(jsonDecode(userFromPhone.body));
     }
@@ -99,6 +100,7 @@ Future<UserProfile?> getUserDetails(User user) async {
       return UserProfile.fromJson(jsonDecode(userFromEmail.body));
     }
   }
+  print("user not found new user");
   return null;
 }
 
