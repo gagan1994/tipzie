@@ -22,6 +22,7 @@ class WebRtcHelper {
       StreamController<LiveLocationModel>();
   StreamController<List<dynamic>> userInRoom =
       StreamController<List<dynamic>>();
+  StreamController<String> userleft = StreamController<String>();
 
   static WebRtcHelper getInstance() {
     return instance;
@@ -164,6 +165,11 @@ class WebRtcHelper {
           print("user joined $data");
           userInRoom.add(data['user_id']);
           break;
+        case 'user-left':
+          print("user left ${data['user_id']}");
+          userleft.sink.add(data['user_id']);
+
+          break;
         default:
           print('Unknown message type: $type');
       }
@@ -248,6 +254,8 @@ class WebRtcHelper {
     });
     _signalingChannel.sink.close();
     peerConnections.clear();
+    userInRoom.sink.close();
+    userleft.sink.close();
   }
 
   void createRoom() async {
@@ -349,5 +357,12 @@ class WebRtcHelper {
       userInRoom = StreamController<List<dynamic>>();
     }
     return userInRoom;
+  }
+
+  StreamController<String> getUsersLeft() {
+    if (userleft.isClosed) {
+      userleft = StreamController<String>();
+    }
+    return userleft;
   }
 }

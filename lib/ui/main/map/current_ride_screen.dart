@@ -43,7 +43,6 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
   @override
   void dispose() {
     SocketWrapper.instance.cleanup();
-    SocketWrapper.instance.userInRoom().close();
     assistantHelper.dispose();
     super.dispose();
   }
@@ -227,6 +226,14 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
         setState(() {
           activeUserId.clear();
           activeUserId.addAll(event);
+        });
+      });
+      SocketWrapper.instance.getUsersLeft().stream.listen((event) {
+        print("user joined event: - $event");
+        if (!activeUserId.contains(event)) return;
+
+        setState(() {
+          activeUserId.remove(event);
         });
       });
     }

@@ -53,7 +53,12 @@ class SocketWrapper {
     return WebRtcHelper.getInstance().getUsersInRoom();
   }
 
+  StreamController<String> getUsersLeft() {
+    return WebRtcHelper.getInstance().getUsersLeft();
+  }
+
   void cleanup() {
+    WebRtcHelper.getInstance().dispose();
     isInit = false;
   }
 }
